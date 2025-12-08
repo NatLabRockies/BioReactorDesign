@@ -26,7 +26,7 @@ Installation of python package for users
 
    conda create -c conda-forge --name bird python=3.10 paraview
    conda activate bird
-   pip install nrel-bird
+   pip install nlr-bird
 
 
 .. _installation_of:

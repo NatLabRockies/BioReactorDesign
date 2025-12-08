@@ -120,7 +120,7 @@ jobs:
         run: |
           micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
-          pip install nrel-bird
+          pip install nlr-bird
           pip install pytest
 
       - name: Test

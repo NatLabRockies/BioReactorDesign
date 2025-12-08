@@ -15,7 +15,7 @@ with open(os.path.join(here, "bird", "version.py"), encoding="utf-8") as f:
 version = version.split("=")[-1].strip().strip('"').strip("'")
 
 setup(
-    name="nrel-bird",
+    name="nlr-bird",
     version=version,
     description="Bio Reactor Design (BiRD): a toolbox to simulate and analyze different designs of bioreactors in OpenFOAM",
     long_description=readme,

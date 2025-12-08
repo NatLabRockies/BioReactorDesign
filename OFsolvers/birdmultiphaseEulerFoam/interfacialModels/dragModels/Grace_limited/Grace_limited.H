@@ -38,7 +38,7 @@ Description
 
 SourceFiles
     Grace_limited.C
-    Added by M Rahimi and H Sitaraman, NREL
+    Added by M Rahimi and H Sitaraman, NLR
 
 \*---------------------------------------------------------------------------*/
 
