@@ -22,7 +22,7 @@ version = version.split("=")[-1].strip().strip('"').strip("'")
 
 project = "Bio Reactor Design (BiRD)"
 copyright = "2024"
-author = "NREL"
+author = "NLR"
 
 release = version
 version = version

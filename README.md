@@ -1,4 +1,4 @@
-# <ins>Bi</ins>o <ins>R</ins>eactor <ins>D</ins>esign (BiRD) [![bird-CI](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml) [![bird-pyversion](https://img.shields.io/pypi/pyversions/NREL-bird.svg)](https://pypi.org/project/NREL-bird/) [![coverage](https://codecov.io/gh/NREL/BioReactorDesign/graph/badge.svg)](https://app.codecov.io/gh/nrel/bioreactordesign)  [![bird-pypi](https://badge.fury.io/py/nrel-bird.svg)](https://badge.fury.io/py/nrel-bird)
+# <ins>Bi</ins>o <ins>R</ins>eactor <ins>D</ins>esign (BiRD) [![bird-CI](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml) [![bird-pyversion](https://img.shields.io/pypi/pyversions/NLR-bird.svg)](https://pypi.org/project/NLR-bird/) [![coverage](https://codecov.io/gh/NREL/BioReactorDesign/graph/badge.svg)](https://app.codecov.io/gh/nrel/bioreactordesign)  [![bird-pypi](https://badge.fury.io/py/nlr-bird.svg)](https://badge.fury.io/py/nlr-bird)
 
 ## Quick start
 1. Follow the steps to install the python package (see `Installation of python package for developers` or `Installation of python package for users` below)
@@ -25,7 +25,7 @@ pip install -e .
 ```bash
 conda create -c conda-forge --name bird python=3.10 paraview
 conda activate bird
-pip install nrel-bird=={version}
+pip install nlr-bird=={version}
 ```
 
 We highly recommend that you specify the version explicitly as the library is still rapidly changing.
@@ -82,7 +82,7 @@ To cite BiRD, please use these articles on [CO2 interphase mass transfer](https:
 
 ## Acknowledgments
 
-This work was authored by the National Renewable Energy Laboratory (NREL), operated by Alliance for Sustainable Energy, LLC, for the U.S. Department of Energy (DOE) under Contract No. DE-AC36-08GO28308. This work was supported by funding from DOE Bioenergy Technologies Office (BETO) [CO2RUe consortium](https://www.energy.gov/eere/co2rue). The research was performed using computational resources sponsored by the Department of Energy's Office of Energy Efficiency and Renewable Energy and located at the National Renewable Energy Laboratory. The views expressed in the article do not necessarily represent the views of the DOE or the U.S. Government. The U.S. Government retains and the publisher, by accepting the article for publication, acknowledges that the U.S. Government retains a nonexclusive, paid-up, irrevocable, worldwide license to publish or reproduce the published form of this work, or allow others to do so, for U.S. Government purposes.
+This work was authored in part by the National Laboratory of the Rockies (NLR) for the U.S. Department of Energy (DOE) under Contract No. DE-AC36-08GO28308. This work was supported by funding from DOE Bioenergy Technologies Office (BETO) [CO2RUe consortium](https://www.energy.gov/eere/co2rue). The research was performed using computational resources sponsored by the Department of Energy's Office of Critical Minerals and Energy Innovation (CMEI) and located at the National Laboratory of the Rockies. The views expressed in the article do not necessarily represent the views of the DOE or the U.S. Government. The U.S. Government retains and the publisher, by accepting the article for publication, acknowledges that the U.S. Government retains a nonexclusive, paid-up, irrevocable, worldwide license to publish or reproduce the published form of this work, or allow others to do so, for U.S. Government purposes.
 
 
 
