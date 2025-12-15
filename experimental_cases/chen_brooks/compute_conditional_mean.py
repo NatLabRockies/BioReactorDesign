@@ -259,7 +259,7 @@ def make_plot(fields_cond: dict, heights: list[float], field_names=list[str], ex
                     ax.plot(
                          exp_data[key_name][:,0],
                          exp_data[key_name][:,1],
-                         color="b",
+                         color="r",
                          linewidth=3,
                          label="exp"
                     )
