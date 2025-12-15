@@ -224,7 +224,7 @@ def radial_mean(
 
 def make_plot(fields_cond: dict, heights: list[float], field_names=list[str], experimental_data_folder:str|None=None):
 
-    from prettyPlot.plotting import plt, pretty_labels
+    from prettyPlot.plotting import plt, pretty_labels, pretty_legend
 
     exp_data = read_exp_data(experimental_data_folder)
 
@@ -254,7 +254,7 @@ def make_plot(fields_cond: dict, heights: list[float], field_names=list[str], ex
                     #linewidth=3,
                     label="sim"
                 )
-                key_name = f"alpha-of-r_y{iheight+1}"
+                key_name = f"vl-of-r_y{iheight+1}"
                 if exp_data[key_name] is not None:
                     ax.plot(
                          exp_data[key_name][:,0],
@@ -280,7 +280,7 @@ def make_plot(fields_cond: dict, heights: list[float], field_names=list[str], ex
                     #color="b",
                     #linewidth=3,
                 )
-                key_name = f"vl-of-r_y{iheight+1}"
+                key_name = f"alpha-of-r_y{iheight+1}"
                 if exp_data[key_name] is not None:
                     ax.plot(
                          exp_data[key_name][:,0],
@@ -337,4 +337,5 @@ if __name__ == "__main__":
         heights=[h1, h2, h3],
         #field_names=["U.liquid", "alpha.gas", "Ualpha.liquid"],
         field_names=["alpha.gas", "Ualpha.liquid"],
+        experimental_data_folder="./",
     )
