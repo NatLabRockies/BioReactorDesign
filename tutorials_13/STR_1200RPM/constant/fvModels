@@ -1,0 +1,123 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvModels;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+/*
+phaseChange
+{
+
+    #include "$FOAM_CASE/constant/globalVars";
+    
+    type            massDiffusionLimitedPhaseChange;
+
+    libs            ("libbirdmultiphaseEulerFvModels.so");
+
+    phases          (gas liquid);
+
+    energySemiImplicit yes;
+
+    interfaceComposition
+    {
+        gas_liquid_inThe_liquid
+        {   
+            type Henry;
+            species ( O2 H2 CO2 );
+            k ( $He_O2 $He_H2 $He_CO2 );
+            Le $LeLiqMix;
+        }
+    }
+
+    diffusiveMassTransfer
+    {
+        blending        heatAndDiffusiveMassTransfer;
+
+        gas_dispersedIn_liquid_inThe_liquid
+        {
+            type Higbie;
+            Le $LeLiqMix;
+        }
+
+        liquid_dispersedIn_gas_inThe_liquid
+        {
+            type spherical;
+            Le 1.0; 
+        }
+
+        gas_dispersedIn_liquid_inThe_gas
+        {
+            type Higbie;
+            Le $LeLiqMix;
+        }
+
+        liquid_dispersedIn_gas_inThe_gas
+        {
+            type spherical;
+            Le 1.0; 
+        }
+    }
+}
+*/
+
+// Sparge holes
+ang1 #calc "degToRad(22.5)";
+ang2 #calc "degToRad(45)";
+ang3 #calc "degToRad(67.5)";
+spargeRad  0.0245;
+
+x1 #calc "$spargeRad*cos($ang1)";
+x1neg #calc "-1.0*$x1";
+z1 #calc "$spargeRad*sin($ang1)";
+z1neg #calc "-1.0*$z1";
+x2 #calc "$spargeRad*cos($ang2)";
+x2neg #calc "-1.0*$x2";
+z2 #calc "$spargeRad*sin($ang2)";
+z2neg #calc "-1.0*$z2";
+x3 #calc "$spargeRad*cos($ang3)";
+x3neg #calc "-1.0*$x3";
+z3 #calc "$spargeRad*sin($ang3)";
+z3neg #calc "-1.0*$z3";
+x4 0.0;
+z4 0.0245;
+z4neg -0.0245;
+
+    massSource
+    {
+        type            massSource;
+        phase alpha.gas;
+        cellZone
+        {
+            type            containsPoints;
+            points          
+(        ($x1 0.01 $z1)
+        ($x2 0.01 $z2)
+        ($x3 0.01 $z3)
+        ($x4 0.01 $z4)
+        ($x1neg 0.01 $z1)
+        ($x2neg 0.01 $z2)
+        ($x3neg 0.01 $z3)
+        ($x1 0.01 $z1neg)
+        ($x2 0.01 $z2neg)
+        ($x3 0.01 $z3neg)
+        ($x4 0.01 $z4neg)
+        ($x1neg 0.01 $z1neg)
+        ($x2neg 0.01 $z2neg)
+        ($x3neg 0.01 $z3neg)
+);
+        }
+
+        massFlowRate 6.645e-6;
+    }
+
+// ************************************************************************* //
+
