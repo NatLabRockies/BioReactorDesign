@@ -17,6 +17,21 @@ FoamFile
 dimensions      [];
 
 internalField   uniform 0;
+
+sources
+{
+    massSource2
+    {
+        type            uniformFixedValue;
+        uniformValue    
+        {
+            type            constant;
+            value           0.75;
+        }
+    }
+}
+
+
 boundaryField
 {
     outlet

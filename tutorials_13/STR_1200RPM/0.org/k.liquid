@@ -18,6 +18,20 @@ dimensions      [0 2 -2 0 0 0 0];
 
 internalField   uniform 3.75e-05;
 
+sources
+{
+    massSource2
+    {
+        type            uniformFixedValue;
+        uniformValue    
+        {
+            type            constant;
+            value           3.75e-5;
+        }
+    }
+}
+
+
 boundaryField
 {
     outlet

@@ -20,20 +20,27 @@ limitp
     min        1e4;
 }
 
-limitT
+limitTgas
 {
     type            limitTemperature;
-
-    select          all;
-
-    field           T;   // Optional energy/temperature field name
-                            // Set to T for compressibleVoF
-
-    phase           gas; // Optional phase name
-
+    active          yes;
+    cellZone        all;
     min             288;
     max             298;
+    phase           gas;
 }
+
+limitTliquid
+{
+    type            limitTemperature;
+    active          yes;
+    cellZone        all;
+    min             288;
+    max             298;
+    phase           liquid;
+}
+
+
 
 
 // ************************************************************************* //

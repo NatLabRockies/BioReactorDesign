@@ -91,10 +91,27 @@ x4 0.0;
 z4 0.0245;
 z4neg -0.0245;
 
+    massSource2
+    {
+        type            massSource;
+        phase liquid;
+        cellZone
+        {
+            type            containsPoints;
+            points          
+(        (0.03 0.06 0)
+
+);
+        }
+
+        massFlowRate 6.645e-3;
+    }
+
+
     massSource
     {
         type            massSource;
-        phase alpha.gas;
+        phase gas;
         cellZone
         {
             type            containsPoints;
