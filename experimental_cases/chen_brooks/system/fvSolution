@@ -107,8 +107,8 @@ PIMPLE
 //    nNonOrthogonalCorrectors 0;
 
     nNonOrthogonalCorrectors 0;
-    nCorrectors          15;
-    nOuterCorrectors    1;
+    nCorrectors          3;
+    nOuterCorrectors    2;
     turbOnFinalIterationOnly false;
     outerCorrectorResidualControl
     {
@@ -138,7 +138,7 @@ relaxationFactors
     {
         p_rgh 0.7;
     }
-    
+
     equations
     {
         ".*"            1;
