@@ -18,8 +18,8 @@ solvers
 {
     "alpha.*"
     {
-        nAlphaCorr      2;
-        nAlphaSubCycles 5;
+        nAlphaCorr      1;
+        nAlphaSubCycles 2;
     }
 
     bubbles
@@ -35,7 +35,7 @@ solvers
     {
         solver          GAMG;
         smoother        DIC;
-        tolerance       1e-7;
+        tolerance       1e-8;
         relTol          0;
     }
 
@@ -90,7 +90,7 @@ solvers
         minIter         1;
     }
 
-    yPsi
+    "yPsi.*"
     {
         solver          PCG;
         preconditioner  DIC;
@@ -102,17 +102,47 @@ solvers
 
 PIMPLE
 {
-    nOuterCorrectors 3;
-    nCorrectors      1;
-    nNonOrthogonalCorrectors 0;
+//    nOuterCorrectors 3;
+//    nCorrectors      5;
+//    nNonOrthogonalCorrectors 0;
 
+    nNonOrthogonalCorrectors 0;
+    nCorrectors          15;
+    nOuterCorrectors    1;
+    turbOnFinalIterationOnly false;
+    outerCorrectorResidualControl
+    {
+        U
+        {
+                tolerance  1e-5;
+                relTol      0;
+        }
+        p_rgh
+        {
+                tolerance  1e-6;
+                relTol      0;
+        }
+     }
+
+
+    faceMomentum        yes;
+    VmDdtCorrection     yes;
+    dragCorrection      yes;
+    interphaseHeatCorrectionScheme no;
+    maxDeltaT 1e-1;
 }
 
 relaxationFactors
 {
+    fields
+    {
+        p_rgh 0.7;
+    }
+    
     equations
     {
         ".*"            1;
+        "e.*"          0.99;
     }
 }
 
