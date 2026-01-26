@@ -12,7 +12,7 @@ Installation of python package for developers
 
    conda create -c conda-forge --name bird python=3.10 paraview
    conda activate bird
-   git clone https://github.com/NREL/BioReactorDesign.git
+   git clone https://github.com/NatLabRockies/BioReactorDesign.git
    cd BioReactorDesign
    pip install -e .
 
