@@ -1,4 +1,4 @@
-# <ins>Bi</ins>o <ins>R</ins>eactor <ins>D</ins>esign (BiRD) [![bird-CI](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml) [![bird-pyversion](https://img.shields.io/pypi/pyversions/NLR-bird.svg)](https://pypi.org/project/NLR-bird/) [![coverage](https://codecov.io/gh/NREL/BioReactorDesign/graph/badge.svg)](https://app.codecov.io/gh/nrel/bioreactordesign)  [![bird-pypi](https://badge.fury.io/py/nlr-bird.svg)](https://badge.fury.io/py/nlr-bird)
+# <ins>Bi</ins>o <ins>R</ins>eactor <ins>D</ins>esign (BiRD) [![bird-CI](https://github.com/NatLabRockies/BioReactorDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NatLabRockies/BioReactorDesign/actions/workflows/ci.yml) [![bird-pyversion](https://img.shields.io/pypi/pyversions/NLR-bird.svg)](https://pypi.org/project/NLR-bird/) [![coverage](https://codecov.io/gh/NREL/BioReactorDesign/graph/badge.svg)](https://app.codecov.io/gh/nrel/bioreactordesign)  [![bird-pypi](https://badge.fury.io/py/nlr-bird.svg)](https://badge.fury.io/py/nlr-bird)
 
 ## Quick start
 1. Follow the steps to install the python package (see `Installation of python package for developers` or `Installation of python package for users` below)
@@ -15,7 +15,7 @@ bash run.sh
 ```bash
 conda create -c conda-forge --name bird python=3.10 paraview
 conda activate bird
-git clone https://github.com/NREL/BioReactorDesign.git
+git clone https://github.com/NatLabRockies/BioReactorDesign.git
 cd BioReactorDesign
 pip install -e .
 ```
@@ -38,7 +38,7 @@ We highly recommend that you specify the version explicitly as the library is st
 
 ## Documentation
 
-See the [nrel.github.io/BioReactorDesign](https://nrel.github.io/BioReactorDesign).
+See the [natlabrockies.github.io/BioReactorDesign](https://natlabrockies.github.io/BioReactorDesign).
 
 
 ## References
