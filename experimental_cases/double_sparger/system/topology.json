@@ -1,0 +1,29 @@
+{
+	"Boundary": {
+		"outlet":[
+			   {"type": "top", "Rmin": 0, "Rmax": 0, "Lmin": 0, "Lmax": 1},
+			   {"type": "top", "Rmin": 1, "Rmax": 1, "Lmin": 0, "Lmax": 1},
+			   {"type": "top", "Rmin": 2, "Rmax": 2, "Lmin": 0, "Lmax": 1},
+			   {"type": "top", "Rmin": 3, "Rmax": 3, "Lmin": 0, "Lmax": 1},
+			   {"type": "top", "Rmin": 4, "Rmax": 4, "Lmin": 0, "Lmax": 1}
+			 ],
+	        "inlet_sparger_top":[
+                           {"type": "top", "Rmin": 2, "Rmax": 2, "Lmin": 2, "Lmax": 3}
+                         ],
+	        "inlet_sparger_bottom":[
+                           {"type": "top", "Rmin": 2, "Rmax": 2, "Lmin": 4, "Lmax": 5}
+                         ]
+
+	},
+
+	"Walls": {
+                "Sparger": [
+                            {"R": 2, "L": 3},
+                            {"R": 2, "L": 5}
+                           ]
+        }
+}
+
+
+
+
