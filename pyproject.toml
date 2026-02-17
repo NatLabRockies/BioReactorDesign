@@ -1,0 +1,83 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nlr-bird"
+readme = "README.md"
+dynamic = ["version"]
+requires-python = ">=3.10,<3.14"
+license = { file = "LICENSE" }
+description = "Bio Reactor Design (BiRD): a toolbox to simulate and analyze different designs of bioreactors in OpenFOAM"
+keywords = ["meshing", "openfoam", "bioreactors"]
+authors = [
+    { name = "Malik Hassanaly" },
+    { email = "malik.hassanaly@gmail.com" },
+]
+maintainers = [
+    { name = "Malik Hassanaly" },
+    { email = "malik.hassanaly@gmail.com" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "numpy",
+    "prettyPlot",
+    "ruamel_yaml",
+    "numpy-stl>=3.2.0",
+    "scipy",
+    "corner",
+    "jax",
+    "numpyro>=0.16.1",
+    "torchvision",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "bird.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+"*" = ["*.yaml", "*.csv"]
+
+[project.optional-dependencies]
+docs = [
+    "sphinx",
+    "sphinx_rtd_theme",
+    "sphinx-autodoc-typehints",
+]
+tests = [
+    "pytest",
+    "pytest-cov",
+]
+calibration = [
+    "joblib",
+    "tensorflow",
+    "scikit-learn",
+    "tf2jax",
+]
+optim = [
+    "optuna",
+    "pandas",
+]
+dev = [
+    "nox",
+    "black",
+    "isort",
+    "codespell",
+    "nlr-bird[docs,tests,optim,calibration]",
+]
+
+
+[project.urls]
+Homepage = "https://github.com/NatLabRockies/BioReactorDesign"
+Documentation = "https://natlabrockies.github.io/BioReactorDesign"
+Repository = "https://github.com/NatLabRockies/BioReactorDesign"
+Issues = "https://github.com/NatLabRockies/BioReactorDesign/issues"

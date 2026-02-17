@@ -37,18 +37,22 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
-      - name: Install dependencies
-        run: |
-          pip install black
-          pip install isort
-          pip install codespell
-      - name: Formatting and sorting import
-        run: |
-          source .github/linters/formatting.sh
-          format . true
+          cache: 'pip'
 
-  Test-BiRD:
-    name: Test-BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
+      - name: Cache Nox
+        uses: actions/cache@v4
+        with:
+          path: .nox
+          key: ${{ runner.os }}-lint-nox-${{ hashFiles('noxfile.py') }}
+
+      - name: Install nox
+        run: pip install nox
+
+      - name: Formatting and sorting import
+        run: nox -s linter
+
+  Unit-Test-BiRD:
+    name: Unit-Test-BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -81,14 +85,15 @@ jobs:
         run: |
           micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
-          pip install . 
-          pip install pytest
+          pip install --upgrade nox
+          pip install .[tests] 
 
       - name: Test
-        run: pytest .
+        run: nox -s tests -- no-reports
 
-  Test-pypi-Bird:
-    name: Test-pypi-BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
+
+  Unit-Test-pypi-Bird:
+    name: Unit-Test-pypi-BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -120,13 +125,14 @@ jobs:
         run: |
           micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
+          pip install --upgrade nox
           pip install nlr-bird
           pip install pytest
 
       - name: Test
-        run: pytest .
+        run: nox -s tests -- no-reports
 
-  Test-OF:
+  Regression-Test-OF:
     name: Test-OF (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
