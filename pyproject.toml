@@ -36,7 +36,6 @@ dependencies = [
     "corner",
     "jax",
     "numpyro>=0.16.1",
-    "torchvision",
 ]
 
 [tool.setuptools.dynamic]
