@@ -119,19 +119,18 @@ def run_pytest(session: nox.Session) -> None:
 
     """
 
-    package = importlib.util.find_spec("batfit")
-    coverage_folder = os.path.dirname(package.origin)
+    package = importlib.util.find_spec("bird")
 
     if "no-reports" in session.posargs:
         command = [
             "pytest",
-            f"--cov={coverage_folder}",  # for editable or site-packages
+            f"--cov=.",  # for editable or site-packages
             "tests/",
         ]
     else:
         command = [
             "pytest",
-            "--cov=batfit",
+            "--cov=bird",
             "--cov-report=html:reports/htmlcov",
             "--cov-report=xml:reports/coverage.xml",
             "--junitxml=reports/junit.xml",
