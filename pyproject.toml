@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "nlr-bird"
 readme = "README.md"
 dynamic = ["version"]
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.10,<3.15"
 license = { file = "LICENSE" }
 description = "Bio Reactor Design (BiRD): a toolbox to simulate and analyze different designs of bioreactors in OpenFOAM"
 keywords = ["meshing", "openfoam", "bioreactors"]
@@ -25,6 +25,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
     "numpy",
