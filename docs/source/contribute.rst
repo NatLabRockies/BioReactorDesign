@@ -12,8 +12,8 @@ You can automatically enforce the formatting guidelines with
 
 .. code-block:: console
 
-   pip install black isort codespell
-   bash fixFormat.sh
+   pip install nox
+   nox -s lint -- write 
 
 
 Tests
