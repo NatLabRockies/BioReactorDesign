@@ -126,8 +126,7 @@ jobs:
           micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
           pip install --upgrade nox
-          pip install nlr-bird
-          pip install pytest
+          pip install nlr-bird[tests]
 
       - name: Test
         run: nox -s tests -- no-reports

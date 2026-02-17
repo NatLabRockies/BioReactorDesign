@@ -107,6 +107,27 @@ def run_codespell(session: nox.Session) -> None:
     session.run(*command)
 
 
+@nox.session(name="pypi", python=False)
+@nox.session(name="deploy", python=False)
+def run_deploy(session: nox.Session) -> None:
+    """
+    Deploy to pypi
+    """
+    session.run("pip", "install", "build")
+    session.run("pip", "install", "twine")
+    session.run("python", "-m", "build")
+    session.run(
+        "python",
+        "-m",
+        "twine",
+        "upload",
+        "--verbose",
+        "--repository",
+        "pypi",
+        "dist/*",
+    )
+
+
 @nox.session(name="tests", python=False)
 @nox.session(name="test", python=False)
 def run_pytest(session: nox.Session) -> None:
