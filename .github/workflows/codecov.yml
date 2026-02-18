@@ -24,7 +24,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.14'
           cache: 'pip'
 
       - name: Set up micromamba
@@ -42,13 +42,13 @@ jobs:
         run: |
           micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
-          pip install pytest
-          pip install pytest-cov
-          pip install -e .
+          pip install --upgrade nox
+          pip install .[tests]
 
       - name: Generate coverage report
         run: |
-          pytest --cov=./ --cov-report=xml:coverage.xml          
+          pytest --cov=./ --cov-report=xml:coverage.xml
+
       - name: Upload coverage to Codecov
         
         uses: codecov/codecov-action@v5

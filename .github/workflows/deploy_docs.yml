@@ -42,8 +42,7 @@ jobs:
         run: |
           micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
-          pip install -e .
-          pip install sphinx sphinx_rtd_theme sphinx-autodoc-typehints
+          pip install -e .[docs]
 
       - name: Build documentation
         run: |
