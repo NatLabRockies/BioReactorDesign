@@ -137,3 +137,6 @@ dmypy.json
 
 *.swp
 .vim
+# pixi environments
+.pixi/*
+!.pixi/config.toml
