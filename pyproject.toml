@@ -29,13 +29,13 @@ classifiers = [
 ]
 dependencies = [
     "numpy",
-    "prettyPlot",
+    "prettyplot>=0.0.36,<0.0.37",
     "ruamel_yaml",
     "numpy-stl>=3.2.0",
     "scipy",
     "corner",
-    "jax",
-    "numpyro>=0.16.1",
+    "jax>=0.9.0,<0.10",
+    "numpyro>=0.20.0,<0.21",
 ]
 
 [tool.setuptools.dynamic]
@@ -98,3 +98,37 @@ optim = { features = ["optim"], solve-group = "default" }
 tests = { features = ["tests"], solve-group = "default" }
 
 [tool.pixi.tasks]
+
+[tool.pixi.dependencies]
+numpy = ">=2.4.2,<3"
+ruamel_yaml = ">=0.15.80,<0.16"
+scipy = ">=1.17.1,<2"
+corner = ">=2.2.3,<3"
+numpy-stl = ">=3.2.0,<4"
+python = ">=3.12"
+
+[tool.pixi.feature.docs.dependencies]
+sphinx = ">=8.2.3,<9"
+sphinx_rtd_theme = ">=3.1.0,<4"
+sphinx-autodoc-typehints = ">=3.5.2,<4"
+
+[tool.pixi.feature.tests.dependencies]
+pytest = ">=9.0.2,<10"
+pytest-cov = ">=7.0.0,<8"
+
+[tool.pixi.feature.dev.dependencies]
+nox = ">=2026.2.9,<2027"
+black = ">=26.1.0,<27"
+isort = ">=8.0.0,<9"
+codespell = ">=2.4.1,<3"
+
+[tool.pixi.feature.calibration.dependencies]
+joblib = ">=1.5.3,<2"
+scikit-learn = ">=1.8.0,<2"
+
+[tool.pixi.feature.optim.dependencies]
+optuna = ">=4.7.0,<5"
+pandas = ">=3.0.1,<4"
+
+[dependency-groups]
+calibration = ["tensorflow>=2.20.0,<3"]
