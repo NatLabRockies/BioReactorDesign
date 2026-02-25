@@ -100,12 +100,12 @@ tests = { features = ["tests"], solve-group = "default" }
 [tool.pixi.tasks]
 
 [tool.pixi.dependencies]
+python = ">=3.12"
 numpy = ">=2.4.2,<3"
 ruamel_yaml = ">=0.15.80,<0.16"
 scipy = ">=1.17.1,<2"
 corner = ">=2.2.3,<3"
 numpy-stl = ">=3.2.0,<4"
-python = ">=3.12"
 
 [tool.pixi.feature.docs.dependencies]
 sphinx = ">=8.2.3,<9"
