@@ -27,27 +27,16 @@ jobs:
           python-version: '3.14'
           cache: 'pip'
 
-      - name: Set up micromamba
-        uses: mamba-org/setup-micromamba@v1
+      - name: Setup Pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
         with:
-          environment-name: test-env
-          create-args: >-
-            python=${{ matrix.python-version }}
-          channels: conda-forge
-          channel-priority: strict
-          cache-downloads: true
-          cache-env: true
+          pixi-version: v0.39.0
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
-      - name: Install dependencies
+      - name: Build documentation
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview
-          pip install --upgrade pip
-          pip install --upgrade nox
-          pip install -e .[tests]
-
-      - name: Generate coverage report
-        run: |
-          pytest --cov=./ --cov-report=xml:coverage.xml
+          pixi run test-cov
 
       - name: Upload coverage to Codecov
         

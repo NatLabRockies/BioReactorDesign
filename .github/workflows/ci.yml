@@ -39,17 +39,17 @@ jobs:
           python-version: ${{matrix.python-version}}
           cache: 'pip'
 
-      - name: Cache Nox
-        uses: actions/cache@v4
+      - name: Setup Pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
         with:
-          path: .nox
-          key: ${{ runner.os }}-lint-nox-${{ hashFiles('noxfile.py') }}
-
-      - name: Install nox
-        run: pip install nox
+          pixi-version: v0.39.0
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
       - name: Formatting and sorting import
-        run: nox -s linter
+        run: |
+          pixi run lint
+          pixi run spell
 
   Unit-Test-BiRD:
     name: Unit-Test-BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
@@ -70,26 +70,16 @@ jobs:
         with:
           python-version: ${{matrix.python-version}}
 
-      - name: Set up micromamba
-        uses: mamba-org/setup-micromamba@v1
+      - name: Setup Pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
         with:
-          environment-name: test-env
-          create-args: >-
-            python=${{ matrix.python-version }}
-          channels: conda-forge
-          channel-priority: strict
-          cache-downloads: true
-          cache-env: true
+          pixi-version: v0.39.0
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
-      - name: Install dependencies
+      - name: Formatting and sorting import
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview
-          pip install --upgrade pip
-          pip install --upgrade nox
-          pip install .[tests] 
-
-      - name: Test
-        run: nox -s tests -- no-reports
+          pixi run test
 
 
   Unit-Test-pypi-Bird:
