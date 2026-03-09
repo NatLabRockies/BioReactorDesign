@@ -157,6 +157,3 @@ scikit-learn = ">=1.8.0,<2"
 [tool.pixi.feature.optim.dependencies]
 optuna = ">=4.7.0,<5"
 pandas = ">=3.0.1,<4"
-
-[dependency-groups]
-calibration = ["tensorflow>=2.20.0,<3"]
