@@ -60,7 +60,7 @@ def run_lint(session: nox.Session) -> None:
         "--line-length",
         "79",
         "--target-version",
-        "py310",
+        "py314",
         "--exclude",
         ".pixi",
         ".",

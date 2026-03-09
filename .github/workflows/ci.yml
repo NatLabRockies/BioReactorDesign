@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10']
+        python-version: ['3.14']
         os: ['ubuntu-latest']
     defaults:
       run:
@@ -57,7 +57,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.14']
+        python-version: ['3.11', '3.14']
         os: ['ubuntu-latest', 'macos-latest']
     defaults:
       run:
@@ -88,7 +88,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10']
+        python-version: ['3.14']
         os: ['ubuntu-latest']
     defaults:
       run:
@@ -127,7 +127,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10']
+        python-version: ['3.14']
         os: ['ubuntu-22.04']
     defaults:
       run:
