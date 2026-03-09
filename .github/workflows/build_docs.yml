@@ -19,12 +19,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.14'
-          cache: 'pip'
-
       - name: Setup Pixi
         uses: prefix-dev/setup-pixi@v0.9.4
         with:
