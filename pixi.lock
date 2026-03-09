@@ -7248,7 +7248,7 @@ packages:
 - pypi: ./
   name: nlr-bird
   version: 0.0.53
-  sha256: ddfc140c8db2c393773fb0bd0577d89fd24ad0d5a2a733057372304d143b6548
+  sha256: 9f6abad4aa8a402553f2c7ff9c771f4edacb5a0e1c556b24408a5a38634ee70b
   requires_dist:
   - numpy
   - prettyplot>=0.0.36,<0.0.37
@@ -7277,7 +7277,7 @@ packages:
   - isort ; extra == 'dev'
   - codespell ; extra == 'dev'
   - nlr-bird[calibration,docs,optim,tests] ; extra == 'dev'
-  requires_python: '>=3.10,<3.15'
+  requires_python: '>=3.11,<3.15'
 - conda: https://conda.anaconda.org/conda-forge/noarch/nox-2026.2.9-pyhcf101f3_0.conda
   sha256: 1a6d49c956a739041dbbe5f061ec6c2d92428e89f1089612978bff95e5c2c92c
   md5: f59e57ff0cf84c21b070c206bbaa27db
