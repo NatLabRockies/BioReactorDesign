@@ -10,7 +10,7 @@ cd tutorial_cases/bubble_column_20L
 bash run.sh
 ``` 
 
-## Installation of python package for developers
+## Installation of python package for developers (recommended)
 
 ```bash
 conda create -c conda-forge --name bird python=3.14 paraview
@@ -19,6 +19,19 @@ git clone https://github.com/NatLabRockies/BioReactorDesign.git
 cd BioReactorDesign
 pip install -e .
 ```
+
+## Installation of python package for developers (with `pixi`)
+This requires installing `pixi`. If it is not available on your machine, follow [Pixi Installation](https://pixi.prefix.dev/latest/installation).
+Once installed, `pixi` does not require the `conda` environment creation and `pip install` gymnastics, and can be used as
+
+```bash
+git clone https://github.com/NREL/BioReactorDesign.git
+cd BioReactorDesign
+pixi shell
+```
+This will activate an environment for you (equivalent to `pip install -e .`)
+Alternatively to the `pixi shell`, in any directory of BiRD, you can use `pixi run python myscript.py` instead of `python myscript.py`.
+
 
 ## Installation of python package for users
 
@@ -45,8 +58,7 @@ See the [natlabrockies.github.io/BioReactorDesign](https://natlabrockies.github.
 
 Software record [SWR 24-35](https://www.osti.gov/biblio/2319227)
 
-To cite BiRD, please use these articles on [CO2 interphase mass transfer](https://doi.org/10.1016/j.cherd.2025.01.034) (open access [link](https://arxiv.org/pdf/2404.19636) ) on [aerobic bioreactors](https://doi.org/10.1016/j.cherd.2018.08.033) and on [butanediol synthesis](https://doi.org/10.1016/j.cherd.2023.07.031)
-
+To cite BiRD, please use these articles on [CO2 interphase mass transfer](https://doi.org/10.1016/j.cherd.2025.01.034) (open access [link](https://arxiv.org/pdf/2404.19636) ) on [aerobic bioreactors](https://doi.org/10.1016/j.cherd.2018.08.033) and on [butanediol synthesis](https://doi.org/10.1016/j.cherd.2023.07.031).
 
 ```
 @article{hassanaly2025bayesian,
