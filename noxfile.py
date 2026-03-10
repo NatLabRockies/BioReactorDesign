@@ -60,7 +60,9 @@ def run_lint(session: nox.Session) -> None:
         "--line-length",
         "79",
         "--target-version",
-        "py310",
+        "py314",
+        "--exclude",
+        ".pixi",
         ".",
     ]
     isort_command = [
@@ -75,6 +77,8 @@ def run_lint(session: nox.Session) -> None:
         "--line-length",
         "79",
         "--use-parentheses",
+        "--skip",
+        ".pixi",
         ".",
     ]
 
@@ -165,6 +169,18 @@ def run_pytest(session: nox.Session) -> None:
             command[1:1] = ["-n", "auto"]
     session.run(*command)
     run_cleanup(session)
+
+
+@nox.session(name="docs", python=False)
+def run_sphinx(session: nox.Session) -> None:
+    """
+    Run spellcheck and then use sphinx to build docs
+    """
+
+    run_codespell(session)
+    os.chdir("docs")
+    session.run("make", "html")
+    os.chdir(" .. ".strip())
 
 
 def run_pre_commit(session: nox.Session) -> None:
