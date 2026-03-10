@@ -21,8 +21,8 @@ If you use pixi, you can run
 .. code-block:: console
 
    pixi shell 
-   pixi lint-write
-   pixi spell-write
+   pixi run lint-write
+   pixi run spell-write
 
 Tests
 ------------
@@ -45,7 +45,7 @@ If you use pixi
    pixi shell
    BIRD_HOME=`python -c "import bird; print(bird.BIRD_DIR)"`
    cd ${BIRD_HOME}/../
-   pixi test
+   pixi run test
 
 To run the regression tests
 

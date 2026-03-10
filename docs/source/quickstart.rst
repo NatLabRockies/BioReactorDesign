@@ -4,7 +4,7 @@ Quick start
 
 .. _installation_dev:
 
-Installation of python package for developers (recommmended)
+Installation of python package for developers (recommended)
 ------------
 
 
