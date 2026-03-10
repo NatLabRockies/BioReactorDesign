@@ -14,7 +14,15 @@ You can automatically enforce the formatting guidelines with
 
    pip install nox
    nox -s lint -- write 
+   nox -s spell -- write 
 
+If you use pixi, you can run 
+
+.. code-block:: console
+
+   pixi shell 
+   pixi lint-write
+   pixi spell-write
 
 Tests
 ------------
@@ -29,6 +37,15 @@ To run the unit tests
    BIRD_HOME=`python -c "import bird; print(bird.BIRD_DIR)"`
    cd ${BIRD_HOME}/../
    pytest .
+
+If you use pixi
+
+.. code-block:: console
+
+   pixi shell
+   BIRD_HOME=`python -c "import bird; print(bird.BIRD_DIR)"`
+   cd ${BIRD_HOME}/../
+   pixi test
 
 To run the regression tests
 
