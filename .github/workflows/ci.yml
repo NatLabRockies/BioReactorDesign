@@ -19,6 +19,9 @@ on:
       - 'LICENSE'
       - 'docs/**'
 
+permissions:
+  contents: read
+
 jobs:
   Lint:
     name: Lint (${{ matrix.python-version }}, ${{ matrix.os }})
