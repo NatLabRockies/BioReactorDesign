@@ -6,7 +6,11 @@ on:
      paths:
       - 'docs/**'
       - '.github/workflows/build_docs.yml'
- 
+
+
+permissions:
+  contents: read
+
 jobs:
  
   build_docs:

@@ -10,6 +10,9 @@ on:
       - 'LICENSE'
       - 'docs/**'
 
+permissions:
+  contents: read
+
 jobs:
   codecov:
     runs-on: ubuntu-latest
