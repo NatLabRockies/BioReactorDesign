@@ -4,7 +4,7 @@ Quick start
 
 .. _installation_dev:
 
-Installation of python package for developers
+Installation of python package for developers (recommended)
 ------------
 
 
@@ -15,6 +15,23 @@ Installation of python package for developers
    git clone https://github.com/NREL/BioReactorDesign.git
    cd BioReactorDesign
    pip install -e .
+
+.. _installation_users:
+
+Installation of python package for developers (with pixi)
+------------
+
+This requires installing pixi. If it is not available on your machine, follow `Pixi Installation <https://pixi.prefix.dev/latest/installation/>`_
+Once installed, pixi does not require the conda environment creation and pip install gymnastics, and can be used as 
+
+.. code-block:: console
+
+   git clone https://github.com/NREL/BioReactorDesign.git
+   cd BioReactorDesign
+   pixi shell
+
+This will activate an environment for you (equivalent to ``pip install -e .``)
+Alternatively to the ``pixi shell``, in any directory of BiRD, you can use ``pixi run python myscript.py`` instead of ``python myscript.py``
 
 .. _installation_users:
 
@@ -63,4 +80,11 @@ Run an example
 
    cd tutorial_cases/bubble_column_20L
    bash run.sh
+
+If you run with pixi
+
+.. code-block:: console
+
+   cd tutorial_cases/bubble_column_20L
+   bash run_pixi.sh
 

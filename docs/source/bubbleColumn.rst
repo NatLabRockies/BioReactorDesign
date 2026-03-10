@@ -20,7 +20,14 @@ To simply run the entire tutorial, do:
    cd ${BCE_CASE}
    bash run.sh
 
-This test is run as part of the continuous integration
+If you use pixi, make sure to run ``pixi shell`` first or 
+
+.. code-block:: console
+
+   cd ${BCE_CASE}
+   bash run_pixi.sh
+
+These tests are run as part of the continuous integration
 
 Geometry
 ------------

@@ -258,3 +258,37 @@ jobs:
           bash run.sh
           cd ../../
 
+  Regression-Test-OF-pixi:
+    name: Regression-Test-OF-pixi (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-22.04']
+    defaults:
+      run:
+        shell: bash -l {0}
+        working-directory: ${{github.workspace}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gerlero/setup-openfoam@v1
+        with:
+          openfoam-version: 9
+      - name: Setup Pixi
+        uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          pixi-version: v0.62.2
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      - name: Compile solver
+        run: |
+          cd OFsolvers/birdmultiphaseEulerFoam
+          export WM_COMPILE_OPTION=Debug
+          ./Allwmake
+          cd ../../
+      - name: Run bubble column tutorial
+        run: |
+          cd tutorial_cases/bubble_column_20L
+          bash run_pixi.sh 
+          cd ../../
+
