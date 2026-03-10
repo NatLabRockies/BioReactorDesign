@@ -175,12 +175,6 @@ def run_pytest(session: nox.Session) -> None:
 def run_sphinx(session: nox.Session) -> None:
     """
     Run spellcheck and then use sphinx to build docs
-
-    Use the optional 'clean' argument to remove everything under the 'build'
-    and 'source/api' folders prior to re-building the docs. This is important
-    in cases where the api module names have been changed or when some navbars
-    are not showing new pages. In general, try without 'clean' first.
-
     """
 
     run_codespell(session)
