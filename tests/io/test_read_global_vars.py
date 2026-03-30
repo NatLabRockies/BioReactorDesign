@@ -138,4 +138,3 @@ def test_read_global_vars_putida_non_calc():
         < 1e-12
     )
     assert abs(globalVars_dict["f_O2"] - 1.0) < 1e-12
-
