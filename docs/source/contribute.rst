@@ -12,9 +12,17 @@ You can automatically enforce the formatting guidelines with
 
 .. code-block:: console
 
-   pip install black isort codespell
-   bash fixFormat.sh
+   pip install nox
+   nox -s lint -- write 
+   nox -s spell -- write 
 
+If you use pixi, you can run 
+
+.. code-block:: console
+
+   pixi shell 
+   pixi run lint-write
+   pixi run spell-write
 
 Tests
 ------------
@@ -29,6 +37,15 @@ To run the unit tests
    BIRD_HOME=`python -c "import bird; print(bird.BIRD_DIR)"`
    cd ${BIRD_HOME}/../
    pytest .
+
+If you use pixi
+
+.. code-block:: console
+
+   pixi shell
+   BIRD_HOME=`python -c "import bird; print(bird.BIRD_DIR)"`
+   cd ${BIRD_HOME}/../
+   pixi run test
 
 To run the regression tests
 

@@ -19,6 +19,9 @@ on:
       - 'LICENSE'
       - 'docs/**'
 
+permissions:
+  contents: read
+
 jobs:
   Lint:
     name: Lint (${{ matrix.python-version }}, ${{ matrix.os }})
@@ -26,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10']
+        python-version: ['3.14']
         os: ['ubuntu-latest']
     defaults:
       run:
@@ -37,23 +40,30 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
-      - name: Install dependencies
-        run: |
-          pip install black
-          pip install isort
-          pip install codespell
-      - name: Formatting and sorting import
-        run: |
-          source .github/linters/formatting.sh
-          format . true
+          cache: 'pip'
 
-  Test-BiRD:
-    name: Test-BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
+      - name: Cache Nox
+        uses: actions/cache@v4
+        with:
+          path: .nox
+          key: ${{ runner.os }}-lint-nox-${{ hashFiles('noxfile.py') }}
+
+      - name: Install nox
+        run: pip install nox
+
+      - name: Formatting and sorting import
+        run: nox -s linter
+
+      - name: Spellcheck
+        run: nox -s spell
+
+  Unit-Test-BiRD:
+    name: Unit-Test-BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.13']
+        python-version: ['3.11', '3.14']
         os: ['ubuntu-latest', 'macos-latest']
     defaults:
       run:
@@ -81,19 +91,45 @@ jobs:
         run: |
           micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
-          pip install . 
-          pip install pytest
+          pip install --upgrade nox
+          pip install .[tests] 
 
       - name: Test
-        run: pytest .
+        run: nox -s tests -- no-reports
 
-  Test-pypi-Bird:
-    name: Test-pypi-BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
+  Unit-Test-pixi-BiRD:
+    name: Unit-Test-pixi-BiRD (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10']
+        os: ['ubuntu-latest', 'macos-latest']
+    defaults:
+      run:
+        shell: bash -l {0}
+        working-directory: ${{github.workspace}}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Pixi
+        uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          pixi-version: v0.62.2
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+
+      - name: Formatting and sorting import
+        run: |
+          pixi run test
+
+  Unit-Test-pypi-Bird:
+    name: Unit-Test-pypi-BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.14']
         os: ['ubuntu-latest']
     defaults:
       run:
@@ -120,19 +156,19 @@ jobs:
         run: |
           micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
-          pip install nrel-bird
-          pip install pytest
+          pip install --upgrade nox
+          pip install nlr-bird[tests]
 
       - name: Test
-        run: pytest .
+        run: nox -s tests -- no-reports
 
-  Test-OF:
-    name: Test-OF (${{ matrix.python-version }}, ${{ matrix.os }})
+  Regression-Test-OF:
+    name: Regression-Test-OF (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10']
+        python-version: ['3.14']
         os: ['ubuntu-22.04']
     defaults:
       run:
@@ -220,5 +256,39 @@ jobs:
         run: |
           cd tutorial_cases/FlatPanel_250L_ASU
           bash run.sh
+          cd ../../
+
+  Regression-Test-OF-pixi:
+    name: Regression-Test-OF-pixi (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-22.04']
+    defaults:
+      run:
+        shell: bash -l {0}
+        working-directory: ${{github.workspace}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gerlero/setup-openfoam@v1
+        with:
+          openfoam-version: 9
+      - name: Setup Pixi
+        uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          pixi-version: v0.62.2
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      - name: Compile solver
+        run: |
+          cd OFsolvers/birdmultiphaseEulerFoam
+          export WM_COMPILE_OPTION=Debug
+          ./Allwmake
+          cd ../../
+      - name: Run bubble column tutorial
+        run: |
+          cd tutorial_cases/bubble_column_20L
+          bash run_pixi.sh 
           cd ../../
 

@@ -6,7 +6,11 @@ on:
      paths:
       - 'docs/**'
       - '.github/workflows/build_docs.yml'
- 
+
+
+permissions:
+  contents: read
+
 jobs:
  
   build_docs:
@@ -19,33 +23,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Setup Pixi
+        uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          python-version: '3.10'
-          cache: 'pip'
-
-      - name: Set up micromamba
-        uses: mamba-org/setup-micromamba@v1
-        with:
-          environment-name: test-env
-          create-args: >-
-            python=${{ matrix.python-version }}
-          channels: conda-forge
-          channel-priority: strict
-          cache-downloads: true
-          cache-env: true
-
-      - name: Install dependencies
-        run: |
-          micromamba install --yes -n test-env -c conda-forge paraview
-          python -m pip install --upgrade pip
-          pip install -e . 
-          pip install sphinx sphinx_rtd_theme sphinx-autodoc-typehints
+          pixi-version: v0.62.2
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
       - name: Build documentation
         run: |
-          cd docs
-          make html
+          pixi run docs
 
 
