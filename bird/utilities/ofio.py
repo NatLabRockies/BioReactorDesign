@@ -1274,6 +1274,41 @@ def read_mu_liquid(
     return mu_liq, field_dict
 
 
+def _cross_reference_math(expr):
+    """
+    Resolve math in cross referencing in the globalVars dictionary
+    """
+    # Replace 'Foam::pow' with 'math.pow'
+    if "Foam::pow" in expr:
+        expr = expr.replace("Foam::pow", "math.pow")
+
+    if "pow" in expr:
+        indstr = [m.start() for m in re.finditer("pow", expr)]
+        new_expr = expr
+        count_replace = 0
+        for ind in indstr:
+            if not "mat" in new_expr[ind - 6 : ind + 3]:
+                tmp = new_expr
+                new_expr = (
+                    tmp[: ind + 5 * count_replace]
+                    + "math.pow"
+                    + tmp[ind + 5 * count_replace + 3 :]
+                )
+                count_replace += 1
+        expr = new_expr
+    # Replace 'exp' with 'math.exp'
+    expr = expr.replace("exp", "math.exp")
+    # Replace 'sin' with 'math.sin'
+    expr = expr.replace("sin", "math.sin")
+    # Replace 'cos' with 'math.cos'
+    expr = expr.replace("cos", "math.cos")
+    # Replace 'tan' with 'math.tan'
+    expr = expr.replace("tan", "math.tan")
+
+    degToRad = lambda x: x * np.pi / 180.0
+    return expr, degToRad
+
+
 def _cross_reference_global_vars(
     globalVars_dict: dict,
 ) -> dict:
@@ -1289,61 +1324,57 @@ def _cross_reference_global_vars(
 
     for key, value in globalVars_dict.items():
         # Check if we need to do cross referencing
-        if isinstance(value, str) and value.startswith("#calc"):
+        if isinstance(value, str):
+            # CALC case
+            if value.startswith("#calc"):
+                # Extract expression inside quotes
+                expr = value.split('"', 1)[1].rsplit('"', 1)[0]
 
-            # Extract expression inside quotes
-            expr = value.split('"', 1)[1].rsplit('"', 1)[0]
-
-            # Replace $Var with its numeric value from globalVars_dict
-            def repl(match):
-                varname = match.group(1)
-                if varname not in cross_referenced_globalVars_dict:
-                    raise KeyError(
-                        f"Variable '{varname}' not found for expression {expr}"
-                    )
-                return str(cross_referenced_globalVars_dict[varname])
-
-            expr = var_pattern.sub(repl, expr)
-
-            # Replace 'Foam::pow' with 'math.pow'
-            if "Foam::pow" in expr:
-                expr = expr.replace("Foam::pow", "math.pow")
-
-            if "pow" in expr:
-                indstr = [m.start() for m in re.finditer("pow", expr)]
-                new_expr = expr
-                count_replace = 0
-                for ind in indstr:
-                    if not "mat" in new_expr[ind - 6 : ind + 3]:
-                        tmp = new_expr
-                        new_expr = (
-                            tmp[: ind + 5 * count_replace]
-                            + "math.pow"
-                            + tmp[ind + 5 * count_replace + 3 :]
+                # Replace $Var with its numeric value from globalVars_dict
+                def repl(match):
+                    varname = match.group(1)
+                    if varname not in cross_referenced_globalVars_dict:
+                        raise KeyError(
+                            f"Variable '{varname}' not found for expression {expr}"
                         )
-                        count_replace += 1
-                expr = new_expr
-            # Replace 'exp' with 'math.exp'
-            expr = expr.replace("exp", "math.exp")
-            # Replace 'sin' with 'math.sin'
-            expr = expr.replace("sin", "math.sin")
-            # Replace 'cos' with 'math.cos'
-            expr = expr.replace("cos", "math.cos")
-            # Replace 'tan' with 'math.tan'
-            expr = expr.replace("tan", "math.tan")
+                    return str(cross_referenced_globalVars_dict[varname])
 
-            degToRad = lambda x: x * np.pi / 180.0
-            try:
-                result = eval(expr, {"math": math, "degToRad": degToRad})
-                # Convert to int if whole number
-                if isinstance(result, float) and result.is_integer():
-                    result = int(result)
-                cross_referenced_globalVars_dict[key] = result
+                expr = var_pattern.sub(repl, expr)
 
-            except Exception as e:
-                logger.warning(
-                    f"Could not evaluate globalVars expression for {key}: {expr}"
-                )
+                expr, degToRad = _cross_reference_math(expr)
+                try:
+                    result = eval(expr, {"math": math, "degToRad": degToRad})
+                    result = float(result)
+                    # Convert to int if whole number
+                    # if result.is_integer():
+                    #    result = int(result)
+                    cross_referenced_globalVars_dict[key] = result
+
+                except Exception as e:
+                    logger.warning(
+                        f"Could not evaluate globalVars expression for {key}: {expr}"
+                    )
+            # Direct variable references
+            elif "$" in value:
+
+                def repl_direct(match):
+                    varname = match.group(1)
+                    return str(cross_referenced_globalVars_dict[varname])
+
+                try:
+                    # Substitute the variable
+                    expr = var_pattern.sub(repl_direct, value)
+                    expr, degToRad = _cross_reference_math(expr)
+                    result = eval(expr, {"math": math, "degToRad": degToRad})
+                    # Convert to int if whole number
+                    result = float(result)
+                    # if result.is_integer():
+                    #    result = int(result)
+                    cross_referenced_globalVars_dict[key] = result
+                except Exception as e:
+                    logger.warning(
+                        f"Could not evaluate globalVars expression for {key}: {expr}"
+                    )
 
     return cross_referenced_globalVars_dict
 
@@ -1374,7 +1405,6 @@ def read_global_vars(
     globalVars_dict : dict
         Dictionary that contains the globals vars variable values
     """
-
     # Set the filename to read
     if case_folder is None:
         if filename is None or not os.path.isfile(filename):
@@ -1416,8 +1446,8 @@ def read_global_vars(
                 # Try numeric conversion otherwise store value as str
                 try:
                     val = float(value)
-                    if val.is_integer():
-                        val = int(val)
+                    # if val.is_integer():
+                    #    val = int(val)
                     globalVars_dict[key] = val
                 except ValueError:
                     globalVars_dict[key] = value

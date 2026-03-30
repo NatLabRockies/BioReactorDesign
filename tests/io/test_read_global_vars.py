@@ -122,3 +122,20 @@ def test_read_global_vars_putida():
         abs(globalVars_dict["z3"] - 0.0219 * np.sin(67.5 * np.pi / 180))
         < 1e-12
     )
+
+
+def test_read_global_vars_putida_non_calc():
+    """
+    Test for reading content of `constant/globalVars` for the Putida case with direct references
+    """
+    case_folder = os.path.join(Path(__file__).parent, "putida_test_non_calc")
+    # Read globalVars from case_folder path
+    globalVars_dict = read_global_vars(case_folder=case_folder, cross_ref=True)
+
+    assert abs(globalVars_dict["ang1"] - 22.5 * np.pi / 180) < 1e-12
+    assert (
+        abs(globalVars_dict["z3"] - 0.0219 * np.sin(67.5 * np.pi / 180))
+        < 1e-12
+    )
+    assert abs(globalVars_dict["f_O2"] - 1.0) < 1e-12
+

@@ -932,13 +932,13 @@ def compute_instantaneous_kla(
 
     where:
       - :math:`kLa_{\rm spec}` is the mass transfer rate in :math:`h^{-1}`
-      - :math:`d_{\rm gas}` is the bubble diameter in :math:`m`
-      - :math:`\alpha_{\rm gas}` is the volume fraction of gas
-      - :math:`\mu_{\rm liq}` is the liquid viscosity in :math:`kg.m^{-1}.s^{-1}`
-      - :math:`\rho_{\rm liq}` is the liquid density in :math:`kg.m^{-3}`
-      - :math:`D_{\rm spec}` is the species molecular diffusivity in :math:`m^2.s^{-1}`
-      - :math:`|u_{\rm slip}|` is the magnitude of the slip velocity in :math:`m.s^{-1}`
-      - :math:`V_{\rm liq}` is the volume of liquid in :math:`m^3`
+      - :math:`d_{\rm gas}` is the bubble diameter in :math:`m`. Either read from the time folder, or looked up from phaseProperties
+      - :math:`\alpha_{\rm gas}` is the volume fraction of gas. Read from the time folder.
+      - :math:`\mu_{\rm liq}` is the liquid viscosity in :math:`kg.m^{-1}.s^{-1}`. Either read from the time folder or globalVars.
+      - :math:`\rho_{\rm liq}` is the liquid density in :math:`kg.m^{-3}`. Either read from the time folder or assumed to be 1000kg/m3
+      - :math:`D_{\rm spec}` is the species molecular diffusivity in :math:`m^2.s^{-1}`. Read from globalVars
+      - :math:`|u_{\rm slip}|` is the magnitude of the slip velocity in :math:`m.s^{-1}`. Read from the time folder.
+      - :math:`V_{\rm liq}` is the volume of liquid in :math:`m^3`. Read from the time folder.
 
      .. math::
 
@@ -952,10 +952,10 @@ def compute_instantaneous_kla(
 
      and
       - :math:`C^{*}_{\rm spec}` is the saturation concentration of species spec in :math:`mol.m^{-3}`
-      - :math:`\rho_{\rm gas}` is the density of the gas in :math:`kg.m^{-3}`
-      - :math:`Y_{\rm spec, gas}` is the mass fraction of species spec in the gas phase
-      - :math:`He_{\rm spec}` is the Henry's constant of species spec
-      - :math:`W_{\rm spec}` is the molar mass of species spec in :math:`kg.mol^{-1}`
+      - :math:`\rho_{\rm gas}` is the density of the gas in :math:`kg.m^{-3}`. Read from the time folder.
+      - :math:`Y_{\rm spec, gas}` is the mass fraction of species spec in the gas phase. Read from the time folder.
+      - :math:`He_{\rm spec}` is the Henry's constant of species spec. Read from globalVars.
+      - :math:`W_{\rm spec}` is the molar mass of species spec in :math:`kg.mol^{-1}`. Read from globalVars.
 
 
     Parameters
@@ -1032,9 +1032,18 @@ def compute_instantaneous_kla(
     alpha_gas, field_dict = read_field(
         field_name="alpha.gas", field_dict=field_dict, **kwargs
     )
-    rho_liq, field_dict = read_field(
-        field_name="thermo:rho.liquid", field_dict=field_dict, **kwargs
-    )
+    try:
+        rho_liq, field_dict = read_field(
+            field_name="thermo:rho.liquid", field_dict=field_dict, **kwargs
+        )
+    except FileNotFoundError:
+        abs_time_path = os.path.join(case_folder, time_folder)
+        logger.warning(
+            f"thermo:rho.liquid not found in {abs_time_path}, assuming it is 1000kg/m3"
+        )
+        rho_liq = 1000.0
+        field_dict["rho_liq"] = rho_liq
+
     rho_gas, field_dict = read_field(
         field_name="thermo:rho.gas", field_dict=field_dict, **kwargs
     )
@@ -1045,6 +1054,7 @@ def compute_instantaneous_kla(
         field_name="U.liquid", field_dict=field_dict, **kwargs
     )
     d_gas, field_dict = read_bubble_diameter(field_dict=field_dict, **kwargs)
+
     mu_liq, field_dict = read_mu_liquid(field_dict=field_dict, **kwargs)
     species_gas = {}
     for species_name in species_names:
