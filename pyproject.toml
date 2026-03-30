@@ -132,6 +132,7 @@ corner = ">=2.2.3,<3"
 numpy-stl = ">=3.2.0,<4"
 pytest = ">=9.0.2,<10"
 pytest-cov = ">=7.0.0,<8"
+pip = ">=26.0.1,<27"
 
 [tool.pixi.feature.docs.dependencies]
 sphinx = ">=8.2.3,<9"

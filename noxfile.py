@@ -63,6 +63,8 @@ def run_lint(session: nox.Session) -> None:
         "py314",
         "--exclude",
         ".pixi",
+        "--exclude",
+        "pixi*",
         ".",
     ]
     isort_command = [
@@ -79,6 +81,8 @@ def run_lint(session: nox.Session) -> None:
         "--use-parentheses",
         "--skip",
         ".pixi",
+        "--skip",
+        "pixi*",
         ".",
     ]
 
