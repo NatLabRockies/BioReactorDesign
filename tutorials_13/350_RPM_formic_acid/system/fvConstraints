@@ -1,0 +1,55 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  12
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      fvConstraints;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+limitp
+{
+    type       limitPressure;
+
+    min        1e4;
+}
+
+limitTgas
+{
+    type            limitTemperature;
+
+    select          all;
+
+    //field           T.gas;   // Optional energy/temperature field name
+                            // Set to T for compressibleVoF
+
+    phase           gas; // Optional phase name
+
+    min             291;
+    max             298;
+}
+
+limitTliquid
+{
+    type            limitTemperature;
+
+    select          all;
+
+    //field           T.liquid;   // Optional energy/temperature field name
+                            // Set to T for compressibleVoF
+
+    phase           liquid; // Optional phase name
+
+    min             291;
+    max             298;
+}
+
+
+
+// ************************************************************************* //

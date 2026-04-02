@@ -1,0 +1,249 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+libs ( "libbirdmultiphaseEuler.so" );
+
+solver          birdmultiphaseEuler;
+
+
+startFrom       latestTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         2.0;
+
+deltaT          1e-5;
+
+writeControl    adjustableRunTime;
+
+writeInterval   0.005;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable no;
+
+adjustTimeStep  yes;
+
+maxCo           0.5;
+
+maxDeltaT       1;
+
+functions
+{
+   #includeFunc fieldAverage(U.gas, U.liquid, alpha.gas, formicAcid.liquid, H2O.liquid)
+
+    UI
+    {
+        type            volFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+
+        log             true;
+        writeControl    writeTime;
+        writeFields     false;
+
+        cellZone        all;
+        operation       UI;
+
+        weightField     alpha.liquid;
+
+        fields
+        (
+            formicAcid.liquid
+        );
+    }
+
+    disengagement
+    {
+        type            disengagement;
+        libs            ("libbirdmultiphaseEulerFunctionObjects.so");
+
+        //- Properties common to all functionObjects
+        executeControl  runTime;
+        executeInterval 0.1;
+        writeControl    runTime;
+        writeInterval   0.1;
+        direction (0 1 0);
+
+        //- Properties specific of this functionobject
+        phase           liquid;
+        inletPhase      gas;
+        inlet           inlet;
+        tolerance       1e-2;
+        nsamples        50;
+        disengage       false;
+    }
+
+    compute_pH
+    {
+        libs        ("libutilityFunctionObjects.so");
+
+        type coded;
+
+        codeWrite
+        #{
+
+          //  const volScalarField& alpha = mesh().lookupObject<volScalarField>("alpha.liquid");
+            const volScalarField& frmc = mesh().lookupObject<volScalarField>("formicAcid.liquid");
+            const volScalarField& alpha = mesh().lookupObject<volScalarField>("alpha.liquid");
+            const dimensionedScalar rho("rho",dimDensity,1000);
+            const dimensionedScalar M("M",dimDensity,46.025);
+     /*       const scalar Ka = 1.78e-4; //Formic acid dissociation constant
+            const scalar Kw = 1e-14; //Water dissociation constant
+            const label maxIter = 15;
+            const scalar tol = 1e-3;*/
+
+constexpr scalar data_clog[50] = { -3.912023, -3.775206, -3.638389, -3.501572, -3.364755, -3.227938, -3.091121, -2.954304, -2.817488, -2.680671, -2.543854, -2.407037, -2.270220, -2.133403, -1.996586, -1.859769, -1.722952, -1.586135, -1.449318, -1.312501, -1.175684, -1.038867, -0.902051, -0.765234, -0.628417, -0.491600, -0.354783, -0.217966, -0.081149, 0.055668, 0.192485, 0.329302, 0.466119, 0.602936, 0.739753, 0.876570, 1.013386, 1.150203, 1.287020, 1.423837, 1.560654, 1.697471, 1.834288, 1.971105, 2.107922, 2.244739, 2.381556, 2.518373, 2.655190, 2.792007 };
+
+constexpr scalar data_pH[50] = { 6.691116, 6.546855, 6.421873, 6.128169, 5.444459, 4.666373, 4.327254, 4.118662, 3.968566, 3.846178, 3.742289, 3.651267, 3.569768, 3.495746, 3.420339, 3.337934, 3.255157, 3.183710, 3.128036, 3.081159, 3.030986, 2.979210, 2.931678, 2.886616, 2.842660, 2.800678, 2.760289, 2.721534, 2.684358, 2.648739, 2.614665, 2.582126, 2.551117, 2.521638, 2.493687, 2.467263, 2.442362, 2.418976, 2.397090, 2.376686, 2.357735, 2.340202, 2.324045, 2.309214, 2.295652, 2.283298, 2.272085, 2.261943, 2.252800, 2.244573 };
+
+constexpr scalar delta_clog = data_clog[1] - data_clog[0];
+const scalar cmin = 1e-6; //Foam::exp(data_clog[0]);
+
+            // Molar concentration
+            volScalarField c0 = frmc*rho/M;
+
+
+            volScalarField pH
+            (
+                IOobject
+                (
+                    "pH",
+                    mesh().time().name(),
+                    mesh(),
+                    IOobject::NO_READ,
+                    IOobject::NO_WRITE
+                ),
+                mesh(),
+                dimensionedScalar("pH",dimless,0.),
+                "zeroGradient"
+            
+            );
+
+
+
+            forAll(c0, cellI)
+            {
+                const scalar clog0 = Foam::log(c0[cellI] + cmin);            
+                const label id = floor( (clog0 - data_clog[0]) /delta_clog );
+                
+                if ( id > 48 )
+                {
+                    pH[cellI] = 2.24;
+                    continue;
+                }
+
+                if ( id < 0 )
+                {
+                    pH[cellI] = 6.7;
+                    continue;
+                }
+
+                
+
+                const scalar w = ( clog0 - data_clog[id] )/delta_clog;
+             
+                pH[cellI] = w*data_pH[id] + (1.-w)*data_pH[id+1];                 
+                             
+            }   
+            
+            pH.correctBoundaryConditions();       
+            
+            // Write
+            if(mesh().time().write()) 
+            {
+                pH.write();
+
+                scalar totalPH = 0.;
+                scalar lessThanSix = 0.;
+                scalar lessThanFive = 0.;
+                scalar lessThanFour = 0.;
+                scalar totV = 0.;    
+                forAll(pH, cellI)
+                {
+                    if(mesh().C()[cellI].z() > 0.85) continue;
+                    if(alpha[cellI] < 0.5) continue;
+
+                    scalar vol = mesh().V()[cellI]*alpha[cellI]; 
+                    totV += vol;
+                    totalPH += vol*pH[cellI];
+
+                    if(pH[cellI] < 6.0)
+                    {
+                        lessThanSix += vol;
+                    }
+
+                    if(pH[cellI] < 5.0)
+                    {
+                        lessThanFive += vol;
+                    }
+
+                    if(pH[cellI] < 4.0)
+                    {
+                        lessThanFour += vol;
+                    }
+                    
+                }
+
+                reduce(totalPH,sumOp<scalar>());
+                reduce(lessThanSix,sumOp<scalar>());
+                reduce(lessThanFive,sumOp<scalar>());
+                reduce(lessThanFour,sumOp<scalar>());
+                reduce(totV,sumOp<scalar>());                
+
+                totalPH /= totV;
+                lessThanSix /= totV;
+                lessThanFive /= totV;
+                lessThanFour /= totV;
+    
+                if(Pstream::master())
+                {
+                    std::ofstream file;
+                    file.open("pH_stats.csv",std::ofstream::out | std::ofstream::app);
+                    file << mesh().time().value() << ", ";
+                    file << totalPH << ", ";
+                    file << lessThanSix << ", ";
+                    file << lessThanFive << ", ";
+                    file << lessThanFour << "\n";
+                    file.close();
+                }            
+            }
+        #};
+
+        codeInclude
+        #{
+            #include <iomanip>
+            #include <fstream>
+        #};
+    }
+
+} 
+
+}
+
+
+// ************************************************************************* //
