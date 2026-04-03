@@ -20,6 +20,7 @@ internalField   uniform (0 0 0);
 
 boundaryField
 {
+    #includeEtc "caseDicts/setConstraintTypes"
     outlet
     {
         type            pressureInletOutletVelocity;
@@ -34,21 +35,15 @@ boundaryField
     {
         type            noSlip;
     }
-    inside_to_hub
+    nonCouple
     {
-        type            empty;
+        type            movingWallSlipVelocity;
+        value           $internalField;
     }
-    inside_to_hub_copy
+    "shaft|impeller"
     {
-        type            empty;
-    }
-    hub_to_rotor
-    {
-        type            empty;
-    }
-    hub_to_rotor_copy
-    {
-        type            empty;
+        type            movingWallVelocity;
+        value           $internalField;
     }
 }
 

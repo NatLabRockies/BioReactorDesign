@@ -20,6 +20,7 @@ internalField   uniform $k_inlet_gas;
 
 boundaryField
 {
+    #includeEtc "caseDicts/setConstraintTypes"
     outlet
     {
         type            inletOutlet;
@@ -32,26 +33,15 @@ boundaryField
         type            zeroGradient;
         value           uniform $k_inlet_gas;
     }
-    walls
+    "vessel|shaft|walls|impeller"
     {
         type            zeroGradient;
-        value           uniform $k_inlet_gas;
+        value           $internalField;
     }
-    inside_to_hub
+
+    nonCouple
     {
-        type            empty;
-    }
-    inside_to_hub_copy
-    {
-        type            empty;
-    }
-    hub_to_rotor
-    {
-        type            empty;
-    }
-    hub_to_rotor_copy
-    {
-        type            empty;
+        type            zeroGradient;
     }
 }
 sources

@@ -20,6 +20,7 @@ internalField   uniform 0;
 
 boundaryField
 {
+    #includeEtc "caseDicts/setConstraintTypes"
     outlet
     {
         type            calculated;
@@ -30,30 +31,16 @@ boundaryField
         type            calculated;
         value           uniform 0;
     }
-    walls
+    "vessel|shaft|walls|impeller"
     {
         type            calculated;
         value           uniform 0;
     }
-    inside_to_hub
+
+    nonCouple
     {
-        type            empty;
-        value           nonuniform List<scalar> 0();
-    }
-    inside_to_hub_copy
-    {
-        type            empty;
-        value           nonuniform List<scalar> 0();
-    }
-    hub_to_rotor
-    {
-        type            empty;
-        value           nonuniform List<scalar> 0();
-    }
-    hub_to_rotor_copy
-    {
-        type            empty;
-        value           nonuniform List<scalar> 0();
+        type            calculated;
+        value           uniform 0;
     }
 }
 

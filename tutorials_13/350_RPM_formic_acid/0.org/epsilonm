@@ -20,6 +20,7 @@ internalField   uniform $eps_inlet_gas;
 
 boundaryField
 {
+    #includeEtc "caseDicts/setConstraintTypes"
     outlet
     {
         type            inletOutlet;
@@ -37,21 +38,15 @@ boundaryField
         type            zeroGradient;
         value           uniform $eps_inlet_gas;
     }
-    inside_to_hub
+    "vessel|shaft|walls|impeller"
     {
-        type            empty;
+        type            zeroGradient;
+        value           $internalField;
     }
-    inside_to_hub_copy
+
+    nonCouple
     {
-        type            empty;
-    }
-    hub_to_rotor
-    {
-        type            empty;
-    }
-    hub_to_rotor_copy
-    {
-        type            empty;
+        type            zeroGradient;
     }
 }
 sources

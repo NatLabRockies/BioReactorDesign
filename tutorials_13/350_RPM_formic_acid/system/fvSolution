@@ -43,9 +43,9 @@ solvers
     {
         solver          GAMG;
         smoother        DIC;
-        tolerance       1e-11;
+        tolerance       1e-8;
         relTol          0;
-        maxIter   20;
+        maxIter   10;
 	    minIter 0;
     }
 
@@ -133,6 +133,7 @@ PIMPLE
     nCorrectors          5;
     nOuterCorrectors    5;
     turbOnFinalIterOnly false;
+    correctMeshPhi true;
     outerCorrectorResidualControl
     {
         U
@@ -164,8 +165,8 @@ relaxationFactors
     
     equations
     {
-        ".*"            1;
-        "e.*"          0.99;
+        ".*"            0.9;
+        "e.*"          0.9;
     }
 }
 

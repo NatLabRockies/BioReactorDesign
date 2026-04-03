@@ -20,6 +20,7 @@ internalField   uniform 0;
 
 boundaryField
 {
+    #includeEtc "caseDicts/setConstraintTypes"
     outlet
     {
         type            calculated;
@@ -31,27 +32,16 @@ boundaryField
         Prt             0.85;
         value           uniform 0;
     }
-    walls
+    "vessel|shaft|walls|impeller"
     {
         type            compressible::alphatWallFunction;
         Prt             0.85;
-        value           uniform 0;
+        value           $internalField;
     }
-    inside_to_hub
+    
+    nonCouple
     {
-        type            empty;
-    }
-    inside_to_hub_copy
-    {
-        type            empty;
-    }
-    hub_to_rotor
-    {
-        type            empty;
-    }
-    hub_to_rotor_copy
-    {
-        type            empty;
+        type            zeroGradient;
     }
 }
 

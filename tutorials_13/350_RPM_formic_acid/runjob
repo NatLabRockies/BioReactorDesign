@@ -2,7 +2,7 @@
 ##SBATCH --qos=high
 #SBATCH --job-name=s350flow
 ##SBATCH --partition=debug
-#SBATCH --nodes=1
+#SBATCH --nodes=2
 #SBATCH --ntasks-per-node=100  # use 52
 #SBATCH --time=2-00:00:00
 ##SBATCH --time=0-02:00:00
@@ -21,7 +21,7 @@ ml PrgEnv-cray
 #ml openfoam/9-craympich
 #. ./presteps.sh
 module load openfoam/13-craympich-scotch
-srun -n 100 -K1 --cpu-bind=v,rank_ldom  foamRun -parallel -fileHandler collated
+srun -n 200 -K1 --cpu-bind=v,rank_ldom  foamRun -parallel -fileHandler collated
 
 # post-process
 reconstructPar -newTimes

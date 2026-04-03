@@ -1,0 +1,49 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      epsilon.liquid;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+#include "$FOAM_CASE/constant/globalVars"
+dimensions      [0 2 -3 0 0 0 0];
+
+internalField   uniform $eps_inlet_liq;
+
+boundaryField
+{
+    #includeEtc "caseDicts/setConstraintTypes"
+    outlet
+    {
+        type            inletOutlet;
+        phi             phi.liquid;
+        inletValue      uniform $eps_inlet_liq;
+        value           uniform $eps_inlet_liq;
+    }
+    propeller
+    {
+        type            epsilonWallFunction;
+        value           uniform $eps_inlet_liq;
+    }
+    "vessel|shaft|walls|impeller"
+    {
+        type            epsilonWallFunction;
+        value           $internalField;
+    }
+    
+    nonCouple
+    {
+        type            zeroGradient;
+    }
+}
+
+
+// ************************************************************************* //

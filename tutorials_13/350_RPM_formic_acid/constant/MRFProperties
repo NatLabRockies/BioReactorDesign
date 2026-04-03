@@ -14,22 +14,23 @@ FoamFile
     object      dynamicMeshDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+/*
 MRF
 {
-    cellZone    rotor;
+    cellZone    rotating;
     active      yes;
 
     origin    (0 0 0);
     axis      (0 0 1);
-   // omega     900 [rpm]; 
-
+    omega     350 [rpm]; 
+/*
     omega
     {
            type      scale;
            scale     linearRamp;
            duration  1.0;
            value     350 [rpm];
-    }
+    } */
 }
-
+*/
 // ************************************************************************* //
