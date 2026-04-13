@@ -1,4 +1,4 @@
-Multiphase Flow model
+Multiphase flow model
 =====
 
 
@@ -49,9 +49,51 @@ Multiphase flow closure models
 
 Though all closure models can be swapped by any other one available in OpenFOAM, we often use the same set of closure models. Usually, and throughout the tutorial, the user will find that the interphase drag force is obtained by using the Grace model [Grace1976]_ and transverse lift from the model by using the Tomiyama model [Tomiyama2002]_. Wall lubrication forces are computed using the model by Antal et al. [Antal1991]_ and turbulent dispersion uses the model of Burns et al. [Burns2004]_. Interphase mass transfer of species is modeled by using the mass transfer coefficient obtained from Higbie correlation [Higbie1935]_. The interphase mass transfer of a species also depends on the local saturation concentration obtained from Henry's constant and the local gas phase concentration of the species. 
 
-Henry's constant
+The OpenFOAM treatments of Henry's constant
 ------------
 The Henry's constant is a critical parameter that controls the mass transfer rates. The Henry's constant is a temperature dependent variable that is usually expressed in :math:`mol/(kg.bar)`, see for example `the NIST database <https://webbook.nist.gov/cgi/cbook.cgi?ID=C7782447&Mask=10>`_.
+
+In OpenFOAM, a non-dimensional version of the the Henry's constant is used and the user may find a discrepancy between the values used in the tutorials and the values available is existing databases. We will describe here how to go from one to the other.
+
+Consider the case of a mass transfer of :math:`O_2` from the gas phase to the liquid phase. The Henry's constant in OpenFOAM is used to compute the saturated liquid mass fraction ``Yf`` of :math:`O_2` in the liquid phase as :math:`Y_l = H_{\rm OF} \frac{Y_g \rho_g}{\rho_l}` (``Foam::interfaceCompositionModels::Henry::Yf`` in ``Henry.C``), where :math:`Y_l` is ``Yf``, :math:`Y_g` is the mass fraction of :math:`O_2` in the gas, :math:`\rho_l` is the liquid density and :math:`rho_g` is the gas density, and :math:`H_{\rm OF}` is the Henry's constant as used in OpenFOAM. 
+
+``Yf`` is eventually used to compute a mass transfer source term in ``Foam::InterfaceCompositionPhaseChangePhaseSystem<BasePhaseSystem>::
+correct()`` in ``InterfaceCompositionPhaseChangePhaseSystem.C``.
+
+
+Converting to non-dimensional Henry's constant
+------------
+:math:`H_{\rm OF}` is non-dimensional which differs from values reported in databases (noted :math:`H_{\rm DB}`). We show below how to convert :math:`H_{\rm DB}` to obtain :math:`H_{\rm OF}`.
+Again, consider the case of a mass transfer of :math:`O_2` from the gas phase to the liquid phase.
+
+ .. math::
+
+   H_{\rm DB} = \frac{c_l'}{p' \rho_l},
+
+where :math:`c_l'` is the concentration (:math:`mol/m^3`) and :math:`p'= x_c p` is the partial pressure of :math:`O_2`, :math:`x_c` its mole fraction in the gas phase and :math:`p` is the background pressure. 
+
+ .. math::
+
+   H_{\rm OF} = \frac{Y_l \rho_l}{ Y_g \rho_g},
+
+as described above.
+
+Using the ideal gas equation,
+
+ .. math::
+
+   H_{\rm DB} \rho_l R T = \frac{c_l'}{c_g'} =  \frac{y_l \rho_l}{y_g \rho_g}
+
+where :math:`T` is the temperature, :math:`R` is the universal gas constant, and the last equation is obtained because the same molar mass applied to both the gas and the liquid phase. It comes that
+
+ .. math::
+
+   H_{\rm DB} \rho_l R T = H_{\rm OF}
+
+For example, :math:`H_{\rm DB}` for :math:`O_2` is reported to be :math:`1.3 \times 10^{-8}` mol/(kg Pa) in `the NIST database <https://webbook.nist.gov/cgi/cbook.cgi?ID=C7782447&Mask=10>`_. The bubble column tutorial of BiRD uses in ``globalVars`` a value ``H_O2_298`` of 0.032, which assumed :math:`\rho_l = 1000` and :math:`T = 298`.
+
+.. important::
+   Since ``H_O2_298`` is set in ``globalVars`` it is a constant value that cannot accomodate temperature inhomogeneities.
 
 
 References
