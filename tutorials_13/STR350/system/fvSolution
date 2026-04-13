@@ -42,12 +42,12 @@ solvers
     p_rgh
     {
         solver          GAMG;
-        preconditioner  GaussSeidel;
+        preconditioner  DIC;
         smoother        DIC;
         tolerance       1e-9;
         relTol          0.001;
-        maxIter   50;
-	    minIter 0;
+        maxIter   500;
+	    minIter 1;
     }
 
     p_rghFinal
@@ -78,7 +78,7 @@ solvers
 
     "e.*"
     {
-        solver          PBiCGStab;
+        solver          GAMG;
         smoother        GaussSeidel;
         preconditioner  DILU;
         tolerance       1e-8;
@@ -133,8 +133,8 @@ PIMPLE
     correctMeshPhi      yes; */
     
     nNonOrthogonalCorrectors 0;
-    nCorrectors          3;
-    nOuterCorrectors    12;
+    nCorrectors          10;
+    nOuterCorrectors    3;
     turbOnFinalIterOnly false;
     correctMeshPhi true;
     outerCorrectorResidualControl
@@ -157,6 +157,9 @@ PIMPLE
     dragCorrection      yes;
     interphaseHeatCorrectionScheme no;
     maxDeltaT 1e-1;
+    momentumTurbulenceCoupling no;
+    nMomentumTurbulenceCorrectors 10;
+    nEnergyCorrectors 1;
 }
 
 relaxationFactors
@@ -170,8 +173,8 @@ relaxationFactors
     {
         ".*"            0.99;
         "e.*"          0.8;
-        "k."    0.8;
-        "epsilon.*" 0.8;
+        "k."    0.5;
+        "epsilon.*" 0.5;
     }
 }
 
