@@ -55,7 +55,7 @@ The Henry's constant is a critical parameter that controls the mass transfer rat
 
 
 References
-==========
+------------
 
 .. [Lehnigk2021] Lehnigk, R. et al. (2021). "An open-source population balance modeling framework for the simulation of polydisperse multiphase flows". AIChE Journal.
 .. [Hassanaly2025] Hassanaly, M. et al. (2025). "Bayesian calibration of bubble size dynamics applied to CO2 gas fermenters". Chemical Engineering Research and Design.
