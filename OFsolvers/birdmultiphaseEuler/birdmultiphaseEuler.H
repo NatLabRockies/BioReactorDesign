@@ -98,6 +98,9 @@ protected:
         //  Defaults to 1
         int nEnergyCorrectors;
 
+        // Number of turbulence correctors
+        int nTurbulenceCorrectors;
+
         phaseSystem::alphaControl alphaControls;
 
 

@@ -97,7 +97,7 @@ solvers
 
     "(k|epsilon|Yi).*"
     {
-        solver          PBiCGStab;
+        solver          GAMG;
 	smoother GaussSeidel;
         preconditioner  DILU;
         tolerance       1e-9;
@@ -134,7 +134,7 @@ PIMPLE
     
     nNonOrthogonalCorrectors 0;
     nCorrectors          10;
-    nOuterCorrectors    3;
+    nOuterCorrectors    1;
     turbOnFinalIterOnly false;
     correctMeshPhi true;
     outerCorrectorResidualControl
@@ -157,8 +157,7 @@ PIMPLE
     dragCorrection      yes;
     interphaseHeatCorrectionScheme no;
     maxDeltaT 1e-1;
-    momentumTurbulenceCoupling no;
-    nMomentumTurbulenceCorrectors 10;
+    nTurbulenceCorrectors 2;
     nEnergyCorrectors 1;
 }
 

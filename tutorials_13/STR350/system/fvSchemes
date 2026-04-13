@@ -49,9 +49,9 @@ divSchemes
 
     div((((alpha*rho)*nuEff)*dev2(T(grad(U))))) Gauss linear;
     
-    div(phim,epsilonm) Gauss linear;
-    div(phim,km) Gauss linear;
-    div(alphaRhoPhi,epsilon) Gauss linear;
+    div(phim,epsilonm) Gauss Minmod;
+    div(phim,km) Gauss Minmod;
+    div(alphaRhoPhi,epsilon) Gauss Minmod;
 }
 
 laplacianSchemes

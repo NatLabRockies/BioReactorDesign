@@ -26,10 +26,11 @@ MRF
     omega
     {
            type      scale;
-           scale     linearRamp;
-           duration  1.0;
+           scale     quadraticRamp;
+           t0        0.0;
+           duration  0.5;
            value     350 [rpm];
-    } */
+    }  */
 }
 
 // ************************************************************************* //

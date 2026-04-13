@@ -61,6 +61,9 @@ bool Foam::solvers::birdmultiphaseEuler::read()
     nEnergyCorrectors =
         pimple.dict().lookupOrDefault<int>("nEnergyCorrectors", 1);
 
+    nTurbulenceCorrectors =
+        pimple.dict().lookupOrDefault<int>("nTurbulenceCorrectors", 1);
+
     alphaControls.read(mesh.solution().solverDict("alpha"));
 
     return true;
@@ -125,6 +128,11 @@ Foam::solvers::birdmultiphaseEuler::birdmultiphaseEuler(fvMesh& mesh)
     nEnergyCorrectors
     (
         pimple.dict().lookupOrDefault<int>("nEnergyCorrectors", 1)
+    ),
+
+    nTurbulenceCorrectors
+    (
+        pimple.dict().lookupOrDefault<int>("nTurbulenceCorrectors", 1)
     ),
 
     trDeltaT
@@ -289,7 +297,10 @@ void Foam::solvers::birdmultiphaseEuler::thermophysicalTransportPredictor()
 
 void Foam::solvers::birdmultiphaseEuler::momentumTransportCorrector()
 {
-    fluid_.correctMomentumTransport();
+    for (int i = 0; i < nTurbulenceCorrectors; i++)
+    {
+        fluid_.correctMomentumTransport();
+    }
 }
 
 
