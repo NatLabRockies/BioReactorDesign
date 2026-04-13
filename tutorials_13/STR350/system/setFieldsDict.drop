@@ -1,0 +1,56 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      setFieldsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+default
+(
+    volScalarFieldValue formicAcid.liquid 9e-4
+    volScalarFieldValue H2O.liquid 0.9991
+    volScalarFieldValue T.liquid 293.15
+    volScalarFieldValue T.gas 293.15
+);
+
+regions
+(
+
+
+    boxToCell
+    {
+        box (-1.0 -1 0.095) (1.0 1.0 1.0);
+        fieldValues
+        (
+            volVectorFieldValue U.liquid (0 0 0)
+            volVectorFieldValue U.gas (0 0 0)
+            volScalarFieldValue alpha.liquid 0
+            volScalarFieldValue alpha.gas 1
+        );
+    }
+
+    boxToCell
+    {
+        box (-0.0023 0.015 0.092) (0.0023 0.0196 0.0966);
+        fieldValues
+        (
+            volScalarFieldValue formicAcid.liquid 0.04
+            volScalarFieldValue H2O.liquid 0.96
+            volScalarFieldValue alpha.liquid 1
+            volScalarFieldValue alpha.gas 0
+            volVectorFieldValue U.liquid (0 0 -0.85)
+        );
+    }
+);
+
+
+// ************************************************************************* //
