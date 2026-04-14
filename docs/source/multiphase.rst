@@ -93,7 +93,7 @@ where :math:`T` is the temperature, :math:`R` is the universal gas constant, and
 For example, :math:`H_{\rm CP}` for :math:`O_2` is reported to be :math:`1.3 \times 10^{-8}` mol/(kg Pa) in `the NIST database <https://webbook.nist.gov/cgi/cbook.cgi?ID=C7782447&Mask=10>`_. The bubble column tutorial of BiRD uses in ``globalVars`` a value ``H_O2_298`` of 0.032, which assumed :math:`\rho_l = 1000` and :math:`T = 298`.
 
 .. important::
-   Since ``H_O2_298`` is set in ``globalVars`` it is a constant value that cannot accomodate spatial inhomogeneities of temperature
+   Since ``H_O2_298`` is set in ``globalVars`` it is a constant value that cannot accommodate spatial inhomogeneities of temperature
    This will be improved in future versions 
 
 References
