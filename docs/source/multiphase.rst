@@ -55,7 +55,7 @@ The Henry's constant is a critical parameter that controls the mass transfer rat
 
 In OpenFOAM, a non-dimensional version of the the Henry's constant is used and the user may find a discrepancy between the values used in the tutorials and the values available is existing databases. We will describe here how to go from one to the other.
 
-Consider the case of a mass transfer of :math:`O_2` from the gas phase to the liquid phase. The Henry's constant in OpenFOAM is used to compute the saturated liquid mass fraction ``Yf`` of :math:`O_2` in the liquid phase as :math:`Y_l = H_{\rm OF} \frac{Y_g \rho_g}{\rho_l}` (``Foam::interfaceCompositionModels::Henry::Yf`` in ``Henry.C``), where :math:`Y_l` is ``Yf``, :math:`Y_g` is the mass fraction of :math:`O_2` in the gas, :math:`\rho_l` is the liquid density and :math:`rho_g` is the gas density, and :math:`H_{\rm OF}` is the Henry's constant as used in OpenFOAM. 
+Consider the case of a mass transfer of :math:`O_2` from the gas phase to the liquid phase. The Henry's constant in OpenFOAM is used to compute the saturated liquid mass fraction ``Yf`` of :math:`O_2` in the liquid phase as :math:`Y_l = H_{\rm CC} \frac{Y_g \rho_g}{\rho_l}` (``Foam::interfaceCompositionModels::Henry::Yf`` in ``Henry.C``), where :math:`Y_l` is ``Yf``, :math:`Y_g` is the mass fraction of :math:`O_2` in the gas, :math:`\rho_l` is the liquid density and :math:`rho_g` is the gas density, and :math:`H_{\rm CC}` is the Henry's constant as used in OpenFOAM. 
 
 ``Yf`` is eventually used to compute a mass transfer source term in ``Foam::InterfaceCompositionPhaseChangePhaseSystem<BasePhaseSystem>::
 correct()`` in ``InterfaceCompositionPhaseChangePhaseSystem.C``.
@@ -63,18 +63,18 @@ correct()`` in ``InterfaceCompositionPhaseChangePhaseSystem.C``.
 
 Converting to non-dimensional Henry's constant
 ------------
-:math:`H_{\rm OF}` is non-dimensional which differs from values reported in databases (noted :math:`H_{\rm DB}`). We show below how to convert :math:`H_{\rm DB}` to obtain :math:`H_{\rm OF}`.
+:math:`H_{\rm CC}` is non-dimensional which differs from values reported in databases (noted :math:`H_{\rm CP}`). We show below how to convert :math:`H_{\rm CP}` to obtain :math:`H_{\rm CC}`.
 Again, consider the case of a mass transfer of :math:`O_2` from the gas phase to the liquid phase.
 
  .. math::
 
-   H_{\rm DB} = \frac{c_l'}{p' \rho_l},
+   H_{\rm CP} = \frac{c_l'}{p' \rho_l},
 
 where :math:`c_l'` is the concentration (:math:`mol/m^3`) and :math:`p'= x_c p` is the partial pressure of :math:`O_2`, :math:`x_c` its mole fraction in the gas phase and :math:`p` is the background pressure. 
 
  .. math::
 
-   H_{\rm OF} = \frac{Y_l \rho_l}{ Y_g \rho_g},
+   H_{\rm CC} = \frac{Y_l \rho_l}{ Y_g \rho_g},
 
 as described above.
 
@@ -82,19 +82,19 @@ Using the ideal gas equation,
 
  .. math::
 
-   H_{\rm DB} \rho_l R T = \frac{c_l'}{c_g'} =  \frac{y_l \rho_l}{y_g \rho_g}
+   H_{\rm CP} \rho_l R T = \frac{c_l'}{c_g'} =  \frac{y_l \rho_l}{y_g \rho_g}
 
 where :math:`T` is the temperature, :math:`R` is the universal gas constant, and the last equation is obtained because the same molar mass applied to both the gas and the liquid phase. It comes that
 
  .. math::
 
-   H_{\rm DB} \rho_l R T = H_{\rm OF}
+   H_{\rm CP} \rho_l R T = H_{\rm CC}
 
-For example, :math:`H_{\rm DB}` for :math:`O_2` is reported to be :math:`1.3 \times 10^{-8}` mol/(kg Pa) in `the NIST database <https://webbook.nist.gov/cgi/cbook.cgi?ID=C7782447&Mask=10>`_. The bubble column tutorial of BiRD uses in ``globalVars`` a value ``H_O2_298`` of 0.032, which assumed :math:`\rho_l = 1000` and :math:`T = 298`.
+For example, :math:`H_{\rm CP}` for :math:`O_2` is reported to be :math:`1.3 \times 10^{-8}` mol/(kg Pa) in `the NIST database <https://webbook.nist.gov/cgi/cbook.cgi?ID=C7782447&Mask=10>`_. The bubble column tutorial of BiRD uses in ``globalVars`` a value ``H_O2_298`` of 0.032, which assumed :math:`\rho_l = 1000` and :math:`T = 298`.
 
 .. important::
-   Since ``H_O2_298`` is set in ``globalVars`` it is a constant value that cannot accomodate temperature inhomogeneities.
-
+   Since ``H_O2_298`` is set in ``globalVars`` it is a constant value that cannot accomodate spatial inhomogeneities of temperature
+   This will be improved in future versions 
 
 References
 ------------
