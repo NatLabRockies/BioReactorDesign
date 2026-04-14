@@ -72,7 +72,7 @@ In OpenFOAM's ``diffusiveMassTransferModels`` framework, the Higbie model return
 
 where :math:`\alpha_g` is the gas phase volume fraction and :math:`d_b` is the bubble diameter.
 
-In the mass fraction transport source term :math:`K` is then multiplied by the phase density, the species diffusivity and the difference between the mass fraction at saturation (:math:`Yf`, discussed below) and the local mass fraction.
+In the mass fraction transport source term :math:`K` is then multiplied by the phase density, the species diffusivity and the difference between the mass fraction at saturation (``Yf``, discussed below) and the local mass fraction.
 
 OpenFOAM's treatment of the Henry's constant
 ^^^^^^^^^^^^^^^^^^^^^^
