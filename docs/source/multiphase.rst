@@ -47,10 +47,36 @@ where $:math:`u` is the phase velocity, :math:`t` is time, :math:`n_v` is the nu
 Multiphase flow closure models
 ------------
 
-Though all closure models can be swapped by any other one available in OpenFOAM, we often use the same set of closure models. Usually, and throughout the tutorial, the user will find that the interphase drag force is obtained by using the Grace model [Grace1976]_ and transverse lift from the model by using the Tomiyama model [Tomiyama2002]_. Wall lubrication forces are computed using the model by Antal et al. [Antal1991]_ and turbulent dispersion uses the model of Burns et al. [Burns2004]_. Interphase mass transfer of species is modeled by using the mass transfer coefficient obtained from Higbie correlation [Higbie1935]_. The interphase mass transfer of a species also depends on the local saturation concentration obtained from Henry's constant and the local gas phase concentration of the species. 
+Though all closure models can be swapped by any other one available in OpenFOAM, we often use the same set of closure models. Usually, and throughout the tutorial, the user will find that the interphase drag force is obtained by using the Grace model [Grace1976]_ and transverse lift from the model by using the Tomiyama model [Tomiyama2002]_. Wall lubrication forces are computed using the model by Antal et al. [Antal1991]_ and turbulent dispersion uses the model of Burns et al. [Burns2004]_. Interphase mass transfer of species is modeled by using the mass transfer coefficient obtained from Higbie correlation [Higbie1935]_. The interphase mass transfer of a species also depends on the local saturation concentration obtained from Henry's constant and the local gas phase concentration of the species. The Higbie model is not available in OpenFOAM 9, and is described below
 
-The OpenFOAM treatments of Henry's constant
-------------
+.. _higbie-mass-transfer-model:
+
+Higbie Model
+^^^^^^^^^^^^^^^^^^^^^^
+
+The Higbie model calculates the phase-interface mass transfer coefficient based on the contact time of a fluid eddy at the gas-liquid boundary. The local Sherwood number (:math:`\text{Sh}`) for a spherical bubble is approximated by the analytical solution:
+
+.. math::
+
+   \text{Sh} = \frac{2}{\sqrt{\pi}} \sqrt{\text{Re} \cdot \text{Sc}} \approx 1.13 \sqrt{\text{Re} \cdot \text{Sc}}
+
+where :math:`\text{Re}` is the particle Reynolds number and :math:`\text{Sc}` is the Schmidt number (which OpenFOAM computes as the product of the Lewis and Prandtl numbers, :math:`\text{Le} \cdot \text{Pr}`).
+
+The volumetric mass transfer coefficient, :math:`K`, relates the Sherwood number to the specific interfacial area (:math:`a = 6 \alpha_g / d_b`):
+
+In OpenFOAM's ``diffusiveMassTransferModels`` framework, the Higbie model returns a diffusivity-normalized coefficient (:math:`K`):
+
+.. math::
+
+   K = \frac{6 \alpha_g \text{Sh}}{d_b^2}
+
+where :math:`\alpha_g` is the gas phase volume fraction and :math:`d_b` is the bubble diameter.
+
+In the mass fraction transport source term :math:`K` is then multiplied by the phase density, the species diffusivity and the difference between the mass fraction at saturation (:math:`Yf`, discussed below) and the local mass fraction.
+
+OpenFOAM's treatment of the Henry's constant
+^^^^^^^^^^^^^^^^^^^^^^
+
 The Henry's constant is a critical parameter that controls the mass transfer rates. The Henry's constant is a temperature dependent variable that is usually expressed in :math:`mol/(kg.bar)`, see for example `the NIST database <https://webbook.nist.gov/cgi/cbook.cgi?ID=C7782447&Mask=10>`_.
 
 In OpenFOAM, a non-dimensional version of the the Henry's constant is used and the user may find a discrepancy between the values used in the tutorials and the values available is existing databases. We will describe here how to go from one to the other.
@@ -62,7 +88,8 @@ correct()`` in ``InterfaceCompositionPhaseChangePhaseSystem.C``.
 
 
 Converting to non-dimensional Henry's constant
-------------
+^^^^^^^^^^^^^^^^^^^^^^
+
 :math:`H_{\rm CC}` is non-dimensional which differs from values reported in databases (noted :math:`H_{\rm CP}`). We show below how to convert :math:`H_{\rm CP}` to obtain :math:`H_{\rm CC}`.
 Again, consider the case of a mass transfer of :math:`O_2` from the gas phase to the liquid phase.
 
