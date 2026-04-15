@@ -59,12 +59,6 @@ tests = [
     "pytest",
     "pytest-cov",
 ]
-calibration = [
-    "joblib",
-    "tensorflow",
-    "scikit-learn",
-    "tf2jax",
-]
 optim = [
     "optuna",
     "pandas",
@@ -74,7 +68,7 @@ dev = [
     "black",
     "isort",
     "codespell",
-    "nlr-bird[docs,tests,optim,calibration]",
+    "nlr-bird[docs,tests,optim]",
 ]
 
 

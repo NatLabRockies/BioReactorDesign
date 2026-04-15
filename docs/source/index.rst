@@ -24,8 +24,8 @@ We provide a solver ``birdmultiphaseEulerFoam`` that contains custom models adde
    :hidden:
 
    quickstart
+   multiphase
    meshing
-   preprocess
    uq
    python_interface
    tutorials
