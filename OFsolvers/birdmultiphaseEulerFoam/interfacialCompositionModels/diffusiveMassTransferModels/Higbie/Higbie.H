@@ -60,7 +60,7 @@ class Higbie
 
         //- Lewis number
         const dimensionedScalar Le_;
-
+        const scalar correctionFactor_;
 
 public:
 

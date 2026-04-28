@@ -53,7 +53,9 @@ Foam::diffusiveMassTransferModels::Higbie::Higbie
 )
 :
     diffusiveMassTransferModel(dict, pair),
-    Le_("Le", dimless, dict)
+    Le_("Le", dimless, dict),
+    correctionFactor_(dict.lookupOrDefault<scalar>("correction", 1.0))
+
 {}
 
 
@@ -70,7 +72,7 @@ Foam::diffusiveMassTransferModels::Higbie::K() const
 {
     volScalarField Sh(1.13*sqrt(pair_.Re())*sqrt(Le_*pair_.Pr()));
 
-    return 6*pair_.dispersed()*Sh/sqr(pair_.dispersed().d());
+    return correctionFactor_*6*pair_.dispersed()*Sh/sqr(pair_.dispersed().d());
 }
 
 
