@@ -18,8 +18,24 @@ solvers
 {
     "alpha.*"
     {
-        nAlphaCorr      1;
-        nAlphaSubCycles 2;
+        nCorrectors     1;
+        nSubCycles      3;
+
+        MULES
+        {
+            nIter           1;
+            globalBounds    yes;
+        }
+
+        MULESCorr       yes;
+        MULESCorrRelax  1;
+    
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-10;
+        relTol          0;
+        minIter         1;
+
     }
 
     bubbles
@@ -41,11 +57,12 @@ solvers
 
     p_rgh
     {
-        solver          GAMG;
+        solver          PCG;
         smoother        DIC;
-        tolerance       1e-8;
+        preconditioner        DIC;
+        tolerance       1e-11;
         relTol          0;
-        maxIter   20;
+        maxIter   200;
 	minIter 1;
     }
 
@@ -53,13 +70,13 @@ solvers
     {
         $p_rgh;
         relTol          0;
-        maxIter 30;
+        maxIter 300;
     }
     
      "pcorr.*"
     {
         $p_rghFinal;
-        tolerance       1e-2;
+        tolerance       1e-5;
         relTol          0;
     }
 
@@ -67,30 +84,22 @@ solvers
 
     "U.*"
     {
-        solver          GAMG;
+        solver          smoothSolver;
         smoother        symGaussSeidel;
-        tolerance       1e-8;
+        tolerance       1e-12;
         relTol          0;
-        minIter         1;
+        minIter         0;
     }
 
-    "e.*"
+
+    "(k|omega|epsilon|Yi|e).*"
     {
         solver          PBiCGStab;
-        preconditioner  DILU;
-        tolerance       1e-8;
-        relTol          0;
-        minIter         1;
-    }
-
-    "(k|epsilon|Yi).*"
-    {
-        solver          GAMG;
 	smoother GaussSeidel;
         preconditioner  DILU;
-        tolerance       1e-9;
+        tolerance       1e-12;
         relTol          0;
-        minIter         1;
+        minIter         0;
     }
 
     yPsi
@@ -103,30 +112,32 @@ solvers
     
     "f.*"
     {
-        solver          PBiCGStab;
+        solver          smoothSolver;
+        smoother        GaussSeidel;
         preconditioner  DILU;
-        tolerance       1e-10;
+        tolerance       1e-12;
         relTol          0;
     }
 }
 
 PIMPLE
 {
-    nOuterCorrectors 1;
-    nCorrectors      15;
-    nNonOrthogonalCorrectors 0;
+    nOuterCorrectors 2;
+    nCorrectors      3;
+    nNonOrthogonalCorrectors 1;
     correctMeshPhi      yes;
-
-    faceMomentum        yes;
-    VmDdtCorrection     yes;
-    dragCorrection      yes;
+    correctPhi          yes;
+    turbOnFinalIterOnly yes;
+    faceMomentum        no;
+    VmDdtCorrection     no;
+    dragCorrection      no;
 }
 
 relaxationFactors
 {
     fields
     {
-        p_rgh 0.7;
+        p_rgh 1;
     }
     
     equations
@@ -135,5 +146,9 @@ relaxationFactors
     }
 }
 
+cache
+{
+    grad(U);
+}
 
 // ************************************************************************* //

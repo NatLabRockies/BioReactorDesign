@@ -14,6 +14,29 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+phaseTurbulenceStabilisationGas
+{
+    type    phaseTurbulenceStabilisation;
+
+    libs    ("libbirdmultiphaseEulerFvModels.so");
+
+    phase   gas;
+
+    alphaInversion  0.1;
+}
+
+phaseTurbulenceStabilisationLiquid
+{
+    type    phaseTurbulenceStabilisation;
+
+    libs    ("libbirdmultiphaseEulerFvModels.so");
+
+    phase   liquid;
+
+    alphaInversion  0.1;
+}
+
+
 phaseChange
 {
 

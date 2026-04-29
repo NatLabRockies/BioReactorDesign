@@ -15,7 +15,7 @@ FoamFile
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 //- Maximum non-orthogonality allowed. Set to 180 to disable.
-maxNonOrtho 65;
+maxNonOrtho 45;
 
 //- Max skewness allowed. Set to <0 to disable.
 maxBoundarySkewness 20;
@@ -24,7 +24,7 @@ maxInternalSkewness 4;
 //- Max concaveness allowed. Is angle (in degrees) below which concavity
 //  is allowed. 0 is straight face, <0 would be convex face.
 //  Set to 180 to disable.
-maxConcave 80;
+maxConcave 20;
 
 //- Minimum pyramid volume. Is absolute volume of cell pyramid.
 //  Set to a sensible fraction of the smallest cell volume expected.
@@ -67,9 +67,9 @@ minVolRatio 0.01;
 //  compatibility
 minTriangleTwist -1;
 
-nSmoothScale   4;
+nSmoothScale   5;
 
-errorReduction 0.75;
+errorReduction 0.3;
 
 //- If >0 : preserve cells with all points on the surface if the
 //  resulting volume after snapping (by approximation) is larger than

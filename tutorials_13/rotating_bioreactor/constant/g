@@ -17,7 +17,7 @@ FoamFile
 #include "$FOAM_CASE/constant/globalVars"
 
 dimensions      [0 1 -2 0 0 0 0];
-value           (0 #calc " -$grav " 0);
+value           (0 0 #calc " -$grav ");
 
 
 // ************************************************************************* //

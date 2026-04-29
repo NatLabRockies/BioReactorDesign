@@ -15,11 +15,11 @@ FoamFile
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 //simulationType  LES;
-simulationType LES;
+simulationType RAS;
 
 RAS
 {
-    model  LaheyKEpsilon;
+    model  kOmegaSSTSato;
     turbulence  on;
     printCoeff  on;
 }

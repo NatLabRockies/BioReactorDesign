@@ -14,12 +14,12 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-//simulationType  LES;
-simulationType LES;
+simulationType  RAS;
+//simulationType LES;
 
 RAS
 {
-    model  continuousGasKEpsilon;
+    model  kOmegaSST;
     turbulence      on;
     printCoeffs     on;
 }

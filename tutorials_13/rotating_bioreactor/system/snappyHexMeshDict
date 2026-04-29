@@ -82,7 +82,7 @@ castellatedMeshControls
         }
     );
 
-    resolveFeatureAngle 30;
+    resolveFeatureAngle 70;
 
     refinementSurfaces
     {
@@ -130,13 +130,13 @@ castellatedMeshControls
 snapControls
 {
 
-    nSmoothPatch 3;
+    nSmoothPatch 5;
 
-    tolerance 1.0;
+    tolerance 0.5;
 
-    nSolveIter 300;
+    nSolveIter 500;
 
-    nRelaxIter 10;
+    nRelaxIter 20;
 
     nFeatureSnapIter 10;
 
@@ -194,7 +194,7 @@ meshQualityControls
 
     relaxed
     {
-        maxNonOrtho 75;
+        maxNonOrtho 65;
     }
 }
 
@@ -202,7 +202,7 @@ writeFlags
 (
 );
 
-mergeTolerance 1E-6;
+mergeTolerance 1E-5;
 
 
 // ************************************************************************* //

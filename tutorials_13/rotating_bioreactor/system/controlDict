@@ -30,7 +30,7 @@ deltaT          1e-5;
 
 writeControl    runTime;
 
-writeInterval   0.1;
+writeInterval   0.05;
 
 purgeWrite      0;
 
@@ -48,9 +48,8 @@ runTimeModifiable no;
 
 adjustTimeStep  yes;
 
-maxCo           0.2;
-
-maxDeltaT       1;
+maxCo           0.5;
+maxDeltaT       3e-4;
 
 
 functions
@@ -58,6 +57,81 @@ functions
     #includeFunc fieldAverage(U.gas, U.liquid, alpha.gas, p, p_rgh, d.gas)
     #includeFunc    writeObjects(d.gas)
     #include "writeStatistics"
+
+    disengagement
+    {
+        type            disengagement;
+        libs            ("libbirdmultiphaseEulerFunctionObjects.so");
+
+        //- Properties common to all functionObjects
+        executeControl  runTime;
+        executeInterval 0.05;
+        writeControl    runTime;
+        writeInterval   0.05;
+        direction (0 0 1);
+
+        //- Properties specific of this functionobject
+        phase           liquid;
+        inletPhase      gas;
+        inlet           inlet;
+        tolerance       1e-2;
+        nsamples        50;
+        disengage       false;
+    } 
+
+
+    timeStep
+    {
+        type            timeStep;
+
+        libs            ("libutilityFunctionObjects.so");
+
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+
+
+    minTgas
+    {
+        type            volFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+
+        log             true;
+        writeControl    runTime;
+        writeFields     false;
+	writeInterval   0.005;
+        cellZone        all;
+        operation       min;
+
+        //weightField     alpha1;
+
+        fields
+        (
+            T.gas
+        );
+    }
+
+    maxTgas
+    {
+        type            volFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+
+        log             true;
+        writeControl    runTime;
+        writeFields     false;
+	writeInterval   0.005;
+        cellZone        all;
+        operation       max;
+
+        //weightField     alpha1;
+
+        fields
+        (
+            T.gas
+        );
+    }
+
+
 }
 
 
