@@ -56,7 +56,12 @@ Foam::diffusiveMassTransferModels::Higbie::Higbie
     Le_("Le", dimless, dict),
     correctionFactor_(dict.lookupOrDefault<scalar>("correction", 1.0))
 
-{}
+{
+    if (dict.found("correction"))
+    {
+        Info << "Using correction for Higbie\n";
+    }
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
