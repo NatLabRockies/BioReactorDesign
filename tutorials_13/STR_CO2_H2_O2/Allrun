@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# Run from this directory
+cd "${0%/*}" || exit 1
+
+# Source tutorial run functions
+. "$WM_PROJECT_DIR/bin/tools/RunFunctions"
+
+runApplication snappyHexMeshConfig \
+    -cylindricalBackground \
+    -rotatingZones 'rotatingZone' \
+    -surfaceLevels "(sparger 3) (stirrer 3)" \
+    -baffles "baffles"
+
+runApplication blockMesh
+runApplication decomposePar  -fileHandler collated
+runParallel snappyHexMesh -fileHandler collated
+
+runApplication reconstructPar
+rm -r processor* log.decomposePar
+
+runApplication setFields
+
+runApplication transformPoints "scale=(0.876 0.876 0.876)"
+
+runApplication decomposePar -fileHandler collated
+runParallel foamRun
+runApplication -a reconstructPar
+
+#------------------------------------------------------------------------------
