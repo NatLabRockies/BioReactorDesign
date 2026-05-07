@@ -205,6 +205,16 @@ private:
             const PtrList<volScalarField::Internal>& dmdts
         ) const;
 
+	    bool solveComposition() 
+	    {
+            return pimple.dict().lookupOrDefault<Switch>("solveComposition",true);
+	    }
+
+	    bool solveEnergy() 
+	    {
+            return pimple.dict().lookupOrDefault<Switch>("solveEnergy",true);
+	    }
+
 
 public:
 

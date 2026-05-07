@@ -41,6 +41,7 @@ void Foam::solvers::birdmultiphaseEuler::compositionPredictor()
         popBalSpecieTransferPtr();
 
     fluid_.correctReactions();
+ 
 
     forAll(fluid.multicomponentPhases(), multicomponentPhasei)
     {
@@ -201,8 +202,16 @@ void Foam::solvers::birdmultiphaseEuler::thermophysicalPredictor()
     for (int Ecorr=0; Ecorr<nEnergyCorrectors; Ecorr++)
     {
         fluid_.predictThermophysicalTransport();
-        compositionPredictor();
-        energyPredictor();
+        
+	if (solveComposition())
+	{
+	    compositionPredictor();
+        }
+
+	if (solveEnergy())
+	{
+	    energyPredictor();
+	}
 
         forAll(fluid.thermalPhases(), thermalPhasei)
         {
