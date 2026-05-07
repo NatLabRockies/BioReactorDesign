@@ -1,7 +1,7 @@
 Tutorial for unstructured grids of tetrahedrons with MRF
 --------------------------------------------------------
 Features demonstrated:
-* Sparging oxygen in water at 1VVM
+* 500 mL sparging oxygen in water at 1VVM
 * Mass transfer
 * MRF region rotating at 100 RPM
 * High Courant number schemes
