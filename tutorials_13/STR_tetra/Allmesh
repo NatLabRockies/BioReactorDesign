@@ -9,7 +9,7 @@ cd "${0%/*}" || exit 1
 rm 0/alpha.gas
 rm 0/alpha.liquid
 
-cp ../geometry/STR.zip
+cp ../geometry/STR.zip .
 
 unzip STR.zip
 
