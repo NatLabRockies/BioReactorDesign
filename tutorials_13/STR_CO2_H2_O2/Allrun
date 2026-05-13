@@ -24,7 +24,7 @@ runApplication setFields
 runApplication transformPoints "scale=(0.876 0.876 0.876)"
 
 runApplication decomposePar -fileHandler collated
-runParallel foamRun
+runParallel foamRun -fileHandler collated
 runApplication -a reconstructPar
 
 #------------------------------------------------------------------------------

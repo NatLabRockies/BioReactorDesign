@@ -26,10 +26,10 @@ omega
         type        linearRamp;
 
         start       0.1;
-        duration    1;
+        duration    0.5;
     }
 
-    value   500 [rpm];
+    value   100 [rpm];
 }
 
 // ************************************************************************* //

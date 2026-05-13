@@ -16,13 +16,13 @@ FoamFile
 
 solver          birdmultiphaseEuler;
 
-startFrom       startTime;
+startFrom       latestTime;
 
 startTime       0;
 
 stopAt          endTime;
 
-endTime         15;
+endTime         7200;
 
 deltaT          1e-5;
 
@@ -30,7 +30,7 @@ writeControl    adjustableRunTime;
 
 writeInterval   1;
 
-purgeWrite      0;
+purgeWrite      100;
 
 writeFormat     binary;
 
@@ -46,7 +46,7 @@ runTimeModifiable true;
 
 adjustTimeStep  yes;
 
-maxCo           20;
+maxCo           30;
 
 maxDeltaT       1;
 

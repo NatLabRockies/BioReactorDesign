@@ -50,9 +50,10 @@ solvers
     p_rgh
     {
         solver          GAMG;
+        preconditioner  DIC;
         smoother        DIC;
         tolerance       1e-6;
-        relTol          0.1;
+        relTol          0.01;
     }
 
     p_rghFinal
@@ -87,6 +88,7 @@ PIMPLE
     correctPhi          yes;
 
     faceMomentum        no;
+    solveEnergy         no;
     VmDdtCorrection     yes;
     dragCorrection      yes;
 }

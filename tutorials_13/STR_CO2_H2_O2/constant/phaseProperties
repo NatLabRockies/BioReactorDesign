@@ -18,13 +18,13 @@ phases  (gas liquid);
 
 referencePhase  liquid;
 
-populationBalances (bubbles);
+//populationBalances (bubbles);
 
 gas
 {
     type            multiComponentPhaseModel;
 
-    diameterModel   velocityGroup;
+    diameterModel   constant;
     constantCoeffs
     {
         d           1e-3;

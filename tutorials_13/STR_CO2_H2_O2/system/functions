@@ -42,4 +42,23 @@ FoamFile
     writeInterval=10
 )
 
+#includeFunc writeObjects(rho.gas);
+
+moleFractionsGas
+{
+    type moleFractions;
+    phase gas;
+    writeControl  writeTime;
+    writeInterval 1; 
+}
+
+moleFractionsLiquid
+{
+    type moleFractions;
+    writeControl  writeTime;
+    writeInterval 1; 
+    phase liquid;
+}
+
+
 // ************************************************************************* //
