@@ -42,9 +42,9 @@ def bayes_step(
     Prior and likelihood definition for MCMC sampling
     """
     # define parameters (incl. prior ranges)
-    cstar = numpyro.sample("cstar", dist.Uniform(1e-8, 1000))
-    kla = numpyro.sample("kla", dist.Uniform(1e-8, 1000))
-    sigma = numpyro.sample("sigma", dist.Uniform(1e-8, 1))
+    cstar = numpyro.sample("cstar", dist.Uniform(1, 10.0))
+    kla = numpyro.sample("kla", dist.Uniform(1e-3, 10.0))
+    sigma = numpyro.sample("sigma", dist.Uniform(1e-3, 10.0))
 
     # initial values
     t0 = time_obs[0]
@@ -147,10 +147,12 @@ def check_data_size(time_obs: np.ndarray, concentration_obs: np.ndarray):
 def compute_kla(
     data_t: np.ndarray,
     data_c: np.ndarray,
-    num_warmup: int = 4000,
-    num_samples: int = 1000,
+    num_warmup: int = 5000,
+    num_samples: int = 100,
     max_chop: int | None = None,
     bootstrap: bool = True,
+    num_bootstraps: int = 5,
+    do_chop=True,
 ) -> dict:
     """
     Main loop to compute kla
@@ -169,15 +171,59 @@ def compute_kla(
     data_t_tmp = data_t.copy()
     data_c_tmp = data_c.copy()
 
-    # Find where to start in the timeseries
-    for ind_start in range(len(data_t_tmp) - 5):
-        if max_chop is not None:
-            max_chop -= 1
-        logger.debug(f"Chopping index = {ind_start}")
+    if do_chop:
+        # Find where to start in the timeseries
+        for ind_start in range(len(data_t_tmp) - 5):
+            if max_chop is not None:
+                max_chop -= 1
+            logger.debug(f"Chopping index = {ind_start}")
+            data_t = data_t_tmp[ind_start:]
+            data_c = data_c_tmp[ind_start:]
+
+            # Hamiltonian Monte Carlo (HMC) with no u turn sampling (NUTS)
+            kernel = NUTS(bayes_step, target_accept_prob=0.9)
+            mcmc = MCMC(
+                kernel,
+                num_warmup=num_warmup,
+                num_samples=num_samples,
+                progress_bar=False,
+            )
+            mcmc.run(
+                rng_key_,
+                time_obs=jnp.array(data_t),
+                concentration_obs=jnp.array(data_c),
+            )
+            # mcmc.print_summary()
+
+            # Read samples
+            hmc_samples = mcmc.get_samples()
+            samp_dict = read_kla_cstar(hmc_samples)
+            kla_samples = samp_dict["kla_samples"]
+            cstar_samples = samp_dict["cstar_samples"]
+
+            accuracy = compute_accuracy(hmc_samples, data_t, data_c)
+
+            ind.append(ind_start)
+            acc.append(accuracy)
+            kla.append(np.mean(kla_samples))
+            cstar.append(np.mean(cstar_samples))
+            kla_err.append(np.std(kla_samples))
+            cstar_err.append(np.std(cstar_samples))
+
+            # post_cal(hmc_samples, data_t, data_c)
+
+            # If accuracy has significantly improved, we have chopped enough
+            if len(acc) >= 3 and abs(acc[-1] - acc[-2]) < 0.1 * acc[0]:
+                break
+            # If we exceed the maximum number of timesteps to ignore, break
+            if max_chop == 0:
+                break
+
+    else:
+        ind_start = 0
         data_t = data_t_tmp[ind_start:]
         data_c = data_c_tmp[ind_start:]
 
-        # Hamiltonian Monte Carlo (HMC) with no u turn sampling (NUTS)
         kernel = NUTS(bayes_step, target_accept_prob=0.9)
         mcmc = MCMC(
             kernel,
@@ -207,25 +253,12 @@ def compute_kla(
         kla_err.append(np.std(kla_samples))
         cstar_err.append(np.std(cstar_samples))
 
-        # post_cal(hmc_samples, data_t, data_c)
-
-        # If accuracy has significantly improved, we have chopped enough
-        if len(acc) >= 3 and abs(acc[-1] - acc[-2]) < 0.1 * acc[0]:
-            break
-        # If we exceed the maximum number of timesteps to ignore, break
-        if max_chop == 0:
-            break
-
     bootstrapped = False
     # Data bootstrapping
     ## Include the uncertainty due to the number of data point available
-    ## Reduce the number of data points following 4 arbitrary scenarios
-    ## scenario 1: remove the first point
-    ## scenario 2: remove the first 2 points
-    ## scenario 3: remove the last point
-    ## scenario 4: remove the last 2 points
 
     # Don't bootstrap if there aren't enough data points
+    # print(ind_start)
     if bootstrap and len(data_t_tmp[ind[-1] :]) > 10:
         kla_boot = []
         kla_err_boot = []
@@ -234,20 +267,14 @@ def compute_kla(
         bootstrapped = True
         logger.info("Doing data bootstrapping")
 
-        for i in range(4):
-            logger.info(f"\t scenario {i}")
-            if i == 0:
-                data_t = data_t_tmp[ind_start + 1 :]
-                data_c = data_c_tmp[ind_start + 1 :]
-            elif i == 1:
-                data_t = data_t_tmp[ind_start + 2 :]
-                data_c = data_c_tmp[ind_start + 2 :]
-            elif i == 2:
-                data_t = data_t_tmp[ind_start:-1]
-                data_c = data_c_tmp[ind_start:-1]
-            elif i == 3:
-                data_t = data_t_tmp[ind_start:-2]
-                data_c = data_c_tmp[ind_start:-2]
+        active_data_len = len(data_t_tmp[ind_start:])
+        min_N = max(1, int(0.10 * active_data_len))
+        max_N = max(1, int(0.20 * active_data_len))
+
+        for i in range(num_bootstraps):
+            N = np.random.randint(min_N, max_N)
+            data_t = data_t_tmp[ind_start:-N]
+            data_c = data_c_tmp[ind_start:-N]
 
             # Hamiltonian Monte Carlo (HMC) with no u turn sampling (NUTS)
             kernel = NUTS(bayes_step, target_accept_prob=0.9)
