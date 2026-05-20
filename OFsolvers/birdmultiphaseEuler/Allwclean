@@ -5,7 +5,7 @@ wclean libso phaseSystem
 wclean libso populationBalance
 wclean libso thermophysicalTransportModels
 wclean libso reactions
-
+wclean libso momentumTransportModels
 wclean
 
 wclean libso fvModels

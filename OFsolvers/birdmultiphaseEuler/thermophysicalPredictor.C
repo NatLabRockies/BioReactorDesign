@@ -35,6 +35,12 @@ License
 
 void Foam::solvers::birdmultiphaseEuler::compositionPredictor()
 {
+	if (!solveComposition())
+	{
+        //fluid_.correctSpecies(); 
+        return;
+    }
+
     autoPtr<HashPtrTable<fvScalarMatrix>> popBalSpecieTransferPtr =
         populationBalanceSystem_.specieTransfer();
     HashPtrTable<fvScalarMatrix>& popBalSpecieTransfer =
@@ -84,6 +90,13 @@ void Foam::solvers::birdmultiphaseEuler::compositionPredictor()
 
 void Foam::solvers::birdmultiphaseEuler::energyPredictor()
 {
+
+    if (!solveEnergy())
+    {
+        //fluid_.correctThermo();
+        return;    
+    }
+
     autoPtr<HashPtrTable<fvScalarMatrix>> heatTransferPtr;
     autoPtr<HashPtrTable<fvScalarMatrix>> heatTransferStabPtr;
 
@@ -203,15 +216,9 @@ void Foam::solvers::birdmultiphaseEuler::thermophysicalPredictor()
     {
         fluid_.predictThermophysicalTransport();
         
-	if (solveComposition())
-	{
-	    compositionPredictor();
-        }
+        compositionPredictor();
 
-	if (solveEnergy())
-	{
-	    energyPredictor();
-	}
+        energyPredictor();
 
         forAll(fluid.thermalPhases(), thermalPhasei)
         {
