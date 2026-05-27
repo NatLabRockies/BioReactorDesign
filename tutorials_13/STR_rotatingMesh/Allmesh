@@ -9,7 +9,7 @@ cd "${0%/*}" || exit 1
 rm -rf 0/alpha.gas
 rm -rf 0/alpha.liquid
 
-unzip ../geometry/STR_rotating.zip .
+unzip ../geometry/STR_rotating.zip STR_rotating.unv
 
 runApplication ideasUnvToFoam STR_rotating.unv
 runApplication changeDictionary
