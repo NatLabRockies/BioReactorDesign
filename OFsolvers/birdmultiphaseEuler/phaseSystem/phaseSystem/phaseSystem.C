@@ -40,6 +40,7 @@ License
 #include "movingWallVelocityFvPatchVectorField.H"
 #include "movingWallSlipVelocityFvPatchVectorField.H"
 #include "pressureReference.H"
+#include "fvcAverage.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -138,7 +139,16 @@ Foam::tmp<Foam::surfaceVectorField> Foam::phaseSystem::nHatfv
     // Interpolated face-gradient of alpha
     surfaceVectorField gradAlphaf = fvc::interpolate(gradAlpha);
     */
-
+/*    
+    volScalarField alphaSmooth1(alpha1);
+    volScalarField alphaSmooth2(alpha2);
+    
+    for (int iter=0; iter<1; iter++)
+    {
+        alphaSmooth1 = fvc::average(alphaSmooth1);
+        alphaSmooth2 = fvc::average(alphaSmooth2);
+    }
+*/
     surfaceVectorField gradAlphaf
     (
         fvc::interpolate(alpha2)*fvc::interpolate(fvc::grad(alpha1))
@@ -716,15 +726,25 @@ Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::surfaceTension
         if (&phase2 != &phase1)
         {
             const phaseInterface interface(phase1, phase2);
+            
 
             if (cAlphas_.found(interface))
             {
-                tSurfaceTension.ref() +=
-                    trackInterface(phase1,phase2)*fvc::interpolate(sigma(interface)*K(phase1, phase2))
+            
+                volScalarField rhoMean((phase1.rho() + phase2.rho())/2.);
+
+                surfaceScalarField surfTension = fvc::interpolate(sigma(interface)*K(phase1, phase2))
                    *(
                         fvc::interpolate(phase2)*fvc::snGrad(phase1)
                       - fvc::interpolate(phase1)*fvc::snGrad(phase2)
                     );
+                    
+                for (int i=0; i<2; i++)
+                {
+                    surfTension = fvc::interpolate(fvc::average(surfTension));
+                }
+                
+                tSurfaceTension.ref() += fvc::interpolate(phase1.rho()/rhoMean)*surfTension;
             }
         }
     }
