@@ -1,0 +1,90 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+Build  : 13-441953dfbb42
+Exec   : changeDictionary
+Date   : May 27 2026
+Time   : 14:59:55
+Host   : "Hyperion"
+PID    : 8533
+I/O    : uncollated
+Case   : /home/federico/OpenFOAM/federico-13/run/BioReactorDesign/tutorials_13/STR_rotatingMesh
+nProcs : 1
+sigFpe : Enabling floating point exception trapping (FOAM_SIGFPE).
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 10)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+--> FOAM Warning : 
+changeDictionary has been superseded by foamDictionary and is now deprecated.
+
+Create time
+
+Create mesh for time = 0
+
+Reading "changeDictionaryDict"
+
+Read dictionary "/home/federico/OpenFOAM/federico-13/run/BioReactorDesign/tutorials_13/STR_rotatingMesh/system/changeDictionaryDict" with replacements for dictionaries 1(boundary)
+Reading polyMesh/boundary file to extract patch names
+Loaded dictionary boundary with entries 
+5
+(
+inlet
+outlet
+shaft
+stirrer
+walls
+)
+
+Replacing entries in dictionary boundary
+Special handling of boundary as polyMesh/boundary file.
+Merging entries from 
+3
+(
+walls
+shaft
+stirrer
+)
+
+fieldDict:
+{
+    inlet
+    {
+        type            patch;
+        nFaces          174;
+        startFace       409069;
+    }
+    outlet
+    {
+        type            patch;
+        nFaces          27;
+        startFace       409243;
+    }
+    shaft
+    {
+        type            wall;
+        nFaces          1102;
+        startFace       409270;
+    }
+    stirrer
+    {
+        type            wall;
+        nFaces          3829;
+        startFace       410372;
+    }
+    walls
+    {
+        type            wall;
+        nFaces          16226;
+        startFace       414201;
+    }
+}
+
+Writing modified boundary
+
+End
+

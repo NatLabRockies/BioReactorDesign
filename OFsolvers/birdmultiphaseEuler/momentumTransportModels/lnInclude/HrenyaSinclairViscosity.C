@@ -1,1 +1,0 @@
-../kineticTheoryModels/viscosityModel/HrenyaSinclair/HrenyaSinclairViscosity.C

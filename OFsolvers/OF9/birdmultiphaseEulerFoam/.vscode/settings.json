@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "disengagement.C": "cpp",
+        "Laakkonen_limited.C": "cpp",
+        "Laakkonen.C": "cpp",
+        "LehrMilliesMewesCoalescence_limited.C": "cpp",
+        "multiphaseEulerFoam.C": "cpp",
+        "phaseSystem.C": "cpp",
+        "phaseModel.C": "cpp",
+        "phaseSystemSolve.C": "cpp",
+        "MultiComponentPhaseModel.C": "cpp",
+        "ReactingPhaseModel.C": "cpp"
+    }
+}

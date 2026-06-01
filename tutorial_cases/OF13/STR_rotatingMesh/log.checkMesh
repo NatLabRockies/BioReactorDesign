@@ -1,0 +1,126 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+Build  : 13-441953dfbb42
+Exec   : checkMesh -allGeometry -allTopology
+Date   : May 27 2026
+Time   : 14:59:57
+Host   : "Hyperion"
+PID    : 8538
+I/O    : uncollated
+Case   : /home/federico/OpenFOAM/federico-13/run/BioReactorDesign/tutorials_13/STR_rotatingMesh
+nProcs : 1
+sigFpe : Enabling floating point exception trapping (FOAM_SIGFPE).
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 10)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Enabling all (cell, face, edge, point) topology checks.
+
+Enabling all geometry checks.
+
+Time = 0s
+
+Mesh stats
+    points:           40159
+    faces:            435222
+    internal faces:   404274
+    cells:            209874
+    faces per cell:   4
+    boundary patches: 11
+    point zones:      0
+    face zones:       2
+    cell zones:       2
+
+Overall number of cells of each type:
+    hexahedra:     0
+    prisms:        0
+    wedges:        0
+    pyramids:      0
+    tet wedges:    0
+    tetrahedra:    209874
+    polyhedra:     0
+
+Checking topology...
+    Boundary definition OK.
+    Cell to face addressing OK.
+    Point usage OK.
+    Upper triangular ordering OK.
+    Face vertices OK.
+    Topological cell zip-up check OK.
+    Face-face connectivity OK.
+   *Number of regions: 2
+    The mesh has multiple regions which are not connected by any face.
+
+Checking patch topology for multiply connected surfaces...
+    Patch               Faces    Points   Surface topology                  
+    inlet               174      174      ok (non-closed singly connected)  
+    outlet              27       21       ok (non-closed singly connected)  
+    shaft               1102     564      ok (non-closed singly connected)  
+    stirrer             3829     1922     ok (non-closed singly connected)  
+    walls               16226    8211     ok (non-closed singly connected)  
+    nonCouple1          4795     2405     ok (non-closed singly connected)  
+    nonCouple2          4795     2405     ok (non-closed singly connected)  
+    nonConformalCyclic_on_nonCouple20        0        ok (empty)                        
+    nonConformalCyclic_on_nonCouple10        0        ok (empty)                        
+    nonConformalError_on_nonCouple20        0        ok (empty)                        
+    nonConformalError_on_nonCouple10        0        ok (empty)                        
+
+Checking geometry...
+    Overall domain bounding box (-0.041999994 -0.041999944 0) (0.042 0.04199979 0.142)
+    Patch bounding boxes
+        inlet                (-0.02257694 -0.022576638 0.0108) (0.022577033 0.022573268 0.0108)
+        outlet               (-0.015815595 0.028324264 0.142) (-0.0059570872 0.038249692 0.142)
+        shaft                (-0.004 -0.0039945618 0.06) (0.0039999999 0.0039968406 0.137)
+        stirrer              (-0.01985 -0.017565604 0.026) (0.01985 0.017565604 0.06)
+        walls                (-0.041999994 -0.041999944 0) (0.042 0.04199979 0.142)
+        nonCouple1           (-0.023 -0.023 0.025) (0.023 0.023 0.06)
+        nonCouple2           (-0.023 -0.023 0.025) (0.023 0.023 0.06)
+        nonConformalCyclic_on_nonCouple2
+        nonConformalCyclic_on_nonCouple1
+        nonConformalError_on_nonCouple2
+        nonConformalError_on_nonCouple1
+    Mesh has 3 geometric (non-empty/wedge) directions (1 1 1)
+    Mesh has 3 solution (non-empty) directions (1 1 1)
+    Max cell openness = 3.5175711e-16 OK.
+    Max aspect ratio = 30.249494 OK.
+    Minimum face area = 9.0037159e-08. Maximum face area = 0.00018601299.  Face area magnitudes OK.
+    Min volume = 1.5174377e-11. Max volume = 6.7275531e-07.  Total volume = 0.00070756025.  Cell volumes OK.
+    Mesh non-orthogonality Max: 85.984798 average: 26.225445
+   *Number of severely non-orthogonal (> 70 degrees) faces: 201.
+    Non-orthogonality check OK.
+    Face pyramids OK.
+    Max skewness = 2.1558692 OK.
+    Coupled point location match (average 0) OK.
+    Face tets OK.
+    Min/max edge length = 0.00039829454 0.025294592 OK.
+    All angles in faces OK.
+    All face flatness OK.
+    Cell determinant (wellposedness) : minimum: 0 average: 0.9333487
+ ***Cells with small determinant (< 0.001) found, number of cells: 67
+    Concave cell check OK.
+    Face interpolation weight : minimum: 0.045256448 average: 0.42046176
+ ***Faces with small interpolation weight (< 0.05) found, number of faces: 2
+    Face volume ratio : minimum: 0.047401679 average: 0.74600939
+    Face volume ratio check OK.
+patchToPatch: Calculating couplings between ...
+    source patch nonCouple2 with 4795 faces and ...
+    target patch nonCouple1 with 4795 faces
+    Source min/average/max coverage = 1/1/1
+    Target min/average/max coverage = 1/1/1
+    Source average openness/error/depth/angle = 5.0539344e-17/9.3993915e-16/2.8199017e-16/1.7846303e-07
+    Source max openness/error/depth/angle = 4.8846067e-16/1.1186678e-14/7.0902928e-15/1.7075473e-06
+    9940 couplings calculated in 0.523839s
+
+Failed 2 mesh checks.
+
+End
+

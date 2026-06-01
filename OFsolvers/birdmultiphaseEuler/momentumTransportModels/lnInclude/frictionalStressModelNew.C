@@ -1,1 +1,0 @@
-../kineticTheoryModels/frictionalStressModel/frictionalStressModel/frictionalStressModelNew.C

@@ -1,0 +1,86 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+Build  : 13-441953dfbb42
+Exec   : ideasUnvToFoam STR_rotating.unv
+Date   : May 27 2026
+Time   : 14:59:52
+Host   : "Hyperion"
+PID    : 8532
+I/O    : uncollated
+Case   : /home/federico/OpenFOAM/federico-13/run/BioReactorDesign/tutorials_13/STR_rotatingMesh
+nProcs : 1
+sigFpe : Enabling floating point exception trapping (FOAM_SIGFPE).
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 10)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Processing tag:164
+Starting reading units at line 3.
+l:1
+units:"  SI: Meter (newton)"
+unitType:2
+Unit factors:
+    Length scale       : 1
+    Force scale        : 1
+    Temperature scale  : 1
+    Temperature offset : 273.15
+
+
+Processing tag:2420
+Skipping tag 2420 on line 9
+Skipping section at line 9.
+
+Processing tag:2411
+Starting reading points at line 20.
+Read 37754 points.
+
+Processing tag:2412
+Starting reading cells at line 75531.
+First occurrence of element type 11 for cell 1 at line 75532
+First occurrence of element type 41 for cell 2099 at line 82471
+First occurrence of element type 111 for cell 28467 at line 134777
+Read 209874 cells and 26153 boundary faces.
+
+Processing tag:2467
+Starting reading patches at line 554527.
+For group 1 named inlet trying to read 174 patch face indices.
+For group 2 named outlet trying to read 27 patch face indices.
+For group 3 named shaft trying to read 1102 patch face indices.
+For group 4 named stirrer trying to read 3829 patch face indices.
+For group 5 named static trying to read 171786 patch face indices.
+For group 6 named rotating trying to read 38088 patch face indices.
+For group 7 named walls trying to read 16226 patch face indices.
+For group 8 named faceRotating trying to read 4795 patch face indices.
+
+Of 26153 so-called boundary faces 4795 belong to two cells and are therefore internal
+Sorting boundary faces according to group (patch)
+0: inlet is patch
+1: outlet is patch
+2: shaft is patch
+3: stirrer is patch
+4: static is cellZone
+5: rotating is cellZone
+6: walls is patch
+7: faceRotating is faceZone
+
+Constructing mesh with non-default patches of size:
+    inlet	174
+    outlet	27
+    shaft	1102
+    stirrer	3829
+    walls	16226
+
+Adding cell and face zones
+ Cell Zone static 	171786
+ Cell Zone rotating 	38088
+ Face Zone faceRotating 	4795
+
+End
+

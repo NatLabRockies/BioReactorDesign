@@ -1,1 +1,0 @@
-../kineticTheoryModels/frictionalStressModel/JohnsonJackson/JohnsonJacksonFrictionalStress.H

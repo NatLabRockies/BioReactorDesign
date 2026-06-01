@@ -1,0 +1,6 @@
+# dynamicCode:
+# SHA1 = be5063f0872ff9d3a8fa402c313317bc41bd69dd
+
+codedFunctionObjectTemplate.C
+
+LIB = $(PWD)/../platforms/$(WM_OPTIONS)/lib/libgasHoldup_be5063f0872ff9d3a8fa402c313317bc41bd69dd

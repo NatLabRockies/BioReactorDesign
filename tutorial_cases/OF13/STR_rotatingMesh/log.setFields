@@ -1,0 +1,45 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+Build  : 13-441953dfbb42
+Exec   : setFields
+Date   : May 27 2026
+Time   : 15:00:01
+Host   : "Hyperion"
+PID    : 8571
+I/O    : uncollated
+Case   : /home/federico/OpenFOAM/federico-13/run/BioReactorDesign/tutorials_13/STR_rotatingMesh
+nProcs : 1
+sigFpe : Enabling floating point exception trapping (FOAM_SIGFPE).
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 10)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+patchToPatch: Calculating couplings between ...
+    source patch nonCouple2 with 4795 faces and ...
+    target patch nonCouple1 with 4795 faces
+    Source min/average/max coverage = 1/1/1
+    Target min/average/max coverage = 1/1/1
+    Source average openness/error/depth/angle = 5.0539344e-17/9.3993915e-16/2.8199017e-16/1.7846303e-07
+    Source max openness/error/depth/angle = 4.8846067e-16/1.1186678e-14/7.0902928e-15/1.7075473e-06
+    9940 couplings calculated in 0.524305s
+fvMeshStitcher: Connecting
+    Cell min/average/max openness = 0/4.3278405e-17/2.2236107e-16
+    Cell min/average/max projected volume fraction = 0/4.7553199e-15/3.7636561e-13
+Reading "setFieldsDict"
+
+Setting field zone values
+Zone: gas
+    Setting volScalarField::Internal alpha.gas
+    Setting volScalarField::Internal alpha.liquid
+
+End
+

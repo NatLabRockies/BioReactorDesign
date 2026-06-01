@@ -1,1 +1,0 @@
-../kineticTheoryModels/kineticTheoryModel/kineticTheoryModel.C

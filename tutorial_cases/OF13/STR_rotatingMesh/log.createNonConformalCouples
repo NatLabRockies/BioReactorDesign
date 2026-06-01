@@ -1,0 +1,48 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+Build  : 13-441953dfbb42
+Exec   : createNonConformalCouples nonCouple2 nonCouple1
+Date   : May 27 2026
+Time   : 14:59:56
+Host   : "Hyperion"
+PID    : 8537
+I/O    : uncollated
+Case   : /home/federico/OpenFOAM/federico-13/run/BioReactorDesign/tutorials_13/STR_rotatingMesh
+nProcs : 1
+sigFpe : Enabling floating point exception trapping (FOAM_SIGFPE).
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 10)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Adding nonConformalCyclic interfaces between patches: 
+    (nonCouple2 nonCouple1)
+In regions: 
+    (region0 region0)
+Named:
+    (nonConformalCyclic_on_nonCouple2 nonConformalCyclic_on_nonCouple1)
+With transform: 
+    transformType   none;
+
+patchToPatch: Calculating couplings between ...
+    source patch nonCouple2 with 4795 faces and ...
+    target patch nonCouple1 with 4795 faces
+    Source min/average/max coverage = 1/1/1
+    Target min/average/max coverage = 1/1/1
+    Source average openness/error/depth/angle = 5.0539344e-17/9.3993915e-16/2.8199017e-16/1.7846303e-07
+    Source max openness/error/depth/angle = 4.8846067e-16/1.1186678e-14/7.0902928e-15/1.7075473e-06
+    9940 couplings calculated in 0.521537s
+fvMeshStitcher: Connecting
+    Cell min/average/max openness = 0/4.3278405e-17/2.2236107e-16
+    Cell min/average/max projected volume fraction = 0/4.7553199e-15/3.7636561e-13
+
+Writing mesh to 0
+
+End
+

@@ -1,1 +1,0 @@
-../kineticTheoryModels/conductivityModel/conductivityModel/conductivityModelNew.C
