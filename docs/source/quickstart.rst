@@ -48,21 +48,32 @@ Installation of python package for users
 
 .. _installation_of:
 
-Installation of BiRD OpenFOAM solver (for developers and users)
+Installation of BiRD OpenFOAM solver (for developers and users).
 ------------
 
-1. Activate your OpenFOAM-9 environment 
+BiRD requires OpenFOAM version 9 or version 13. OpenFOAM can be downloaded from <https://openfoam.org/download/history/>.
+
+1. Activate your OpenFOAM environment 
 
 .. code-block:: console
 
-   source <OpenFOAM-9 installation directory>/etc/<your-shell>rc
+   source <OpenFOAM installation directory>/etc/<your-shell>rc
 
 2. Compile the solver
 
+   If running with OpenFOAM-9:
 .. code-block:: console
 
-   cd OFsolvers/birdmultiphaseEulerFoam/
+   cd OFsolvers/OF9/birdmultiphaseEulerFoam/
    ./Allwmake
+
+
+   If running with OpenFOAM-13:
+.. code-block:: console
+
+   cd OFsolvers/OF13/birdmultiphaseEulerFoam/
+   ./Allwmake
+
 
 The same steps are done in ``.github/workflows/ci.yml`` (under ``Test-OF - Compile solver``) which can be used as a reference. 
 However, note that ``.github/workflows/ci.yml`` compiles the solver in debug mode which is not suitable for production.
@@ -74,17 +85,17 @@ Run an example
 
 1. Follow the steps to install the python package (see either the :ref:`Installation section for developers<installation_dev>` or the :ref:`Installation section for users<installation_users>`)
 2. Follow the steps to install the BiRD OpenFOAM solver (see the :ref:`Installation section for the solver<installation_of>`) 
-3. Check that you can run any of the tutorial cases, for example
+3. Check that you can run any of the tutorial cases, for example when OpenFOAM-9 is installed
 
 .. code-block:: console
 
-   cd tutorial_cases/bubble_column_20L
+   cd tutorial_cases/OF9/bubble_column_20L
    bash run.sh
 
 If you run with pixi
 
 .. code-block:: console
 
-   cd tutorial_cases/bubble_column_20L
+   cd tutorial_cases/OF9/bubble_column_20L
    bash run_pixi.sh
 
