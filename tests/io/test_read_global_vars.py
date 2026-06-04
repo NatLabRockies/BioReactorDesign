@@ -15,6 +15,7 @@ def test_read_global_vars():
         " .. ".strip(),
         " .. ".strip(),
         "tutorial_cases",
+        "OF9",
         "loop_reactor_mixing",
     )
     # Read globalVars from case_folder path

@@ -72,6 +72,7 @@ def test_species_names():
         "..",
         "..",
         "tutorial_cases",
+        "OF9",
         "bubble_column_20L",
     )
 
