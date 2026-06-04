@@ -202,61 +202,61 @@ jobs:
 
       - name: Compile solver
         run: |
-          cd OFsolvers/birdmultiphaseEulerFoam
+          cd OFsolvers/OF9/birdmultiphaseEulerFoam
           export WM_COMPILE_OPTION=Debug
           ./Allwmake
-          cd ../../
+          cd ../../../
       - name: Run deckwer17 PBE
         run: |
-          cd experimental_cases/deckwer17
+          cd experimental_cases/OF9/deckwer17
           bash run.sh 
-          cd ../../
+          cd ../../../
       - name: Run deckwer17 constantD
         run: |
-          cd experimental_cases/deckwer17
+          cd experimental_cases/OF9/deckwer17
           cp constant/phaseProperties_constantd constant/phaseProperties
           bash run.sh 
-          cd ../../
+          cd ../../../
       - name: Run deckwer19 PBE
         run: |
-          cd experimental_cases/deckwer19
+          cd experimental_cases/OF9/deckwer19
           bash run.sh 
-          cd ../../
+          cd ../../../
       - name: Run side sparger tutorial
         run: |
-          cd tutorial_cases/side_sparger
+          cd tutorial_cases/OF9/side_sparger
           bash run.sh 
-          cd ../../
+          cd ../../../
       - name: Run bubble column tutorial
         run: |
-          cd tutorial_cases/bubble_column_20L
+          cd tutorial_cases/OF9/bubble_column_20L
           bash run.sh 
-          cd ../../
+          cd ../../../
       - name: Run stirred-tank tutorial
         run: |
-          cd tutorial_cases/stirred_tank
+          cd tutorial_cases/OF9/stirred_tank
           bash run.sh 
-          cd ../../
+          cd ../../../
       - name: Run reactive loop reactor tutorial
         run: |
-          cd tutorial_cases/loop_reactor_reacting
+          cd tutorial_cases/OF9/loop_reactor_reacting
           bash run.sh 
-          cd ../../
+          cd ../../../
       - name: Run mixing loop reactor tutorial
         run: |
-          cd tutorial_cases/loop_reactor_mixing
+          cd tutorial_cases/OF9/loop_reactor_mixing
           bash run.sh 
-          cd ../../
+          cd ../../../
       - name: Run airlift reactor tutorial
         run: |
-          cd tutorial_cases/airlift_40m
+          cd tutorial_cases/OF9/airlift_40m
           bash run.sh
-          cd ../../
+          cd ../../../
       - name: Run flat panel reactor tutorial
         run: |
-          cd tutorial_cases/FlatPanel_250L_ASU
+          cd tutorial_cases/OF9/FlatPanel_250L_ASU
           bash run.sh
-          cd ../../
+          cd ../../../
 
   Regression-Test-OF-pixi:
     name: Regression-Test-OF-pixi (${{ matrix.os }})
@@ -282,13 +282,13 @@ jobs:
           cache-write: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       - name: Compile solver
         run: |
-          cd OFsolvers/birdmultiphaseEulerFoam
+          cd OFsolvers/OF9/birdmultiphaseEulerFoam
           export WM_COMPILE_OPTION=Debug
           ./Allwmake
-          cd ../../
+          cd ../../../
       - name: Run bubble column tutorial
         run: |
-          cd tutorial_cases/bubble_column_20L
+          cd tutorial_cases/OF9/bubble_column_20L
           bash run_pixi.sh 
-          cd ../../
+          cd ../../../
 
