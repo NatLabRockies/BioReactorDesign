@@ -41,7 +41,9 @@ def get_species_properties(species_name: list[str]) -> dict:
 
 
 def get_species_key_pair(
-    thermo_properties: dict, species_name: list[str]
+    thermo_properties: dict,
+    species_name: list[str],
+    thermo_properties_file: str | None = None,
 ) -> dict:
     """
     Find the key where are stored the species info
@@ -52,6 +54,8 @@ def get_species_key_pair(
         Dictionary of thermo properties
     species_name : list[str]
         List of species names
+    thermo_properties_file : str | None
+        Path the properties were read from, used in log messages only
 
     Returns
     ----------
@@ -75,8 +79,9 @@ def get_species_key_pair(
             if not found:
                 thermo_properties[spec_name] = {}
                 pair_species_keys[spec_name] = spec_name
+                source = thermo_properties_file or "the thermo properties"
                 logger.warning(
-                    f"Could not find species '{spec_name}' info in {thermo_properties_file}"
+                    f"Could not find species '{spec_name}' info in {source}"
                 )
 
     return pair_species_keys
@@ -405,7 +410,9 @@ def write_species_properties(case_folder: str, phase: str = "gas") -> None:
     )
     thermo_properties = read_openfoam_dict(thermo_properties_file)
     pair_species_keys = get_species_key_pair(
-        thermo_properties=thermo_properties, species_name=species_name
+        thermo_properties=thermo_properties,
+        species_name=species_name,
+        thermo_properties_file=thermo_properties_file,
     )
     if phase == "gas":
         thermo_properties_update = update_gas_thermo_prop(
