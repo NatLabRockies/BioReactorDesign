@@ -1,9 +1,20 @@
+import os
+
 import numpy as np
 import vtk.numpy_interface.dataset_adapter as dsa
 from paraview import simple as pv
 
 from bird import logger
-from bird.utilities.ofio import *
+from bird.utilities.ofio import (
+    get_case_times,
+    read_bubble_diameter,
+    read_cell_centers,
+    read_cell_volumes,
+    read_field,
+    read_global_vars,
+    read_mu_liquid,
+    species_name_to_mw,
+)
 
 from .kla_utils import compute_kla
 

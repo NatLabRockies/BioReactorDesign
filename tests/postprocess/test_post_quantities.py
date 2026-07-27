@@ -6,9 +6,17 @@ from pathlib import Path
 import numpy as np
 from prettyPlot.plotting import plt, pretty_labels
 
-# The star import above skips the private helpers
-from bird.postprocess.post_quantities import *
-from bird.postprocess.post_quantities import _get_ind_gas, _get_ind_liq
+from bird.postprocess.post_quantities import (
+    _get_ind_gas,
+    _get_ind_liq,
+    compute_ave_bubble_diam,
+    compute_ave_conc_liq,
+    compute_ave_y_liq,
+    compute_fitted_kla,
+    compute_gas_holdup,
+    compute_instantaneous_kla,
+    compute_superficial_gas_velocity,
+)
 
 
 def write_uniform_alpha_case(root, alpha_liq, cell_volumes, y_liq):
@@ -22,7 +30,7 @@ def write_uniform_alpha_case(root, alpha_liq, cell_volumes, y_liq):
     def write_field(name, body):
         with open(os.path.join(root, "0", name), "w") as f:
             f.write("FoamFile\n{\n    format      ascii;\n")
-            f.write(f"    class       volScalarField;\n")
+            f.write("    class       volScalarField;\n")
             f.write(f"    object      {name};\n}}\n\n")
             f.write("dimensions      [0 0 0 0 0 0 0];\n\n")
             f.write(body)
