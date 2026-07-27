@@ -174,7 +174,7 @@ def radial_mean(
                     fields_conds[field_name]["val"] = (
                         fields_conds_tmp / window_ave
                     )
-                    fields_cond[sfield_name]["radius"] = radius_axis
+                    fields_conds[field_name]["radius"] = radius_axis
                 else:
                     for height in heights:
                         fields_conds[field_name][height2str(height)]["val"] = (
