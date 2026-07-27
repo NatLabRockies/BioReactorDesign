@@ -3,8 +3,10 @@ import shutil
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from bird.utilities.ofio import (
+    _find_header_size,
     _readOF,
     _readOFScal,
     _readOFVec,
@@ -119,6 +121,39 @@ def test_read_nonunif_vec():
     assert abs(data_dict["n_cells"] - 137980) < 1e-6
     assert abs(data_dict["field"].shape[0] - 137980) < 1e-6
     assert data_dict["name"] == "U.gas"
+
+
+def test_find_header_size():
+    """
+    Test for counting the header lines of a nonuniform field
+    """
+    case_folder = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "postprocess",
+        "data_conditional_mean",
+    )
+    n_cells = 137980
+    # Scalar and vector fields of the same case share the same header layout
+    scal_file = os.path.join(case_folder, "79", "CO2.gas")
+    vec_file = os.path.join(case_folder, "79", "U.gas")
+    assert _find_header_size(scal_file, n_cells) == 21
+    assert _find_header_size(vec_file, n_cells) == 21
+    # The header size is what the field readers report
+    assert _readOFScal(filename=scal_file)["n_header"] == 21
+    assert _readOFVec(filename=vec_file)["n_header"] == 21
+
+    # A number of cells absent from the header never matches. Note the scan
+    # looks for a substring, so a short number such as 1 would match inside
+    # the real cell count
+    with pytest.raises(ValueError):
+        _find_header_size(vec_file, 424242)
+
+    # Giving up early also raises rather than returning a wrong offset
+    with pytest.raises(ValueError):
+        _find_header_size(vec_file, n_cells, max_lines=5)
 
 
 def test_read_unif_vec():

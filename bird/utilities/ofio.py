@@ -201,6 +201,48 @@ def _read_meta_data(filename: str, mode: str | None = None) -> dict:
     return meta_data
 
 
+def _find_header_size(
+    filename: str, n_cells: int, max_lines: int = 100
+) -> int:
+    """
+    Count the lines before the internal field values start
+
+    The values of a nonuniform field are preceded by the number of cells on
+    its own line, then a line opening the list with "(".
+
+    Parameters
+    ----------
+    filename: str
+        Field filename
+    n_cells : int
+        Number of computational cells in the domain
+    max_lines : int
+        Number of lines to scan before giving up
+
+    Returns
+    -------
+    n_header: int
+        Number of header lines to skip
+    """
+    oldline = ""
+    newline = ""
+    with open(filename, "r") as f:
+        for iline in range(max_lines):
+            line = f.readline()
+            if len(line) == 0:
+                # End of file reached before the values started
+                break
+            oldline = newline
+            newline = line
+            if str(n_cells) in oldline and "(" in newline:
+                return iline + 1
+
+    error_msg = f"Could not find the sequence {n_cells} then '('"
+    error_msg += f" in the first {max_lines} lines of {filename}"
+    logger.error(error_msg)
+    raise ValueError(error_msg)
+
+
 def _readOFScal(
     filename: str,
     n_cells: int | None = None,
@@ -255,25 +297,7 @@ def _readOFScal(
 
         # Get header size
         if n_header is None:
-            oldline = ""
-            newline = ""
-            iline = 0
-            eof = False
-            with open(filename, "r") as f:
-                while iline < 100 and (not eof):
-                    line = f.readline()
-                    if len(line) == 0:
-                        eof = True
-                    oldline = newline
-                    newline = line
-                    if str(n_cells) in oldline and "(" in newline:
-                        n_header = iline + 1
-                        break
-                    iline += 1
-                else:
-                    raise ValueError(
-                        "Could not find a sequence {n_cells} and '(' in file ({filename})"
-                    )
+            n_header = _find_header_size(filename, n_cells)
 
         # Rapid field read
         try:
@@ -281,7 +305,7 @@ def _readOFScal(
         except Exception as err:
             error_msg = f"Issue when reading {filename}"
             logger.error(error_msg)
-            raise err(error_msg)
+            raise RuntimeError(error_msg) from err
 
     return {
         "field": field,
@@ -343,40 +367,28 @@ def _readOFVec(
     else:
         n_cells = meta_data["n_cells"]
         if n_header is None:
-            oldline = ""
-            newline = ""
-            iline = 0
-            eof = False
-            with open(filename, "r") as f:
-                while iline < 100 and (not eof):
-                    line = f.readline()
-                    if len(line) == 0:
-                        eof = True
-                    oldline = newline
-                    newline = line
-                    if str(n_cells) in oldline and "(" in newline:
-                        n_header = iline + 1
-                        break
-                    iline += 1
-                else:
-                    raise ValueError(
-                        "Could not find a sequence {n_cells} and '(' in file ({filename})"
-                    )
+            n_header = _find_header_size(filename, n_cells)
 
+        # Each line reads "(x y z)", so strip the parentheses off the first
+        # and last column as they are parsed
         try:
             field = np.loadtxt(
-                filename, dtype=tuple, skiprows=n_header, max_rows=n_cells
+                filename,
+                skiprows=n_header,
+                max_rows=n_cells,
+                converters={
+                    # remove ( in the first entry
+                    # Don't touch the middle entry
+                    # Remove ) from the last entry
+                    0: lambda entry: float(entry[1:]),
+                    2: lambda entry: float(entry[:-1]),
+                },
             )
-            for i in range(n_cells):
-                field[i, 0] = float(field[i, 0][1:])
-                field[i, 1] = float(field[i, 1])
-                field[i, 2] = float(field[i, 2][:-1])
-            field = np.array(field).astype(float)
 
         except Exception as err:
             error_msg = f"Issue when reading {filename}"
             logger.error(error_msg)
-            raise err(error_msg)
+            raise RuntimeError(error_msg) from err
 
     return {
         "field": field,
