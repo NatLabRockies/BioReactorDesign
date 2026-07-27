@@ -19,6 +19,28 @@ from bird.utilities.ofio import (
 from .kla_utils import compute_kla
 
 
+def _weighted_average(
+    quantity: float | np.ndarray, weights: float | np.ndarray
+) -> float:
+    """
+    Weighted average of a quantity over the cells it was filtered to
+
+    Parameters
+    ----------
+    quantity: float | np.ndarray
+        Quantity to average, either per cell or uniform
+    weights: float | np.ndarray
+        Averaging weights, typically the cell volumes optionally scaled by a
+        volume fraction
+
+    Returns
+    ----------
+    average: float
+        Weighted average of the quantity
+    """
+    return np.sum(quantity * weights) / np.sum(weights)
+
+
 def _field_filter(
     field: float | np.ndarray, ind: np.ndarray | None, field_type: str
 ) -> float | np.ndarray:
@@ -404,7 +426,7 @@ def compute_gas_holdup(
     cell_volume = _field_filter(cell_volume, ind=ind_liq, field_type="scalar")
 
     # Calculate
-    gas_holdup = np.sum((1 - alpha_liq) * cell_volume) / np.sum(cell_volume)
+    gas_holdup = _weighted_average(1 - alpha_liq, cell_volume)
 
     return gas_holdup, field_dict
 
@@ -662,9 +684,7 @@ def compute_superficial_gas_velocity(
         )
 
         # Compute
-        sup_vel = np.sum(U_gas_axial * alpha_gas * cell_volume) / np.sum(
-            cell_volume
-        )
+        sup_vel = _weighted_average(U_gas_axial * alpha_gas, cell_volume)
 
     return sup_vel, field_dict
 
@@ -745,9 +765,7 @@ def compute_ave_y_liq(
     y_liq = _field_filter(y_liq, ind=ind_liq, field_type="scalar")
 
     # Calculate
-    liq_ave_y = np.sum(alpha_liq * y_liq * cell_volume) / np.sum(
-        alpha_liq * cell_volume
-    )
+    liq_ave_y = _weighted_average(y_liq, alpha_liq * cell_volume)
 
     return liq_ave_y, field_dict
 
@@ -849,9 +867,7 @@ def compute_ave_conc_liq(
 
     conc_loc = rho_liq * y_liq / mol_weight
 
-    conc_ave = np.sum(conc_loc * alpha_liq * cell_volume) / np.sum(
-        alpha_liq * cell_volume
-    )
+    conc_ave = _weighted_average(conc_loc, alpha_liq * cell_volume)
 
     return conc_ave, field_dict
 
@@ -928,9 +944,7 @@ def compute_ave_bubble_diam(
     d_gas = _field_filter(d_gas, ind=ind_liq, field_type="scalar")
 
     # Calculate
-    diam = np.sum(d_gas * alpha_liq * cell_volume) / np.sum(
-        alpha_liq * cell_volume
-    )
+    diam = _weighted_average(d_gas, alpha_liq * cell_volume)
 
     return diam, field_dict
 
@@ -1146,12 +1160,12 @@ def compute_instantaneous_kla(
     kla_spec = {}
     cstar_spec = {}
     for species_name in species_names:
-        kla_spec[species_name] = np.sum(
-            cell_volume * kla_spec_field[species_name]
-        ) / np.sum(cell_volume)
-        cstar_spec[species_name] = np.sum(
-            cell_volume * alpha_liq * cstar_spec_field[species_name]
-        ) / np.sum(cell_volume * alpha_liq)
+        kla_spec[species_name] = _weighted_average(
+            kla_spec_field[species_name], cell_volume
+        )
+        cstar_spec[species_name] = _weighted_average(
+            cstar_spec_field[species_name], cell_volume * alpha_liq
+        )
 
     return kla_spec, cstar_spec, field_dict
 
