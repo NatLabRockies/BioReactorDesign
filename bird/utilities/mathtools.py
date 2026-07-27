@@ -134,7 +134,7 @@ def bissection(
     if residual_min * residual_max > 0:
         error_msg = "No guaranteed bissection solution"
         error_msg += (
-            "\nSearch interval [{x_min:.4g}, {x_max:.4g}] may be too narrow"
+            f"\nSearch interval [{x_min:.4g}, {x_max:.4g}] may be too narrow"
         )
         raise ValueError(error_msg)
 
