@@ -9,7 +9,7 @@ from .kla_utils import compute_kla
 
 
 def _field_filter(
-    field: float | np.ndarray, ind: np.ndarray, field_type: str
+    field: float | np.ndarray, ind: np.ndarray | None, field_type: str
 ) -> float | np.ndarray:
     """
     Filter field by index. Handle uniform and non uniform fields
@@ -18,8 +18,9 @@ def _field_filter(
     ----------
     field: float | np.ndarray
         Field to filter
-    ind: np.ndarray
-        Cell indices to keep
+    ind: np.ndarray | None
+        Cell indices to keep.
+        None keeps the whole domain, see _get_ind_liq
     field_type : str
         Type of the field ("scalar" or "vector")
 
@@ -29,6 +30,16 @@ def _field_filter(
         Field filtered by cell indices
 
     """
+    if field_type.lower() not in ["scalar", "vector"]:
+        msg = f"Field type ({field_type}) not recognized"
+        msg += " Supported field types are 'scalar' and 'vector'"
+        raise NotImplementedError(msg)
+
+    # No index means the selection covers the whole domain, so nothing is
+    # filtered out
+    if ind is None:
+        return field
+
     if field_type.lower() == "scalar":
         if isinstance(field, np.ndarray):
             if len(field.shape) > 1:
@@ -43,7 +54,7 @@ def _field_filter(
             err_msg += " Expected float or np.ndarray for scalar field"
             raise TypeError(err_msg)
 
-    elif field_type.lower() == "vector":
+    else:
         if isinstance(field, np.ndarray):
             if field.shape == (3,):
                 # Uniform field
@@ -55,11 +66,6 @@ def _field_filter(
             err_msg += " Expected np.ndarray for vector field"
             raise TypeError(err_msg)
 
-    else:
-        msg = f"Field type ({field_type}) not recognized"
-        msg += " Supported field types are 'scalar' and 'vector'"
-        raise NotImplementedError(msg)
-
     return filtered_field
 
 
@@ -69,7 +75,7 @@ def _get_ind_liq(
     threshold: float = 0.5,
     n_cells: int | None = None,
     field_dict: dict | None = None,
-) -> tuple[np.ndarray | float, dict]:
+) -> tuple[np.ndarray | None, dict]:
     """
     Get indices of pure liquid cells (where alpha.liquid > threshold)
     Threshold is 0.5 by default
@@ -93,19 +99,15 @@ def _get_ind_liq(
 
     Returns
     ----------
-    ind_liq : np.ndarray | float
-        indices of pure liquid cells
+    ind_liq : np.ndarray | None
+        indices of pure liquid cells.
+        None if the whole domain is liquid, see _field_filter
     field_dict : dict
         Dictionary of fields read
     """
     if field_dict is None:
-        return None
+        field_dict = {}
 
-    kwargs = {
-        "case_folder": case_folder,
-        "time_folder": time_folder,
-        "n_cells": n_cells,
-    }
     assert threshold <= 1
     assert threshold >= 0
 
@@ -113,8 +115,9 @@ def _get_ind_liq(
         f"Assuming that alpha_liq > {threshold} denotes pure liquid"
     )
 
-    # Compute indices of pure liquid
-    if not ("ind_liq" in field_dict) or field_dict["ind_liq"] is None:
+    # Compute indices of pure liquid. Unlike the cached fields, None is a
+    # meaningful value here, so only the absence of the key means "not read"
+    if "ind_liq" not in field_dict:
         alpha_liq, field_dict = read_field(
             case_folder,
             time_folder,
@@ -122,7 +125,18 @@ def _get_ind_liq(
             n_cells=n_cells,
             field_dict=field_dict,
         )
-        ind_liq = np.argwhere(alpha_liq > threshold)[:, 0]
+        # Uniform and non uniform fields are treated differently. A non
+        # uniform field holds one value per cell and can be compared cell by
+        # cell. A uniform field holds a single value for the whole domain, so
+        # either every cell is liquid or none of them is
+        if np.ndim(alpha_liq) > 0:
+            ind_liq = np.argwhere(alpha_liq > threshold)[:, 0]
+        elif alpha_liq > threshold:
+            # Every cell is liquid, so no filtering is needed
+            ind_liq = None
+        else:
+            # No cell is liquid
+            ind_liq = np.array([], dtype=int)
         field_dict["ind_liq"] = ind_liq
     else:
         ind_liq = field_dict["ind_liq"]
@@ -136,7 +150,7 @@ def _get_ind_gas(
     threshold: float = 0.5,
     n_cells: int | None = None,
     field_dict: dict | None = None,
-) -> tuple[np.ndarray | float, dict]:
+) -> tuple[np.ndarray | None, dict]:
     """
     Get indices of pure gas cells (where alpha.liquid <= threshold)
     Threshold is 0.5 by default
@@ -160,34 +174,42 @@ def _get_ind_gas(
 
     Returns
     ----------
-    ind_gas : np.ndarray | float
-        indices of pure gas cells
+    ind_gas : np.ndarray | None
+        indices of pure gas cells.
+        None if the whole domain is gas, see _field_filter
     field_dict : dict
         Dictionary of fields read
     """
     if field_dict is None:
         field_dict = {}
 
-    kwargs = {
-        "case_folder": case_folder,
-        "time_folder": time_folder,
-        "n_cells": n_cells,
-    }
     assert threshold <= 1
     assert threshold >= 0
 
     logger.warning(f"Assuming that alpha_liq <= {threshold} denotes pure gas")
 
-    # Compute indices of pure liquid
-    if not ("ind_gas" in field_dict) or field_dict["ind_gas"] is None:
-        alpha_liq = read_field(
+    # Compute indices of pure gas. Unlike the cached fields, None is a
+    # meaningful value here, so only the absence of the key means "not read"
+    if "ind_gas" not in field_dict:
+        alpha_liq, field_dict = read_field(
             case_folder,
             time_folder,
             field_name="alpha.liquid",
             n_cells=n_cells,
             field_dict=field_dict,
         )
-        ind_gas = np.argwhere(alpha_liq <= threshold)
+        # Uniform and non uniform fields are treated differently. A non
+        # uniform field holds one value per cell and can be compared cell by
+        # cell. A uniform field holds a single value for the whole domain, so
+        # either every cell is gas or none of them is
+        if np.ndim(alpha_liq) > 0:
+            ind_gas = np.argwhere(alpha_liq <= threshold)[:, 0]
+        elif alpha_liq <= threshold:
+            # Every cell is gas, so no filtering is needed
+            ind_gas = None
+        else:
+            # No cell is gas
+            ind_gas = np.array([], dtype=int)
         field_dict["ind_gas"] = ind_gas
     else:
         ind_gas = field_dict["ind_gas"]
@@ -603,9 +625,12 @@ def compute_superficial_gas_velocity(
         if height is None:
             # Find all cells in the middle of the liquid domain
             ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
-            max_dir = np.amax(cell_centers[ind_liq, direction])
-            min_dir = np.amin(cell_centers[ind_liq, direction])
-            height = (max_dir + min_dir) / 2
+            if ind_liq is None:
+                # The whole domain is liquid
+                liq_centers = cell_centers[:, direction]
+            else:
+                liq_centers = cell_centers[ind_liq, direction]
+            height = (np.amax(liq_centers) + np.amin(liq_centers)) / 2
 
         ind_middle, field_dict = _get_ind_slice(
             case_folder=case_folder,
@@ -1076,11 +1101,9 @@ def compute_instantaneous_kla(
             species_gas[species_name], ind=ind_liq, field_type="scalar"
         )
 
-    mag_U_diff = np.sqrt(
-        (U_gas[:, 0] - U_liq[:, 0]) ** 2
-        + (U_gas[:, 1] - U_liq[:, 1]) ** 2
-        + (U_gas[:, 2] - U_liq[:, 2]) ** 2
-    )
+    # Magnitude of the slip velocity. Using the last axis keeps this valid
+    # whether the velocities are uniform, shape (3,), or per cell, shape (N,3)
+    mag_U_diff = np.linalg.norm(U_gas - U_liq, axis=-1)
 
     # Compute kLa
     Re = rho_liq * mag_U_diff * d_gas / mu_liq

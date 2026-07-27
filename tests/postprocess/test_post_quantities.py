@@ -1,10 +1,43 @@
 import os
 import shutil
+import tempfile
 from pathlib import Path
 
+import numpy as np
 from prettyPlot.plotting import plt, pretty_labels
 
+# The star import above skips the private helpers
 from bird.postprocess.post_quantities import *
+from bird.postprocess.post_quantities import _get_ind_gas, _get_ind_liq
+
+
+def write_uniform_alpha_case(root, alpha_liq, cell_volumes, y_liq):
+    """
+    Write a minimal case whose alpha.liquid is a uniform field
+
+    Reading a uniform field gives a single value rather than one value per
+    cell, so this exercises the branch where every cell is selected at once.
+    """
+
+    def write_field(name, body):
+        with open(os.path.join(root, "0", name), "w") as f:
+            f.write("FoamFile\n{\n    format      ascii;\n")
+            f.write(f"    class       volScalarField;\n")
+            f.write(f"    object      {name};\n}}\n\n")
+            f.write("dimensions      [0 0 0 0 0 0 0];\n\n")
+            f.write(body)
+
+    def nonuniform(values):
+        entries = "\n".join(f"{value:.10g}" for value in values)
+        return (
+            "internalField   nonuniform List<scalar> \n"
+            f"{len(values)}\n(\n{entries}\n)\n;\n"
+        )
+
+    os.makedirs(os.path.join(root, "0"), exist_ok=True)
+    write_field("V", nonuniform(cell_volumes))
+    write_field("alpha.liquid", f"internalField   uniform {alpha_liq};\n")
+    write_field("O2.liquid", nonuniform(y_liq))
 
 
 def test_compute_gh():
@@ -42,6 +75,20 @@ def test_compute_gh():
     # Results need to be exactly the same
     assert abs(gh1 - gh) < 1e-12
     assert abs(gh2 - gh) < 1e-12
+
+    # A uniform alpha.liquid selects every cell, so the holdup is 1 - alpha
+    cell_volumes = [1.0, 2.0, 3.0, 4.0]
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        write_uniform_alpha_case(
+            tmpdirname,
+            alpha_liq=0.9,
+            cell_volumes=cell_volumes,
+            y_liq=[0.1, 0.2, 0.3, 0.4],
+        )
+        gh_unif, _ = compute_gas_holdup(
+            case_folder=tmpdirname, time_folder="0", volume_time="0"
+        )
+    assert abs(gh_unif - 0.1) < 1e-12
 
 
 def test_compute_diam():
@@ -190,6 +237,27 @@ def test_ave_y_liq():
 
     # Results need to be exactly the same
     assert abs(ave_y_h21 - ave_y_h2) < 1e-12
+
+    # With a uniform alpha.liquid the average must run over every cell, so it
+    # is the volume weighted mean of the mass fraction. Selecting only the
+    # first cell would give 0.1 instead
+    cell_volumes = np.array([1.0, 2.0, 3.0, 4.0])
+    y_liq = np.array([0.1, 0.2, 0.3, 0.4])
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        write_uniform_alpha_case(
+            tmpdirname,
+            alpha_liq=0.9,
+            cell_volumes=cell_volumes,
+            y_liq=y_liq,
+        )
+        ave_y_unif, _ = compute_ave_y_liq(
+            case_folder=tmpdirname,
+            time_folder="0",
+            species_name="O2",
+            volume_time="0",
+        )
+    expected = np.sum(y_liq * cell_volumes) / np.sum(cell_volumes)
+    assert abs(ave_y_unif - expected) < 1e-12
     assert abs(ave_y_h22 - ave_y_h2) < 1e-12
 
 
@@ -366,3 +434,54 @@ def test_fitted_kla():
     )
     for time_folder in [str(entry) for entry in range(81, 91)]:
         shutil.rmtree(os.path.join(case_folder, time_folder))
+
+
+def test_get_ind_gas():
+    """
+    Test for the selection of pure gas cells
+    """
+    case_folder = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "postprocess",
+        "data_conditional_mean",
+    )
+    n_cells = 137980
+    ind_gas, field_dict = _get_ind_gas(
+        case_folder=case_folder, time_folder="80"
+    )
+    ind_liq, _ = _get_ind_liq(case_folder=case_folder, time_folder="80")
+
+    # Same flat shape as the liquid counterpart
+    assert ind_gas.ndim == 1
+    assert ind_liq.ndim == 1
+    # Gas and liquid cells partition the domain
+    assert len(ind_gas) + len(ind_liq) == n_cells
+    assert len(np.intersect1d(ind_gas, ind_liq)) == 0
+    # The selection agrees with the field it was built from
+    alpha_liq = field_dict["alpha.liquid"]
+    assert np.all(alpha_liq[ind_gas] <= 0.5)
+    assert np.all(alpha_liq[ind_liq] > 0.5)
+    # Reading again reuses the cached indices
+    ind_gas_again, _ = _get_ind_gas(
+        case_folder=case_folder, time_folder="80", field_dict=field_dict
+    )
+    assert np.array_equal(ind_gas_again, ind_gas)
+
+    # A uniform liquid field leaves no gas cell to select
+    cell_volumes = [1.0, 2.0, 3.0, 4.0]
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        write_uniform_alpha_case(
+            tmpdirname,
+            alpha_liq=0.9,
+            cell_volumes=cell_volumes,
+            y_liq=[0.1, 0.2, 0.3, 0.4],
+        )
+        ind_gas_unif, _ = _get_ind_gas(case_folder=tmpdirname, time_folder="0")
+        ind_liq_unif, _ = _get_ind_liq(case_folder=tmpdirname, time_folder="0")
+    assert len(ind_gas_unif) == 0
+    # A uniform liquid field needs no filtering at all, rather than selecting
+    # a single cell
+    assert ind_liq_unif is None
