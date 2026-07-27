@@ -152,7 +152,7 @@ def write_mixer(mixer, output_folder):
             error_message = (
                 f"mixer.sign = {mixer.sign} but should be '+' or '-'"
             )
-            logger.error
+            raise ValueError(error_message)
         f.write(
             '\t\t\t\tFoam::Info << "[BIRD:DYNMIX WARN] " << "upV = " << upV << " downV = " << downV << " for source at " << source_pt_x << ", " << source_pt_y << ", " << source_pt_z <<  endl;\n'
         )
