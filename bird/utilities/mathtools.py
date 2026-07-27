@@ -26,7 +26,8 @@ def conditional_average(
     x_cond: np.ndarray
         The binned array of values conditioned againsts
     y_cond: np.ndarray
-        The conditional averages at each bin
+        The conditional averages at each bin.
+        Bins that received no sample are NaN
     """
     # Check the shape of input arrays
     try:
@@ -57,39 +58,40 @@ def conditional_average(
 
     # Bin conditional space
     mag = np.amax(x) - np.amin(x)
+    if mag == 0:
+        error_msg = "conditional average needs x to span a finite range"
+        error_msg += f"\nall {len(x)} values of x equal {np.amax(x):.4g}"
+        logger.error(error_msg)
+        raise ValueError(error_msg)
     x_bin = np.linspace(
         np.amin(x) - mag / (2 * nbins), np.amax(x) + mag / (2 * nbins), nbins
     )
-    weight = np.zeros(nbins)
-    weightVal = np.zeros(nbins)
-    asum = np.zeros(nbins)
-    bsum = np.zeros(nbins)
-    avalsum = np.zeros(nbins)
-    bvalsum = np.zeros(nbins)
     inds = np.digitize(x, x_bin)
 
-    a = abs(y - x_bin[inds - 1])
-    b = abs(y - x_bin[inds])
+    # Linear weights splitting each sample between its two neighboring bins,
+    # based on where x falls between the bin edges that bracket it
+    a = abs(x - x_bin[inds - 1])
+    b = abs(x - x_bin[inds])
     c = a + b
     a = a / c
     b = b / c
 
-    # Conditional average at each bin
-    for i in range(nbins):
-        asum[i] = np.sum(a[np.argwhere(inds == i)])
-        bsum[i] = np.sum(b[np.argwhere(inds == i + 1)])
-        avalsum[i] = np.sum(
-            a[np.argwhere(inds == i)] * y[np.argwhere(inds == i)]
-        )
-        bvalsum[i] = np.sum(
-            b[np.argwhere(inds == i + 1)] * y[np.argwhere(inds == i + 1)]
-        )
-    weight = asum + bsum
-    weightVal = avalsum + bvalsum
+    # Accumulate the weights and the weighted values into the bins. Samples in
+    # bin `inds` contribute `a` to bin `inds` and `b` to bin `inds - 1`
+    n_edges = nbins + 1
+    weight = (
+        np.bincount(inds, weights=a, minlength=n_edges)[:nbins]
+        + np.bincount(inds, weights=b, minlength=n_edges)[1:n_edges]
+    )
+    weightVal = (
+        np.bincount(inds, weights=a * y, minlength=n_edges)[:nbins]
+        + np.bincount(inds, weights=b * y, minlength=n_edges)[1:n_edges]
+    )
 
-    # Assemble output
+    # Assemble output, leaving bins that received no sample as NaN
     x_cond = x_bin
-    y_cond = weightVal / (weight)
+    y_cond = np.full(nbins, np.nan)
+    np.divide(weightVal, weight, out=y_cond, where=weight > 0)
 
     return x_cond, y_cond
 
