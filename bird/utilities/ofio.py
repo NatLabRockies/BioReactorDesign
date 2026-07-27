@@ -1470,6 +1470,77 @@ def read_global_vars(
     return globalVars_dict
 
 
+def _mw_from_specie_dict(spec_dict: dict) -> float | None:
+    """
+    Molecular weight in kg/mol from a specie entry, None if unreadable
+
+    This is the only place where the molar weight of OpenFOAM dictionaries
+    (in g/mol) is converted to kg/mol.
+
+    Parameters
+    ----------
+    spec_dict: dict
+        Entry of a thermophysicalProperties dictionary for a single species
+
+    Returns
+    -------
+    mw: float | None
+        Molecular weight in kg/mol, or None if the entry has no molWeight
+    """
+    try:
+        mw_g_per_mol = float(spec_dict["specie"]["molWeight"])
+    except (KeyError, TypeError, ValueError):
+        return None
+
+    # HACK to make sure the right units are passed. OpenFOAM writes molWeight
+    # in g/mol, where every species is heavier than 1 (the lightest one, H2,
+    # is 2.016 g/mol). A value below 1 means the case already holds kg/mol,
+    # and the conversion below would then be applied a second time. Fail
+    # loudly rather than return a molecular weight wrong by a factor of 1000
+    assert (
+        mw_g_per_mol > 1.0
+    ), f"molWeight {mw_g_per_mol} is below 1, so it looks like kg/mol while g/mol is expected"
+
+    return mw_g_per_mol * 1e-3
+
+
+def _mw_from_thermo_file(
+    filename: str, species_names: list[str]
+) -> float | None:
+    """
+    Molecular weight in kg/mol read from a thermophysicalProperties file
+
+    Parameters
+    ----------
+    filename: str
+        Path to a thermophysicalProperties file
+    species_names: list[str]
+        Candidate spellings of the species name, tried in order
+
+    Returns
+    -------
+    mw: float | None
+        Molecular weight in kg/mol, or None if no candidate name was found
+    """
+    thermo = read_openfoam_dict(filename)
+
+    for name in species_names:
+        if name in thermo:
+            mw = _mw_from_specie_dict(thermo[name])
+            if mw is not None:
+                return mw
+
+    # Several species may share an entry, with a key such as "(mixture|water)"
+    for name in species_names:
+        for key in thermo:
+            if name in key:
+                mw = _mw_from_specie_dict(thermo[key])
+                if mw is not None:
+                    return mw
+
+    return None
+
+
 def species_name_to_mw(case_folder: str, species_name: str) -> float:
     r"""
     Get molecular weight in :math:`kg/mol` from the species name.
@@ -1518,76 +1589,36 @@ def species_name_to_mw(case_folder: str, species_name: str) -> float:
         ]
 
     mw = None
-    # Try finding the molecular weight from thermo liquid
-    if os.path.isfile(thermo_liq_filename):
-        thermo = read_openfoam_dict(thermo_liq_filename)
-        for name in species_names:
-            if name in thermo:
-                mw = float(thermo[name]["specie"]["molWeight"]) * 1e-3
-                break
-        # Handle situation of type ("species1|species2") for the key
-        if mw is None:
-            for name in species_names:
-                for key in thermo:
-                    if name in key:
-                        try:
-                            mw = (
-                                float(thermo[name]["specie"]["molWeight"])
-                                * 1e-3
-                            )
-                            break
-                        except:
-                            pass
+    # Try finding the molecular weight from the thermo files, liquid first
+    for phase, thermo_filename in (
+        ("liquid", thermo_liq_filename),
+        ("gas", thermo_gas_filename),
+    ):
+        if mw is not None or not os.path.isfile(thermo_filename):
+            continue
+        mw = _mw_from_thermo_file(thermo_filename, species_names)
         if mw is not None:
             logger.debug(
-                f"Read the {species_name} molecular weight ({mw}) from thermophysicalProperties.liquid"
+                f"Read the {species_name} molecular weight ({mw}) from thermophysicalProperties.{phase}"
             )
         else:
             logger.debug(
-                f"Could not read the {species_name} molecular weight from thermophysicalProperties.liquid"
+                f"Could not read the {species_name} molecular weight from thermophysicalProperties.{phase}"
             )
 
-    # Try finding the molecular weight from thermo gas
-    if mw is None and os.path.isfile(thermo_gas_filename):
-        thermo = read_openfoam_dict(thermo_gas_filename)
-        for name in species_names:
-            if name in thermo:
-                mw = float(thermo[name]["specie"]["molWeight"]) * 1e-3
-                break
-        # Handle situation of type ("species1|species2") for the key
-        if mw is None:
-            for name in species_names:
-                for key in thermo:
-                    if name in key:
-                        try:
-                            mw = (
-                                float(thermo[name]["specie"]["molWeight"])
-                                * 1e-3
-                            )
-                            break
-                        except:
-                            pass
-        if mw is not None:
-            logger.debug(
-                f"Read the {species_name} molecular weight ({mw}) from thermophysicalProperties.gas"
-            )
-        else:
-            logger.debug(
-                f"Could not read the {species_name} molecular weight from thermophysicalProperties.gas"
-            )
-
-    # Last resort: try finding the molecular weight from thermo gas
+    # Last resort: try finding the molecular weight from globalVars
     if mw is None and os.path.isfile(globalVars_filename):
         globalVars = read_global_vars(case_folder=case_folder, cross_ref=True)
         for name in species_names:
             if f"Mw_{name}" in globalVars:
                 mw = float(globalVars[f"Mw_{name}"])
                 break
-        if mw is not None:
-            mw = globalVars[f"Mw_{name}"]
-        else:
-            err_msg = f"Mw_{species_name} was not found in globalVars."
-            err_msg += "\nIf you add it, it should be [kg/mol]"
-            raise KeyError(err_msg)
+
+    if mw is None:
+        err_msg = f"Could not find the molecular weight of {species_name}"
+        err_msg += f" in case {case_folder}."
+        err_msg += f"\nIf you add Mw_{species_name} to globalVars,"
+        err_msg += " it should be [kg/mol]"
+        raise KeyError(err_msg)
 
     return mw

@@ -59,8 +59,11 @@ def run_lint(session: nox.Session) -> None:
         "black",
         "--line-length",
         "79",
+        # Target the OLDEST python supported in pyproject.toml, not the newest.
+        # This flag tells black which syntax it may emit, so targeting py314
+        # let it rewrite `except (A, B):` into py3.14-only `except A, B:`
         "--target-version",
-        "py314",
+        "py311",
         "--exclude",
         ".pixi",
         "--exclude",
