@@ -187,7 +187,7 @@ class Param_NN(keras.Model):
         gradient_threshold=None,
     ):
         if gradient_threshold is not None:
-            logger.info("clipping gradients at {gradient_threshold:.2g}")
+            logger.info(f"clipping gradients at {gradient_threshold:.2g}")
         # Make sure the control file for learning rate is consistent with main.py, at least at first
         self.prepareLog()
         bestLoss = None
