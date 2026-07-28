@@ -4,6 +4,7 @@ import tempfile
 from pathlib import Path
 
 import numpy as np
+import pytest
 from prettyPlot.plotting import plt, pretty_labels
 
 from bird.postprocess.post_quantities import (
@@ -177,16 +178,6 @@ def test_compute_superficial_gas_velocity():
     assert abs(sup_vel1 - sup_vel) < 1e-12
     assert abs(sup_vel2 - sup_vel) < 1e-12
 
-    # Do the calculation with paraview
-    sup_vel3, _ = compute_superficial_gas_velocity(
-        case_folder=case_folder,
-        time_folder=time_folder,
-        direction=1,
-        use_pv=True,
-    )
-    # Make sure different methods agree with less than 1% error
-    assert abs((sup_vel3 - sup_vel2) / sup_vel2) < 0.01
-
     # Make sure that we don't use paraview if not possible
     polyMesh_dir = os.path.join(case_folder, "constant", "polyMesh")
     shutil.move(os.path.join(polyMesh_dir, "faces"), ".")
@@ -199,6 +190,40 @@ def test_compute_superficial_gas_velocity():
     # Results need to be exactly the same
     assert abs(sup_vel4 - sup_vel) < 1e-12
     shutil.move("faces", polyMesh_dir)
+
+
+def test__superficial_velocity_pv():
+    """
+    Test the paraview branch of the superficial gas velocity
+
+    Skipped when the installed paraview cannot read the case (it needs a
+    complete polyMesh and the case path to end with a separator)
+    """
+    case_folder = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "postprocess",
+        "data_conditional_mean/",
+    )
+    sup_vel_np, _ = compute_superficial_gas_velocity(
+        case_folder=case_folder,
+        time_folder="79",
+        direction=1,
+        volume_time="1",
+    )
+    try:
+        sup_vel_pv, _ = compute_superficial_gas_velocity(
+            case_folder=case_folder,
+            time_folder="79",
+            direction=1,
+            use_pv=True,
+        )
+    except (AssertionError, ImportError):
+        pytest.skip("paraview cannot read the case in this environment")
+    # The paraview and numpy methods should agree to within 1%
+    assert abs((sup_vel_pv - sup_vel_np) / sup_vel_np) < 0.01
 
 
 def test_ave_y_liq():
