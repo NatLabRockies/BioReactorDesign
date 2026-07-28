@@ -1,4 +1,5 @@
 import os
+import typing
 
 import numpy as np
 
@@ -8,6 +9,21 @@ from bird.utilities.parser import parse_json, parse_yaml
 
 
 def assemble_geom(input_file, topo_file):
+    """
+    Assemble the block-cylindrical geometry from input and topology files
+
+    Parameters
+    ----------
+    input_file: str
+        Path to the geometry input file (.json or .yaml)
+    topo_file: str
+        Path to the topology file (.json or .yaml)
+
+    Returns
+    ----------
+    geom_dict: dict
+        Geometry: radii, lengths, wall blocks and boundary definitions
+    """
     if input_file.endswith(".yaml"):
         inpt_dict = parse_yaml(input_file)
     elif input_file.endswith(".json"):
@@ -47,6 +63,22 @@ def assemble_geom(input_file, topo_file):
 
 
 def assemble_mesh(input_file, geom_dict):
+    """
+    Assemble the mesh parameters (cell counts, gradings, corner points)
+
+    Parameters
+    ----------
+    input_file: str
+        Path to the geometry input file (.json or .yaml)
+    geom_dict: dict
+        Geometry assembled by assemble_geom
+
+    Returns
+    ----------
+    mesh_dict: dict
+        Mesh parameters: cell counts (NR, NS, NVert), gradings and corner
+        coordinates
+    """
     if input_file.endswith(".yaml"):
         inpt_dict = parse_yaml(input_file)
     elif input_file.endswith(".json"):
@@ -239,7 +271,39 @@ def assemble_mesh(input_file, geom_dict):
     }
 
 
+def write_indexed_var(fw: typing.TextIO, name: str, values: list) -> None:
+    """
+    Write a list of values as name-indexed blockMeshDict variables
+
+    For example name="R" and values=[a, b] writes "R1 a;" then "R2 b;"
+
+    Parameters
+    ----------
+    fw: typing.TextIO
+        Open blockMeshDict file to write to
+    name: str
+        Prefix of the variable name
+    values: list
+        Values written as name1, name2, ...
+    """
+    for counter, val in enumerate(values, start=1):
+        fw.write(name + str(counter) + " " + str(val) + ";\n")
+    fw.write("\n")
+
+
 def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
+    """
+    Write the blockMeshDict from the assembled geometry and mesh
+
+    Parameters
+    ----------
+    out_folder: str
+        Folder where blockMeshDict is written
+    geom_dict: dict
+        Geometry assembled by assemble_geom
+    mesh_dict: dict
+        Mesh parameters assembled by assemble_mesh
+    """
     outfile = os.path.join(out_folder, "blockMeshDict")
 
     R = geom_dict["R"]
@@ -283,23 +347,11 @@ def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
     fw.write("\n")
     # fw.write('convertToMeters 0.001;\n')
     # Write all radii
-    counter = 1
-    for rval in R:
-        fw.write("R" + str(counter) + " " + str(rval) + ";\n")
-        counter = counter + 1
-    fw.write("\n")
+    write_indexed_var(fw, "R", R)
     # Write all minus radii
-    counter = 1
-    for rval in R:
-        fw.write("mR" + str(counter) + " " + str(-rval) + ";\n")
-        counter = counter + 1
-    fw.write("\n")
+    write_indexed_var(fw, "mR", [-rval for rval in R])
     # Write all Length
-    counter = 1
-    for lval in L:
-        fw.write("L" + str(counter) + " " + str(lval) + ";\n")
-        counter = counter + 1
-    fw.write("\n")
+    write_indexed_var(fw, "L", L)
     # Write all C
     counter = 1
     for rval in R:
@@ -313,23 +365,9 @@ def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
         counter = counter + 1
 
     # Write all Ngrid
-    counter = 1
-    for nR in NR:
-        fw.write("NR" + str(counter) + " " + str(NR[counter - 1]) + ";\n")
-        counter = counter + 1
-    fw.write("\n")
-    counter = 1
-    for nS in NS:
-        fw.write("NS" + str(counter) + " " + str(NS[counter - 1]) + ";\n")
-        counter = counter + 1
-    fw.write("\n")
-    counter = 1
-    for nVert in NVert:
-        fw.write(
-            "NVert" + str(counter) + " " + str(NVert[counter - 1]) + ";\n"
-        )
-        counter = counter + 1
-    fw.write("\n")
+    write_indexed_var(fw, "NR", NR)
+    write_indexed_var(fw, "NS", NS)
+    write_indexed_var(fw, "NVert", NVert)
 
     # ~~~~ Write vertices
     fw.write("vertices\n")
