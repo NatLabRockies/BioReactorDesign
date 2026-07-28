@@ -61,6 +61,6 @@ To run the regression tests
 
 Demonstrating and documenting your contribution
 ------------
-We prefer the use of docstrings and type hinting. A good example to follow are functions in ``bird/utilities/ofio.py``.
+We prefer the use of docstrings and type hinting. A good example to follow are functions in ``bird/utilities/ofio/``.
  
 If you add a new capability, please make sure to add relevant unit tests in the ``tests/`` folder. A good example to follow are tests ``tests/io``.
