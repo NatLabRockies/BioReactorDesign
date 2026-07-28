@@ -3,6 +3,7 @@ import os
 
 import numpy as np
 
+from bird.meshing._mesh_tools import write_this_block
 from bird.meshing._stirred_tank_reactor import StirredTankReactor
 
 
@@ -201,20 +202,6 @@ def write_edges(outfile, react):
                 )
 
     outfile.write(");\n")
-
-
-def write_this_block(outfile, comment, ids, mesh, zonename="none"):
-    outfile.write("\n //" + comment + "\n")
-    outfile.write("hex (")
-    for i in range(len(ids)):
-        outfile.write(str(ids[i]) + " ")
-    outfile.write(")\n")
-
-    if zonename != "none":
-        outfile.write(zonename + "\n")
-
-    outfile.write("( %d %d %d )\n" % (mesh[0], mesh[1], mesh[2]))
-    outfile.write("SimpleGrading (1 1 1)\n")
 
 
 def write_blocks(outfile, react):

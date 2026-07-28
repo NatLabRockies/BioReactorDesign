@@ -1,3 +1,5 @@
+import typing
+
 import numpy as np
 
 from bird import logger
@@ -372,3 +374,39 @@ def radialCoarsening(
     #        logger.warning("\tIncrease NS in input file to avoid this warning")
 
     return NR, gradR, minCell, maxCell
+
+
+def write_this_block(
+    outfile: typing.TextIO,
+    comment: str,
+    ids: np.ndarray,
+    mesh: np.ndarray,
+    zonename: str = "none",
+) -> None:
+    """
+    Write a single hex block entry to a blockMeshDict
+
+    Parameters
+    ----------
+    outfile: typing.TextIO
+        Open blockMeshDict file to write to
+    comment: str
+        Comment labelling the block in the output
+    ids: np.ndarray
+        The 8 vertex indices of the hex block
+    mesh: np.ndarray
+        Number of cells along each of the 3 block directions
+    zonename: str
+        Cell zone the block belongs to, or "none" for no zone
+    """
+    outfile.write("\n //" + comment + "\n")
+    outfile.write("hex (")
+    for i in range(len(ids)):
+        outfile.write(str(ids[i]) + " ")
+    outfile.write(")\n")
+
+    if zonename != "none":
+        outfile.write(zonename + "\n")
+
+    outfile.write("( %d %d %d )\n" % (mesh[0], mesh[1], mesh[2]))
+    outfile.write("SimpleGrading (1 1 1)\n")
