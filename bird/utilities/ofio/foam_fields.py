@@ -185,8 +185,8 @@ def read_bubble_diameter(
 
     Returns
     ----------
-    cell_volumes : np.ndarray | float
-        Field of cell volumes
+    d_gas : np.ndarray | float
+        Field of bubble diameters
     field_dict : dict
         Dictionary of fields read
     """

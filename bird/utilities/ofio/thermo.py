@@ -103,8 +103,8 @@ def read_mu_liquid(
 
     Returns
     ----------
-    cell_volumes : np.ndarray | float
-        Field of cell volumes
+    mu_liq : np.ndarray | float
+        Field of liquid viscosity
     field_dict : dict
         Dictionary of fields read
     """
