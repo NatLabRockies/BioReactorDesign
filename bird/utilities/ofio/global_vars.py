@@ -76,7 +76,16 @@ def _cross_reference_global_vars(
 
                 expr, degToRad = _cross_reference_math(expr)
                 try:
-                    result = eval(expr, {"math": math, "degToRad": degToRad})
+                    # The builtins key allow to not replace anything else
+                    # than the math
+                    result = eval(
+                        expr,
+                        {
+                            "__builtins__": {},
+                            "math": math,
+                            "degToRad": degToRad,
+                        },
+                    )
                     result = float(result)
                     # Convert to int if whole number
                     # if result.is_integer():
@@ -98,7 +107,16 @@ def _cross_reference_global_vars(
                     # Substitute the variable
                     expr = var_pattern.sub(repl_direct, value)
                     expr, degToRad = _cross_reference_math(expr)
-                    result = eval(expr, {"math": math, "degToRad": degToRad})
+                    # The builtins key allow to not replace anything else
+                    # than the math
+                    result = eval(
+                        expr,
+                        {
+                            "__builtins__": {},
+                            "math": math,
+                            "degToRad": degToRad,
+                        },
+                    )
                     # Convert to int if whole number
                     result = float(result)
                     # if result.is_integer():
