@@ -20,6 +20,7 @@ from .foam_fields import (
     read_cell_centers,
     read_cell_volumes,
     read_size_groups,
+    read_surface_field_value,
 )
 from .global_vars import (
     read_global_vars,
@@ -41,6 +42,7 @@ __all__ = [
     "read_mu_liquid",
     "read_openfoam_dict",
     "read_size_groups",
+    "read_surface_field_value",
     "species_name_to_mw",
     "write_openfoam_dict",
 ]

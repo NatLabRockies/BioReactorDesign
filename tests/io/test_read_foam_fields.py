@@ -1,5 +1,6 @@
 import os
 import shutil
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -12,6 +13,7 @@ from bird.utilities.ofio import (
     _readOFVec,
     read_bubble_diameter,
     read_mu_liquid,
+    read_surface_field_value,
 )
 
 
@@ -247,3 +249,37 @@ def test_read_mu_liquid():
         os.path.join(case_folder, "thermo:mu.liquid_tmp"),
         os.path.join(case_folder, "80", "thermo:mu.liquid"),
     )
+
+
+def test_read_surface_field_value():
+    """
+    Test for reading a surfaceFieldValue.dat file
+    """
+    header_4 = (
+        "# Region type : patch inlet\n"
+        "# Faces : 100\n"
+        "# Area : 0.05\n"
+        "# Time            areaIntegrate(alpha.gas)\n"
+    )
+    data = "0               0.0123\n1               0.0456\n"
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        # Returns the last column of the first data row
+        path = os.path.join(tmpdirname, "surfaceFieldValue.dat")
+        with open(path, "w") as f:
+            f.write(header_4 + data)
+        assert abs(read_surface_field_value(path) - 0.0123) < 1e-12
+
+        # Robust to a different number of comment lines and to blank lines,
+        # unlike a hardcoded line index
+        path_6 = os.path.join(tmpdirname, "surfaceFieldValue_6.dat")
+        with open(path_6, "w") as f:
+            f.write("# a\n# b\n# c\n# d\n\n# e\n# f\n" + data)
+        assert abs(read_surface_field_value(path_6) - 0.0123) < 1e-12
+
+        # No data rows raises
+        path_empty = os.path.join(tmpdirname, "surfaceFieldValue_empty.dat")
+        with open(path_empty, "w") as f:
+            f.write(header_4)
+        with pytest.raises(ValueError):
+            read_surface_field_value(path_empty)

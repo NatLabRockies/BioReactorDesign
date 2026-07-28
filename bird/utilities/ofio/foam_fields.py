@@ -323,3 +323,29 @@ def read_size_groups(case_folder: str) -> dict:
         }
 
     return ndf_groups
+
+
+def read_surface_field_value(filename: str) -> float:
+    """
+    Read the first data row of an OpenFOAM surfaceFieldValue output file
+
+    The leading '#' comment lines are skipped rather than assuming a fixed
+    header length, so the parse stays correct when the number of comment lines
+    changes across OpenFOAM versions.
+
+    Parameters
+    ----------
+    filename: str
+        Path to the surfaceFieldValue.dat file
+
+    Returns
+    ----------
+    value: float
+        Last column of the first data row
+    """
+    with open(filename, "r") as f:
+        for line in f:
+            if line.strip().startswith("#") or not line.strip():
+                continue
+            return float(line.split()[-1])
+    raise ValueError(f"No data rows found in {filename}")
