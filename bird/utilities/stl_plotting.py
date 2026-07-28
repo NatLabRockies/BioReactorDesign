@@ -1,7 +1,7 @@
 import matplotlib
 import numpy as np
 from mpl_toolkits import mplot3d
-from prettyPlot.plotting import plt, pretty_labels, pretty_legend
+from prettyPlot.plotting import plt
 from stl import mesh
 
 

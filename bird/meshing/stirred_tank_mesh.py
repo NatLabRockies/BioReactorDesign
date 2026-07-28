@@ -1,6 +1,4 @@
 # from reactor_geom_data import *
-import os
-
 import numpy as np
 
 from bird.meshing._mesh_tools import write_this_block

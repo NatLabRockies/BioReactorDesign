@@ -1,6 +1,3 @@
-import os
-from pathlib import Path
-
 import numpy as np
 
 from bird.utilities.parser import parse_yaml

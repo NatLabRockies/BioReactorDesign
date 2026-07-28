@@ -1,9 +1,6 @@
 import os
-import re
-from collections import defaultdict
 
 import numpy as np
-from ruamel.yaml import YAML
 
 from bird import BIRD_CONST_DIR, logger
 from bird.utilities.ofio import (
