@@ -8,7 +8,6 @@ Subpackages
    :maxdepth: 1
 
    .. comment API for now
-      bird.calibration
       bird.meshing
       bird.preprocess
    
