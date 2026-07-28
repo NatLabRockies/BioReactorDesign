@@ -5,7 +5,7 @@ def write_preamble(output_folder):
     with open(os.path.join(output_folder, "fvModels"), "w+") as f:
         f.write("FoamFile\n")
         f.write("{\n")
-        f.write("\tversion  9.0;\n")
+        f.write("\tversion  2.0;\n")
         f.write("\tformat   ascii;\n")
         f.write("\tclass    dictionary;\n")
         f.write('\tlocation "constant";\n')
