@@ -141,6 +141,17 @@ def verticalCoarsening(
     if gradVert is None:
         gradVert = [1.0 for _ in range(len(NVert))]
 
+    # There is one coarsening ratio per vertical block, so more ratios than
+    # blocks is a malformed input (indexing NVert below would go out of range)
+    if len(ratio_properties) > len(NVert):
+        error_msg = (
+            f"Got {len(ratio_properties)} verticalCoarsening entries but "
+            f"only {len(NVert)} vertical blocks; there cannot be more "
+            f"coarsening entries than blocks"
+        )
+        logger.error(error_msg)
+        raise ValueError(error_msg)
+
     ratio_list = [entry["ratio"] for entry in ratio_properties]
     ratio_dir = []
     ratio_dir_ref = []
@@ -255,6 +266,17 @@ def radialCoarsening(
 ):
     if gradR is None:
         gradR = [1.0 for _ in range(len(NR))]
+
+    # There is one coarsening ratio per radial block, so more ratios than
+    # blocks is a malformed input (indexing NR below would go out of range)
+    if len(ratio_properties) > len(NR):
+        error_msg = (
+            f"Got {len(ratio_properties)} radialCoarsening entries but "
+            f"only {len(NR)} radial blocks; there cannot be more "
+            f"coarsening entries than blocks"
+        )
+        logger.error(error_msg)
+        raise ValueError(error_msg)
 
     ratio_list = [entry["ratio"] for entry in ratio_properties]
     ratio_dir = []
