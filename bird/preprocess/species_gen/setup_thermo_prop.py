@@ -207,43 +207,17 @@ def update_gas_thermo_prop(
         thermo_keys = []
         thermo_keys_cp_coeff = []
         target_thermo_dict = {}
-        if "Tlow" in species_prop[spec_name]["gas"]["thermodynamics"]:
-            target_thermo_dict["Tlow"] = str(
-                species_prop[spec_name]["gas"]["thermodynamics"]["Tlow"]
-            )
-            thermo_keys.append("Tlow")
-        if "Thigh" in species_prop[spec_name]["gas"]["thermodynamics"]:
-            target_thermo_dict["Thigh"] = str(
-                species_prop[spec_name]["gas"]["thermodynamics"]["Thigh"]
-            )
-            thermo_keys.append("Thigh")
-        if "Tcommon" in species_prop[spec_name]["gas"]["thermodynamics"]:
-            target_thermo_dict["Tcommon"] = str(
-                species_prop[spec_name]["gas"]["thermodynamics"]["Tcommon"]
-            )
-            thermo_keys.append("Tcommon")
-        if "highCpCoeffs" in species_prop[spec_name]["gas"]["thermodynamics"]:
-            target_thermo_dict["highCpCoeffs"] = (
-                "( "
-                + str(
-                    species_prop[spec_name]["gas"]["thermodynamics"][
-                        "highCpCoeffs"
-                    ]
+        thermodynamics = species_prop[spec_name]["gas"]["thermodynamics"]
+        for key in ["Tlow", "Thigh", "Tcommon"]:
+            if key in thermodynamics:
+                target_thermo_dict[key] = str(thermodynamics[key])
+                thermo_keys.append(key)
+        for key in ["highCpCoeffs", "lowCpCoeffs"]:
+            if key in thermodynamics:
+                target_thermo_dict[key] = (
+                    "( " + str(thermodynamics[key]) + " )"
                 )
-                + " )"
-            )
-            thermo_keys_cp_coeff.append("highCpCoeffs")
-        if "lowCpCoeffs" in species_prop[spec_name]["gas"]["thermodynamics"]:
-            target_thermo_dict["lowCpCoeffs"] = (
-                "( "
-                + str(
-                    species_prop[spec_name]["gas"]["thermodynamics"][
-                        "lowCpCoeffs"
-                    ]
-                )
-                + " )"
-            )
-            thermo_keys_cp_coeff.append("lowCpCoeffs")
+                thermo_keys_cp_coeff.append(key)
 
         if not "thermodynamics" in spec_dict:
             spec_dict["thermodynamics"] = target_thermo_dict
@@ -279,16 +253,11 @@ def update_gas_thermo_prop(
         # Transport coeff
         transport_keys = []
         target_transport_dict = {}
-        if "As" in species_prop[spec_name]["gas"]["transport"]:
-            target_transport_dict["As"] = str(
-                species_prop[spec_name]["gas"]["transport"]["As"]
-            )
-            transport_keys.append("As")
-        if "Ts" in species_prop[spec_name]["gas"]["transport"]:
-            target_transport_dict["Ts"] = str(
-                species_prop[spec_name]["gas"]["transport"]["Ts"]
-            )
-            transport_keys.append("Ts")
+        transport = species_prop[spec_name]["gas"]["transport"]
+        for key in ["As", "Ts"]:
+            if key in transport:
+                target_transport_dict[key] = str(transport[key])
+                transport_keys.append(key)
         if not "transport" in spec_dict:
             spec_dict["transport"] = target_transport_dict
         else:
