@@ -6,7 +6,6 @@
                                        {"ratio": 1.0, "direction": "+", "directionRef": "-"}
                                      ],
                 "radialCoarsening":  [
-                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
                                        {"ratio": 1.0, "direction": "+", "directionRef": "-"}
                                      ]
 	},

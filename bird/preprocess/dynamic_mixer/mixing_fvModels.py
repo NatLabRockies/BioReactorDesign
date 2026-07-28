@@ -1,9 +1,6 @@
-import numpy as np
-
 from bird.meshing.block_rect_mesh import from_block_rect_to_seg
 from bird.preprocess.dynamic_mixer.io_fvModels import *
 from bird.preprocess.dynamic_mixer.mixer import Mixer
-from bird.utilities.parser import parse_json
 
 
 def check_input(input_dict):

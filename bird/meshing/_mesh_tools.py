@@ -1,3 +1,5 @@
+import typing
+
 import numpy as np
 
 from bird import logger
@@ -139,6 +141,17 @@ def verticalCoarsening(
     if gradVert is None:
         gradVert = [1.0 for _ in range(len(NVert))]
 
+    # There is one coarsening ratio per vertical block, so more ratios than
+    # blocks is a malformed input (indexing NVert below would go out of range)
+    if len(ratio_properties) > len(NVert):
+        error_msg = (
+            f"Got {len(ratio_properties)} verticalCoarsening entries but "
+            f"only {len(NVert)} vertical blocks; there cannot be more "
+            f"coarsening entries than blocks"
+        )
+        logger.error(error_msg)
+        raise ValueError(error_msg)
+
     ratio_list = [entry["ratio"] for entry in ratio_properties]
     ratio_dir = []
     ratio_dir_ref = []
@@ -253,6 +266,17 @@ def radialCoarsening(
 ):
     if gradR is None:
         gradR = [1.0 for _ in range(len(NR))]
+
+    # There is one coarsening ratio per radial block, so more ratios than
+    # blocks is a malformed input (indexing NR below would go out of range)
+    if len(ratio_properties) > len(NR):
+        error_msg = (
+            f"Got {len(ratio_properties)} radialCoarsening entries but "
+            f"only {len(NR)} radial blocks; there cannot be more "
+            f"coarsening entries than blocks"
+        )
+        logger.error(error_msg)
+        raise ValueError(error_msg)
 
     ratio_list = [entry["ratio"] for entry in ratio_properties]
     ratio_dir = []
@@ -372,3 +396,39 @@ def radialCoarsening(
     #        logger.warning("\tIncrease NS in input file to avoid this warning")
 
     return NR, gradR, minCell, maxCell
+
+
+def write_this_block(
+    outfile: typing.TextIO,
+    comment: str,
+    ids: np.ndarray,
+    mesh: np.ndarray,
+    zonename: str = "none",
+) -> None:
+    """
+    Write a single hex block entry to a blockMeshDict
+
+    Parameters
+    ----------
+    outfile: typing.TextIO
+        Open blockMeshDict file to write to
+    comment: str
+        Comment labelling the block in the output
+    ids: np.ndarray
+        The 8 vertex indices of the hex block
+    mesh: np.ndarray
+        Number of cells along each of the 3 block directions
+    zonename: str
+        Cell zone the block belongs to, or "none" for no zone
+    """
+    outfile.write("\n //" + comment + "\n")
+    outfile.write("hex (")
+    for i in range(len(ids)):
+        outfile.write(str(ids[i]) + " ")
+    outfile.write(")\n")
+
+    if zonename != "none":
+        outfile.write(zonename + "\n")
+
+    outfile.write("( %d %d %d )\n" % (mesh[0], mesh[1], mesh[2]))
+    outfile.write("SimpleGrading (1 1 1)\n")

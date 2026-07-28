@@ -7,7 +7,6 @@
                                        {"ratio": 1.0, "direction": "+", "directionRef": "-"},
                                        {"ratio": 0.25, "direction": "+", "directionRef": "-"},
                                        {"ratio": 1.0, "direction": "+", "directionRef": "-"},
-                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
                                        {"ratio": 1.0, "direction": "-", "directionRef": "+"},
                                        {"ratio": 0.25, "direction": "-", "directionRef": "+"}
                                      ],

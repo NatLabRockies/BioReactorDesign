@@ -7,7 +7,7 @@ def scale_par(inp, min_, max_):
 
 
 def scale_y(inp, mean_, scale_):
-    return (inp - mean_) / (max_ - min_)
+    return (inp - mean_) / scale_
 
 
 def unscale_x(inp, min_, max_):

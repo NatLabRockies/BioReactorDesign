@@ -27,9 +27,7 @@ def readInletArea():
         "0",
         "surfaceFieldValue.dat",
     )
-    with open(filename, "r+") as f:
-        lines = f.readlines()
-    return float(lines[4].split()[-1])
+    return read_surface_field_value(filename)
 
 
 def getLiqVol():
