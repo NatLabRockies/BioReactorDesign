@@ -431,15 +431,21 @@ def write_mixer_ball(
         f.write(f"\t\t\t\t\tif (d2 <= Rmix*Rmix && {push_ax}*{dn} < 0.0)\n")
         f.write("\t\t\t\t\t{\n")
         f.write("\t\t\t\t\t\tconst double w = V[i]*alphaL[i];\n")
-        f.write(f"\t\t\t\t\t\tsV += w; sVU += w*UL[i][{nd}]; sVrho += w*rhoL[i];\n")
+        f.write(
+            f"\t\t\t\t\t\tsV += w; sVU += w*UL[i][{nd}]; sVrho += w*rhoL[i];\n"
+        )
         f.write("\t\t\t\t\t}\n")
         f.write("\t\t\t\t}\n")
         f.write("\t\t\t\treduce(sV, sumOp<scalar>());\n")
         f.write("\t\t\t\treduce(sVU, sumOp<scalar>());\n")
         f.write("\t\t\t\treduce(sVrho, sumOp<scalar>());\n")
-        f.write(f"\t\t\t\tdouble V1 = (sV>1e-30) ? {push_ax}*(sVU/sV) : 0.0;\n")
+        f.write(
+            f"\t\t\t\tdouble V1 = (sV>1e-30) ? {push_ax}*(sVU/sV) : 0.0;\n"
+        )
         f.write("\t\t\t\tif (V1 < 0.0) V1 = 0.0;\n")
-        f.write("\t\t\t\tconst double rhoM = (sV>1e-30) ? sVrho/sV : 1000.0;\n")
+        f.write(
+            "\t\t\t\tconst double rhoM = (sV>1e-30) ? sVrho/sV : 1000.0;\n"
+        )
         # --- Newton solve for V2 ---
         f.write(f"\t\t\t\tconst double rhs = {rhs};\n")
         f.write(
@@ -481,7 +487,9 @@ def write_mixer_ball(
         f.write("\t\t\t\t\t\tconst double g = std::exp(-d2/(epsi*epsi));\n")
         f.write("\t\t\t\t\t\tSax += alphaL[i]*g*V[i];\n")
         if swirl:
-            f.write(f"\t\t\t\t\t\tconst double rr = std::sqrt(d2-({dn})*({dn}));\n")
+            f.write(
+                f"\t\t\t\t\t\tconst double rr = std::sqrt(d2-({dn})*({dn}));\n"
+            )
             f.write("\t\t\t\t\t\tSth += alphaL[i]*g*rr*V[i];\n")
         f.write("\t\t\t\t\t}\n")
         f.write("\t\t\t\t}\n")
@@ -507,7 +515,9 @@ def write_mixer_ball(
         f.write(f"\t\t\t\t\t\t\tUsource[i][{nd}] += {push_ax}*fax*V[i];\n")
         f.write("\t\t\t\t\t\t}\n")
         if swirl:
-            f.write(f"\t\t\t\t\t\tconst double rr = std::sqrt(d2-({dn})*({dn}));\n")
+            f.write(
+                f"\t\t\t\t\t\tconst double rr = std::sqrt(d2-({dn})*({dn}));\n"
+            )
             f.write("\t\t\t\t\t\tif (rr > 1e-3*Rmix && Sth > 1e-30)\n")
             f.write("\t\t\t\t\t\t{\n")
             f.write("\t\t\t\t\t\t\tconst double fth = Qsw/Sth*alphaL[i]*g;\n")
