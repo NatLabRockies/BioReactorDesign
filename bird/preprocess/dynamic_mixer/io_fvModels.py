@@ -326,6 +326,204 @@ def write_mixer_force_sign(mixer, output_folder):
         f.write("\t\t}\n")
 
 
+def write_preamble_ball(output_folder):
+    """Write the FoamFile header + codedSource preamble for the ``ball`` source.
+
+    The Newton solve is inlined in each mixer block (see ``write_mixer_ball``),
+    so no external ``dynamicMix_util.H`` is needed.
+    """
+    with open(os.path.join(output_folder, "fvModels"), "w+") as f:
+        f.write("FoamFile\n")
+        f.write("{\n")
+        f.write("\tversion  2.0;\n")
+        f.write("\tformat   ascii;\n")
+        f.write("\tclass    dictionary;\n")
+        f.write('\tlocation "constant";\n')
+        f.write("\tobject   fvModels;\n")
+        f.write("}\n\n")
+        f.write("codedSource\n")
+        f.write("{\n")
+        f.write("\ttype\tcoded;\n")
+        f.write("\tselectionMode\tall;\n")
+        f.write("\tfield\tU.liquid;\n")
+        f.write("\tname\tsourceTime;\n\n")
+        f.write("\tcodeInclude\n")
+        f.write("\t#{\n")
+        f.write("\t\t#include <cmath>\n")
+        f.write("\t\t#include <algorithm>\n")
+        f.write("\t#};\n\n")
+        f.write("\tcodeAddAlphaRhoSup\n")
+        f.write("\t#{\n")
+        f.write("\t\tconst Time& time = mesh().time();\n")
+        f.write("\t\tconst scalarField& V = mesh().V();\n")
+        f.write("\t\tvectorField& Usource = eqn.source();\n")
+        f.write("\t\tconst vectorField& C = mesh().C();\n")
+        f.write("\t\tconst volScalarField& rhoL =\n")
+        f.write(
+            '\t\t\tmesh().lookupObject<volScalarField>("thermo:rho.liquid");\n'
+        )
+        f.write("\t\tconst volScalarField& alphaL =\n")
+        f.write('\t\t\tmesh().lookupObject<volScalarField>("alpha.liquid");\n')
+        f.write("\t\tconst volVectorField& UL =\n")
+        f.write('\t\t\tmesh().lookupObject<volVectorField>("U.liquid");\n')
+        f.write("\t\tconst double pi = 3.14159265358979;\n")
+
+
+def write_mixer_ball(
+    mixer, output_folder, power_mode="from_Np_Vtip", momentum_mode="axial"
+):
+    """Append one ``ball`` mixer block to ``fvModels``.
+
+    :param mixer: a ready :class:`~bird.preprocess.dynamic_mixer.mixer.ActuatorMixer`.
+    :param power_mode: ``"from_P"`` (drive by ``mixer.power``) or
+        ``"from_Np_Vtip"`` (drive by ``mixer.Np`` and ``mixer.Vtip``).
+    :param momentum_mode: ``"axial"`` (thrust only) or ``"axial_and_swirl"``
+        (thrust + tangential source using ``mixer.sigma``).
+    """
+    if power_mode not in ("from_P", "from_Np_Vtip"):
+        raise ValueError(f"unknown power_mode {power_mode!r}")
+    if momentum_mode not in ("axial", "axial_and_swirl"):
+        raise ValueError(f"unknown momentum_mode {momentum_mode!r}")
+    if power_mode == "from_P" and mixer.power is None:
+        raise ValueError("power_mode 'from_P' requires 'power' in the mixer")
+
+    nd = int(mixer.normal_dir)
+    dn = ["dx", "dy", "dz"][nd]
+    # theta_hat = n_hat x r_hat, per axis: (component index, numerator expr)
+    tan = {
+        0: [(1, "-dz"), (2, "dy")],
+        1: [(0, "dz"), (2, "-dx")],
+        2: [(0, "-dy"), (1, "dx")],
+    }[nd]
+    push_ax = "1.0" if mixer.sign == "+" else "-1.0"
+    push_th = "1.0" if mixer.swirl_sign == "+" else "-1.0"
+    swirl = momentum_mode == "axial_and_swirl"
+
+    if power_mode == "from_P":
+        rhs = f"4.0*{mixer.power}/(rhoM*area)"
+    else:
+        rhs = f"16.0*{mixer.Np}*Vtip*Vtip*Vtip/pow(pi,4.0)"
+    swirl_F = f" + {mixer.sigma}*(V1+V2)*Vtip*Vtip" if swirl else ""
+    swirl_dF = f" + {mixer.sigma}*Vtip*Vtip" if swirl else ""
+
+    with open(os.path.join(output_folder, "fvModels"), "a+") as f:
+        f.write("\t\t// ===== ball mixer =====\n")
+        f.write("\t\t{\n")
+        f.write(f"\t\t\tconst double Rmix = {mixer.R};\n")
+        f.write("\t\t\tconst double area = pi*Rmix*Rmix;\n")
+        f.write(f"\t\t\tconst double Vtip = {mixer.Vtip};\n")
+        if swirl:
+            f.write(f"\t\t\tconst double sigma = {mixer.sigma};\n")
+        f.write(f"\t\t\tconst double startT = {mixer.start_time};\n")
+        f.write(
+            f"\t\t\tconst double px = {mixer.x}, py = {mixer.y}, pz = {mixer.z};\n"
+        )
+        f.write("\t\t\tif (time.value() > startT)\n")
+        f.write("\t\t\t{\n")
+        # --- sense V1 and rho over the upstream half-ball ---
+        f.write("\t\t\t\tscalar sV = 0.0, sVU = 0.0, sVrho = 0.0;\n")
+        f.write("\t\t\t\tforAll(C, i)\n")
+        f.write("\t\t\t\t{\n")
+        f.write(
+            "\t\t\t\t\tconst double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;\n"
+        )
+        f.write("\t\t\t\t\tconst double d2 = dx*dx + dy*dy + dz*dz;\n")
+        f.write(f"\t\t\t\t\tif (d2 <= Rmix*Rmix && {push_ax}*{dn} < 0.0)\n")
+        f.write("\t\t\t\t\t{\n")
+        f.write("\t\t\t\t\t\tconst double w = V[i]*alphaL[i];\n")
+        f.write(f"\t\t\t\t\t\tsV += w; sVU += w*UL[i][{nd}]; sVrho += w*rhoL[i];\n")
+        f.write("\t\t\t\t\t}\n")
+        f.write("\t\t\t\t}\n")
+        f.write("\t\t\t\treduce(sV, sumOp<scalar>());\n")
+        f.write("\t\t\t\treduce(sVU, sumOp<scalar>());\n")
+        f.write("\t\t\t\treduce(sVrho, sumOp<scalar>());\n")
+        f.write(f"\t\t\t\tdouble V1 = (sV>1e-30) ? {push_ax}*(sVU/sV) : 0.0;\n")
+        f.write("\t\t\t\tif (V1 < 0.0) V1 = 0.0;\n")
+        f.write("\t\t\t\tconst double rhoM = (sV>1e-30) ? sVrho/sV : 1000.0;\n")
+        # --- Newton solve for V2 ---
+        f.write(f"\t\t\t\tconst double rhs = {rhs};\n")
+        f.write(
+            "\t\t\t\tdouble V2 = (V1>1e-6) ? 2.0*V1 : std::cbrt(std::abs(rhs));\n"
+        )
+        f.write("\t\t\t\tfor (int it = 0; it < 100; ++it)\n")
+        f.write("\t\t\t\t{\n")
+        f.write(
+            f"\t\t\t\t\tconst double F = (V2-V1)*(V2+V1)*(V2+V1){swirl_F} - rhs;\n"
+        )
+        f.write(
+            f"\t\t\t\t\tconst double dF = 3.0*V2*V2 + 2.0*V1*V2 - V1*V1{swirl_dF};\n"
+        )
+        f.write("\t\t\t\t\tconst double dV = F/dF;\n")
+        f.write("\t\t\t\t\tV2 -= dV;\n")
+        f.write("\t\t\t\t\tif (std::abs(dV) < 1e-10) break;\n")
+        f.write("\t\t\t\t}\n")
+        f.write("\t\t\t\tconst double Tax = 0.5*rhoM*area*(V2*V2 - V1*V1);\n")
+        if swirl:
+            f.write(
+                "\t\t\t\tconst double Qsw = 0.25*rhoM*(V1+V2)*sigma*Rmix*area*Vtip;\n"
+            )
+        # --- pass 1: normalisation sums over the ball ---
+        if swirl:
+            f.write("\t\t\t\tscalar Sax = 0.0, Sth = 0.0;\n")
+        else:
+            f.write("\t\t\t\tscalar Sax = 0.0;\n")
+        f.write("\t\t\t\tforAll(C, i)\n")
+        f.write("\t\t\t\t{\n")
+        f.write(
+            "\t\t\t\t\tconst double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;\n"
+        )
+        f.write("\t\t\t\t\tconst double d2 = dx*dx + dy*dy + dz*dz;\n")
+        f.write("\t\t\t\t\tif (d2 <= Rmix*Rmix)\n")
+        f.write("\t\t\t\t\t{\n")
+        f.write(
+            "\t\t\t\t\t\tconst double epsi = std::max(0.6123724356957945*Rmix, 2.0*std::cbrt(V[i]));\n"
+        )
+        f.write("\t\t\t\t\t\tconst double g = std::exp(-d2/(epsi*epsi));\n")
+        f.write("\t\t\t\t\t\tSax += alphaL[i]*g*V[i];\n")
+        if swirl:
+            f.write(f"\t\t\t\t\t\tconst double rr = std::sqrt(d2-({dn})*({dn}));\n")
+            f.write("\t\t\t\t\t\tSth += alphaL[i]*g*rr*V[i];\n")
+        f.write("\t\t\t\t\t}\n")
+        f.write("\t\t\t\t}\n")
+        f.write("\t\t\t\treduce(Sax, sumOp<scalar>());\n")
+        if swirl:
+            f.write("\t\t\t\treduce(Sth, sumOp<scalar>());\n")
+        # --- pass 2: apply ---
+        f.write("\t\t\t\tforAll(C, i)\n")
+        f.write("\t\t\t\t{\n")
+        f.write(
+            "\t\t\t\t\tconst double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;\n"
+        )
+        f.write("\t\t\t\t\tconst double d2 = dx*dx + dy*dy + dz*dz;\n")
+        f.write("\t\t\t\t\tif (d2 <= Rmix*Rmix)\n")
+        f.write("\t\t\t\t\t{\n")
+        f.write(
+            "\t\t\t\t\t\tconst double epsi = std::max(0.6123724356957945*Rmix, 2.0*std::cbrt(V[i]));\n"
+        )
+        f.write("\t\t\t\t\t\tconst double g = std::exp(-d2/(epsi*epsi));\n")
+        f.write("\t\t\t\t\t\tif (Sax > 1e-30)\n")
+        f.write("\t\t\t\t\t\t{\n")
+        f.write("\t\t\t\t\t\t\tconst double fax = Tax/Sax*alphaL[i]*g;\n")
+        f.write(f"\t\t\t\t\t\t\tUsource[i][{nd}] += {push_ax}*fax*V[i];\n")
+        f.write("\t\t\t\t\t\t}\n")
+        if swirl:
+            f.write(f"\t\t\t\t\t\tconst double rr = std::sqrt(d2-({dn})*({dn}));\n")
+            f.write("\t\t\t\t\t\tif (rr > 1e-3*Rmix && Sth > 1e-30)\n")
+            f.write("\t\t\t\t\t\t{\n")
+            f.write("\t\t\t\t\t\t\tconst double fth = Qsw/Sth*alphaL[i]*g;\n")
+            f.write(
+                f"\t\t\t\t\t\t\tUsource[i][{tan[0][0]}] += {push_th}*fth*V[i]*(({tan[0][1]})/rr);\n"
+            )
+            f.write(
+                f"\t\t\t\t\t\t\tUsource[i][{tan[1][0]}] += {push_th}*fth*V[i]*(({tan[1][1]})/rr);\n"
+            )
+            f.write("\t\t\t\t\t\t}\n")
+        f.write("\t\t\t\t\t}\n")
+        f.write("\t\t\t\t}\n")
+        f.write("\t\t\t}\n")
+        f.write("\t\t}\n")
+
+
 def write_end(output_folder):
     with open(os.path.join(output_folder, "fvModels"), "a+") as f:
         f.write("\t#};\n")
