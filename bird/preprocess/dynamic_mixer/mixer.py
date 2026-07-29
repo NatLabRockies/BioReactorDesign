@@ -95,7 +95,7 @@ class Mixer:
             self.ready = True
 
 
-class SwirlMixer:
+class ActuatorMixer:
     """Actuator-disk mixer with optional swirl, used by the ``ball`` source.
 
     Unlike :class:`Mixer` (the legacy ``pancake`` source), momentum is deposited
