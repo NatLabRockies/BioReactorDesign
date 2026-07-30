@@ -16,5 +16,5 @@ __Uses OpenFOAM-13. Coarse mesh.__
 __Example results__
 Volume colors are gas volume fraction and surface color are gas velocity.
 
-![Gas volume fraction](/tutorials_13/data/STR_MRF.png)
+![Gas volume fraction](/tutorials_13/STR_MRF/STR_MRF.png)
   
