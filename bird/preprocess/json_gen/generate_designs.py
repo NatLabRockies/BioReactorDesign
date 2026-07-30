@@ -621,9 +621,7 @@ def write_script_single(
     solver="birdmultiphaseEulerFoam",
 ):
     """Write a per-case SLURM script (``script_single``) running one case."""
-    ofbashrc = (
-        "/projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc"
-    )
+    ofbashrc = "/projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc"
     with open(os.path.join(case_folder, "script_single"), "w+") as f:
         f.write("#!/bin/bash\n")
         f.write("#SBATCH --qos=high\n")
@@ -653,9 +651,7 @@ def write_pack_scripts(
     via ``srun --exclusive -n cores_per_sim`` (so `sims_per_node*cores_per_sim`
     cores are used per node).
     """
-    ofbashrc = (
-        "/projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc"
-    )
+    ofbashrc = "/projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc"
     bundles = [
         sim_ids[i : i + sims_per_node]
         for i in range(0, len(sim_ids), sims_per_node)
