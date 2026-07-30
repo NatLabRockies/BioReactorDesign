@@ -121,7 +121,23 @@ For example, :math:`H_{\rm CP}` for :math:`O_2` is reported to be :math:`1.3 \ti
 
 .. important::
    Since ``H_O2_298`` is set in ``globalVars`` it is a constant value that cannot accommodate spatial inhomogeneities of temperature
-   This will be improved in future versions 
+   This will be improved in future versions
+   
+Interface tracking and compression (**OpenFOAM-13 only**)
+
+The `birdmultiphaseEuler` module provides optional interface compression and tracking for transition from dispersed to segregated phases. The algorithm is capable of accurately track the interface and applies a compression term to keep it sharp.
+This approach is still experimental and using the interface compression can lead to unphysical results and divergence.
+
+Enzymatic reactions (**OpenFOAM-13 only**)
+
+The `birdmultiphaseEuler` module provides the `bioReactingPhaseModel` that incorporates the model of Michealis and Menten for enzymatic reactions. Currently, this model only consumes liquid species (for example, oxygen dissolved in the liquid).
+For a reacting specie with mass fraction :math:`Y_l`, the uptake rate is
+ .. math::
+
+   UR = - UR_{max} \frac{Y_i}/{k_p - \rho_l Y_i}
+   
+where the user parameters are the maximum uptake rate :math:`UR_{max}` and the enzyme affinity :math:`k_p`.
+
 
 References
 ------------
@@ -133,6 +149,7 @@ References
 .. [Antal1991] Antal, S. P. et al. (1991). "Analysis of phase distribution in fully developed laminar bubbly two-phase flow". International Journal of Multiphase Flow.
 .. [Burns2004] Burns, A. D et al. (2004). "The Favre averaged drag model for turbulent dispersion in Eulerian multi-phase flows". 5th International Conference on Multiphase Flow, ICMF.
 .. [Higbie1935] Higbie, R. (1935). "The rate of absorption of pure gas into a still liquid during short periods of exposure". Transactions of the American Institute of Chemical Engineers.
+.. [Menten1913] Michaelis, L., & Menten, M. L. (1913). Die Kinetik der InwertinWirkung. Biochem., (49), 333-369.
 
 
 
