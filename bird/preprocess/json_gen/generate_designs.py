@@ -5,7 +5,12 @@ from pathlib import Path
 
 import numpy as np
 
-from bird import BIRD_CASE_DIR, logger
+from bird import BIRD_CASE_DIR, BIRD_DIR, logger
+from bird.meshing.block_rect_mesh import from_block_rect_to_seg
+from bird.preprocess.dynamic_mixer.mixer import (
+    ActuatorMixer,
+    actuator_disk_power,
+)
 from bird.preprocess.json_gen.design_io import *
 
 
@@ -580,4 +585,251 @@ def generate_single_scaledup_reactor_sparger_cases(
     overwrite_bubble_size_model(
         case_folder=os.path.join(study_folder, sim_folder),
         constantD=constantD,
+    )
+
+
+def overwrite_scale(case_folder, scale):
+    """Rewrite the ``transformPoints`` scale in presteps.sh to `scale`."""
+    filename = os.path.join(case_folder, "presteps.sh")
+    with open(filename, "r+") as f:
+        lines = f.readlines()
+    with open(filename, "w+") as f:
+        for line in lines:
+            if line.strip().startswith("transformPoints"):
+                f.write(f'transformPoints "scale=({scale} {scale} {scale})"\n')
+            else:
+                f.write(line)
+
+
+def overwrite_ncores(case_folder, n):
+    """Rewrite ``numberOfSubdomains`` in system/decomposeParDict to `n`."""
+    filename = os.path.join(case_folder, "system", "decomposeParDict")
+    with open(filename, "r+") as f:
+        lines = f.readlines()
+    with open(filename, "w+") as f:
+        for line in lines:
+            if line.strip().startswith("numberOfSubdomains"):
+                f.write(f"numberOfSubdomains {n};\n")
+            else:
+                f.write(line)
+
+
+def write_script_single(
+    case_folder,
+    account="gas2fuels",
+    cores=4,
+    solver="birdmultiphaseEulerFoam",
+):
+    """Write a per-case SLURM script (``script_single``) running one case."""
+    ofbashrc = (
+        "/projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc"
+    )
+    with open(os.path.join(case_folder, "script_single"), "w+") as f:
+        f.write("#!/bin/bash\n")
+        f.write("#SBATCH --qos=high\n")
+        f.write("#SBATCH --job-name=lev_single\n")
+        f.write("#SBATCH --nodes=1\n")
+        f.write(f"#SBATCH --ntasks-per-node={cores}\n")
+        f.write("#SBATCH --time=07:59:00\n")
+        f.write(f"#SBATCH --account={account}\n\n")
+        f.write("bash presteps.sh\n")
+        f.write(f"source {ofbashrc}\n")
+        f.write("decomposePar -fileHandler collated\n")
+        f.write(f"srun -n {cores} {solver} -parallel -fileHandler collated\n")
+        f.write("reconstructPar -newTimes\n")
+
+
+def write_pack_scripts(
+    study_folder,
+    sim_ids,
+    sims_per_node=26,
+    cores_per_sim=4,
+    account="gas2fuels",
+    solver="birdmultiphaseEulerFoam",
+):
+    """Write node-packing scripts (Option A): pack_XXX bundles + submit_all.sh.
+
+    Each bundle runs up to `sims_per_node` cases concurrently on one node, each
+    via ``srun --exclusive -n cores_per_sim`` (so `sims_per_node*cores_per_sim`
+    cores are used per node).
+    """
+    ofbashrc = (
+        "/projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc"
+    )
+    bundles = [
+        sim_ids[i : i + sims_per_node]
+        for i in range(0, len(sim_ids), sims_per_node)
+    ]
+    pack_names = []
+    for b, bundle in enumerate(bundles):
+        pack_name = f"pack_{b:03}"
+        pack_names.append(pack_name)
+        with open(os.path.join(study_folder, pack_name), "w+") as f:
+            f.write("#!/bin/bash\n")
+            f.write("#SBATCH --qos=high\n")
+            f.write(f"#SBATCH --job-name=lev_{pack_name}\n")
+            f.write("#SBATCH --nodes=1\n")
+            f.write("#SBATCH --exclusive\n")
+            f.write("#SBATCH --time=07:59:00\n")
+            f.write(f"#SBATCH --account={account}\n\n")
+            f.write(f"source {ofbashrc}\n\n")
+            f.write("run_sim () {\n")
+            f.write('\tcd "$1"\n')
+            f.write("\tbash presteps.sh > log.presteps 2>&1\n")
+            f.write(
+                "\tdecomposePar -fileHandler collated > log.decompose 2>&1\n"
+            )
+            f.write(
+                f"\tsrun --exclusive -n {cores_per_sim} {solver} -parallel"
+                " -fileHandler collated > log.solve 2>&1\n"
+            )
+            f.write("\treconstructPar -newTimes > log.reconstruct 2>&1\n")
+            f.write("\tcd ..\n")
+            f.write("}\n\n")
+            for sim_id in bundle:
+                f.write(f"run_sim {id2simfolder(sim_id)} &\n")
+            f.write("wait\n")
+    with open(os.path.join(study_folder, "submit_all.sh"), "w+") as f:
+        for pack_name in pack_names:
+            f.write(f"sbatch {pack_name}\n")
+
+
+def generate_leveled_reactor_cases(
+    config_dict,
+    branchcom_spots,
+    scale,
+    n_sim,
+    study_folder,
+    mixer_params,
+    vvm=0.4,
+    constantD=True,
+    start_time=3,
+    template_folder="loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup",
+    account="gas2fuels",
+    cores_per_sim=4,
+    sims_per_node=26,
+):
+    """Generate one scale level of the actuator-disk (ball) design sweep.
+
+    One template drives every level; the level `scale` is applied both to the
+    mixers.json rescale (mixer positions) and to presteps.sh transformPoints.
+    Uses the first `n_sim` designs of `config_dict`, so ``Sim_i`` is the same
+    design at every level. `mixer_params` holds Np/Vtip/sigma/radius/swirl_sign.
+    """
+    if not os.path.isabs(template_folder):
+        template_folder = os.path.join(
+            BIRD_DIR, "preprocess", "data_case_gen", template_folder
+        )
+    geom_dict = make_default_geom_dict_from_file(
+        os.path.join(template_folder, "system", "mesh.json")
+    )
+    # mesh.json has no rescale; force the level scale (matched by transformPoints)
+    for a in ("x", "y", "z"):
+        geom_dict["Geometry"]["OverallDomain"][a]["rescale"] = scale
+    seg_geom = from_block_rect_to_seg(geom_dict["Geometry"])
+    model = {
+        "volumetric_source": "ball",
+        "power": "from_Np_Vtip",
+        "momentum_source": "axial_and_swirl",
+    }
+
+    try:
+        shutil.rmtree(study_folder)
+    except FileNotFoundError:
+        pass
+    Path(study_folder).mkdir(parents=True, exist_ok=True)
+
+    sim_ids = sorted(config_dict)[:n_sim]
+    for sim_id in sim_ids:
+        sim_folder = id2simfolder(sim_id)
+        case = os.path.join(study_folder, sim_folder)
+        shutil.copytree(template_folder, case)
+
+        bc_dict = {"inlets": [], "outlets": []}
+        for br in (6, 4):
+            bc_dict["outlets"].append(
+                {
+                    "branch_id": br,
+                    "type": "circle",
+                    "frac_space": 1,
+                    "normal_dir": 1,
+                    "radius": 0.4,
+                    "nelements": 50,
+                    "block_pos": "top",
+                }
+            )
+        for branch in (0, 1, 2):
+            for iind in np.argwhere(config_dict[sim_id][branch] == 1)[:, 0]:
+                bc_dict["inlets"].append(
+                    {
+                        "branch_id": branch,
+                        "type": "circle",
+                        "frac_space": branchcom_spots[branch][iind],
+                        "normal_dir": 1,
+                        "radius": 0.4,
+                        "nelements": 50,
+                        "block_pos": "bottom",
+                    }
+                )
+        generate_stl_patch(
+            os.path.join(case, "system", "inlets_outlets.json"),
+            bc_dict,
+            geom_dict,
+        )
+
+        mix_list = []
+        for branch in (0, 1, 2):
+            for iind in np.argwhere(config_dict[sim_id][branch] == 0)[:, 0]:
+                sign = "+" if branch == 0 else "-"
+                frac = branchcom_spots[branch][iind]
+                # derive this mixer's power from Np/Vtip and its (scaled) radius
+                probe = ActuatorMixer()
+                probe.update_from_loop_dict(
+                    {
+                        "branch_id": branch,
+                        "frac_space": frac,
+                        "radius": mixer_params["radius"],
+                    },
+                    seg_geom,
+                )
+                power = actuator_disk_power(
+                    mixer_params["Np"], mixer_params["Vtip"], probe.R
+                )
+                mix_list.append(
+                    {
+                        "branch_id": branch,
+                        "frac_space": float(frac),
+                        "start_time": start_time,
+                        "sign": sign,
+                        "swirl_sign": mixer_params["swirl_sign"],
+                        "radius": mixer_params["radius"],
+                        "Vtip": mixer_params["Vtip"],
+                        "Np": mixer_params["Np"],
+                        "sigma": mixer_params["sigma"],
+                        "power": power,
+                    }
+                )
+        generate_dynamic_mixer(
+            os.path.join(case, "system", "mixers.json"),
+            mix_list,
+            geom_dict,
+            model=model,
+        )
+        overwrite_vvm(case_folder=case, vvm=vvm)
+        overwrite_scale(case_folder=case, scale=scale)
+        overwrite_ncores(case_folder=case, n=cores_per_sim)
+        overwrite_bubble_size_model(case_folder=case, constantD=constantD)
+        write_script_single(case, account=account, cores=cores_per_sim)
+
+    write_pack_scripts(
+        study_folder,
+        sim_ids,
+        sims_per_node=sims_per_node,
+        cores_per_sim=cores_per_sim,
+        account=account,
+    )
+    write_prep(os.path.join(study_folder, "prep.sh"), n_sim)
+    save_config_dict(os.path.join(study_folder, "configs.pkl"), config_dict)
+    save_config_dict(
+        os.path.join(study_folder, "branchcom_spots.pkl"), branchcom_spots
     )
