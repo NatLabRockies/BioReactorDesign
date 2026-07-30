@@ -5,7 +5,7 @@ def write_preamble(output_folder):
     with open(os.path.join(output_folder, "fvModels"), "w+") as f:
         f.write("FoamFile\n")
         f.write("{\n")
-        f.write("\tversion  9.0;\n")
+        f.write("\tversion  2.0;\n")
         f.write("\tformat   ascii;\n")
         f.write("\tclass    dictionary;\n")
         f.write('\tlocation "constant";\n')
@@ -152,7 +152,7 @@ def write_mixer(mixer, output_folder):
             error_message = (
                 f"mixer.sign = {mixer.sign} but should be '+' or '-'"
             )
-            logger.error
+            raise ValueError(error_message)
         f.write(
             '\t\t\t\tFoam::Info << "[BIRD:DYNMIX WARN] " << "upV = " << upV << " downV = " << downV << " for source at " << source_pt_x << ", " << source_pt_y << ", " << source_pt_z <<  endl;\n'
         )

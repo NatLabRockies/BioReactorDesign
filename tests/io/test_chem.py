@@ -3,6 +3,7 @@ import shutil
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from bird.utilities.ofio import get_species_name, species_name_to_mw
 
@@ -26,9 +27,11 @@ def test_species_mw():
             case_folder=case_folder, species_name=species_name
         )
     assert abs(mw_species["CO2"] - 44.00995 * 1e-3) < 1e-6
-    assert abs(mw_species["CO"] - 28.01055 * 1e-3) < 1e-6
-    assert abs(mw_species["H2"] - 2.01594 * 1e-3) < 1e-6
-    assert abs(mw_species["water"] - 18.01534 * 1e-3) < 1e-6
+    assert abs(mw_species["CO"] - 28.0106 * 1e-3) < 1e-9
+    assert abs(mw_species["H2"] - 2.01594 * 1e-3) < 1e-9
+    # water is only in the liquid file, under the grouped key
+    # "(mixture|water)", so this pins the grouped key lookup
+    assert abs(mw_species["water"] - 18.0153 * 1e-3) < 1e-9
 
     shutil.move(
         os.path.join(
@@ -60,6 +63,10 @@ def test_species_mw():
         os.path.join(case_folder, "thermophysicalProperties.gas_tmp"),
         os.path.join(case_folder, "constant", "thermophysicalProperties.gas"),
     )
+
+    # A species that is in none of the sources is an error
+    with pytest.raises(KeyError):
+        species_name_to_mw(case_folder=case_folder, species_name="Kr")
 
 
 def test_species_names():

@@ -1,9 +1,6 @@
 import os
-import re
-from collections import defaultdict
 
 import numpy as np
-from ruamel.yaml import YAML
 
 from bird import BIRD_CONST_DIR, logger
 from bird.utilities.ofio import (
@@ -41,7 +38,9 @@ def get_species_properties(species_name: list[str]) -> dict:
 
 
 def get_species_key_pair(
-    thermo_properties: dict, species_name: list[str]
+    thermo_properties: dict,
+    species_name: list[str],
+    thermo_properties_file: str | None = None,
 ) -> dict:
     """
     Find the key where are stored the species info
@@ -52,6 +51,8 @@ def get_species_key_pair(
         Dictionary of thermo properties
     species_name : list[str]
         List of species names
+    thermo_properties_file : str | None
+        Path the properties were read from, used in log messages only
 
     Returns
     ----------
@@ -75,8 +76,9 @@ def get_species_key_pair(
             if not found:
                 thermo_properties[spec_name] = {}
                 pair_species_keys[spec_name] = spec_name
+                source = thermo_properties_file or "the thermo properties"
                 logger.warning(
-                    f"Could not find species '{spec_name}' info in {thermo_properties_file}"
+                    f"Could not find species '{spec_name}' info in {source}"
                 )
 
     return pair_species_keys
@@ -202,43 +204,17 @@ def update_gas_thermo_prop(
         thermo_keys = []
         thermo_keys_cp_coeff = []
         target_thermo_dict = {}
-        if "Tlow" in species_prop[spec_name]["gas"]["thermodynamics"]:
-            target_thermo_dict["Tlow"] = str(
-                species_prop[spec_name]["gas"]["thermodynamics"]["Tlow"]
-            )
-            thermo_keys.append("Tlow")
-        if "Thigh" in species_prop[spec_name]["gas"]["thermodynamics"]:
-            target_thermo_dict["Thigh"] = str(
-                species_prop[spec_name]["gas"]["thermodynamics"]["Thigh"]
-            )
-            thermo_keys.append("Thigh")
-        if "Tcommon" in species_prop[spec_name]["gas"]["thermodynamics"]:
-            target_thermo_dict["Tcommon"] = str(
-                species_prop[spec_name]["gas"]["thermodynamics"]["Tcommon"]
-            )
-            thermo_keys.append("Tcommon")
-        if "highCpCoeffs" in species_prop[spec_name]["gas"]["thermodynamics"]:
-            target_thermo_dict["highCpCoeffs"] = (
-                "( "
-                + str(
-                    species_prop[spec_name]["gas"]["thermodynamics"][
-                        "highCpCoeffs"
-                    ]
+        thermodynamics = species_prop[spec_name]["gas"]["thermodynamics"]
+        for key in ["Tlow", "Thigh", "Tcommon"]:
+            if key in thermodynamics:
+                target_thermo_dict[key] = str(thermodynamics[key])
+                thermo_keys.append(key)
+        for key in ["highCpCoeffs", "lowCpCoeffs"]:
+            if key in thermodynamics:
+                target_thermo_dict[key] = (
+                    "( " + str(thermodynamics[key]) + " )"
                 )
-                + " )"
-            )
-            thermo_keys_cp_coeff.append("highCpCoeffs")
-        if "lowCpCoeffs" in species_prop[spec_name]["gas"]["thermodynamics"]:
-            target_thermo_dict["lowCpCoeffs"] = (
-                "( "
-                + str(
-                    species_prop[spec_name]["gas"]["thermodynamics"][
-                        "lowCpCoeffs"
-                    ]
-                )
-                + " )"
-            )
-            thermo_keys_cp_coeff.append("lowCpCoeffs")
+                thermo_keys_cp_coeff.append(key)
 
         if not "thermodynamics" in spec_dict:
             spec_dict["thermodynamics"] = target_thermo_dict
@@ -274,16 +250,11 @@ def update_gas_thermo_prop(
         # Transport coeff
         transport_keys = []
         target_transport_dict = {}
-        if "As" in species_prop[spec_name]["gas"]["transport"]:
-            target_transport_dict["As"] = str(
-                species_prop[spec_name]["gas"]["transport"]["As"]
-            )
-            transport_keys.append("As")
-        if "Ts" in species_prop[spec_name]["gas"]["transport"]:
-            target_transport_dict["Ts"] = str(
-                species_prop[spec_name]["gas"]["transport"]["Ts"]
-            )
-            transport_keys.append("Ts")
+        transport = species_prop[spec_name]["gas"]["transport"]
+        for key in ["As", "Ts"]:
+            if key in transport:
+                target_transport_dict[key] = str(transport[key])
+                transport_keys.append(key)
         if not "transport" in spec_dict:
             spec_dict["transport"] = target_transport_dict
         else:
@@ -405,7 +376,9 @@ def write_species_properties(case_folder: str, phase: str = "gas") -> None:
     )
     thermo_properties = read_openfoam_dict(thermo_properties_file)
     pair_species_keys = get_species_key_pair(
-        thermo_properties=thermo_properties, species_name=species_name
+        thermo_properties=thermo_properties,
+        species_name=species_name,
+        thermo_properties_file=thermo_properties_file,
     )
     if phase == "gas":
         thermo_properties_update = update_gas_thermo_prop(
