@@ -624,7 +624,6 @@ def write_script_single(
     ofbashrc = "/projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc"
     with open(os.path.join(case_folder, "script_single"), "w+") as f:
         f.write("#!/bin/bash\n")
-        f.write("#SBATCH --qos=high\n")
         f.write("#SBATCH --job-name=lev_single\n")
         f.write("#SBATCH --nodes=1\n")
         f.write(f"#SBATCH --ntasks-per-node={cores}\n")
@@ -635,6 +634,18 @@ def write_script_single(
         f.write("decomposePar -fileHandler collated\n")
         f.write(f"srun -n {cores} {solver} -parallel -fileHandler collated\n")
         f.write("reconstructPar -newTimes\n")
+
+
+def write_script_post_single(case_folder, account="gas2fuels"):
+    """Write a per-case post-processing SLURM script (``script_post_single``)."""
+    with open(os.path.join(case_folder, "script_post_single"), "w+") as f:
+        f.write("#!/bin/bash\n")
+        f.write("#SBATCH --job-name=lev_post\n")
+        f.write("#SBATCH --nodes=1\n")
+        f.write("#SBATCH --ntasks-per-node=1\n")
+        f.write("#SBATCH --time=00:59:00\n")
+        f.write(f"#SBATCH --account={account}\n\n")
+        f.write("bash computeQOI.sh\n")
 
 
 def write_pack_scripts(
@@ -662,7 +673,6 @@ def write_pack_scripts(
         pack_names.append(pack_name)
         with open(os.path.join(study_folder, pack_name), "w+") as f:
             f.write("#!/bin/bash\n")
-            f.write("#SBATCH --qos=high\n")
             f.write(f"#SBATCH --job-name=lev_{pack_name}\n")
             f.write("#SBATCH --nodes=1\n")
             f.write("#SBATCH --exclusive\n")
@@ -816,6 +826,7 @@ def generate_leveled_reactor_cases(
         overwrite_ncores(case_folder=case, n=cores_per_sim)
         overwrite_bubble_size_model(case_folder=case, constantD=constantD)
         write_script_single(case, account=account, cores=cores_per_sim)
+        write_script_post_single(case, account=account)
 
     write_pack_scripts(
         study_folder,
