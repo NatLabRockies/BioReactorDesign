@@ -305,17 +305,17 @@ jobs:
       - name: Run bubble column
         run: |
           cd tutorial_cases/OF13/bubble_column
-          bash Allrun --test 
+          ./Allrun --test 
           cd ../../../
       - name: STR MRF
         run: |
           cd tutorial_cases/OF13/STR_MRF
-          bash Allrun --test 
+          ./Allrun --test 
           cd ../../../
       - name: STR rotating mesh
         run: |
           cd tutorial_cases/OF13/STR_rotatingMesh
-          bash Allrun --test 
+          ./Allrun --test 
           cd ../../../
 
   Regression-Test-OF-pixi:

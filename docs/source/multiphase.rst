@@ -123,12 +123,12 @@ For example, :math:`H_{\rm CP}` for :math:`O_2` is reported to be :math:`1.3 \ti
    Since ``H_O2_298`` is set in ``globalVars`` it is a constant value that cannot accommodate spatial inhomogeneities of temperature
    This will be improved in future versions
    
-Interface tracking and compression (**OpenFOAM-13 only**)
+.. _Interface tracking and compression (**OpenFOAM-13 only**):
 
 The `birdmultiphaseEuler` module provides optional interface compression and tracking for transition from dispersed to segregated phases. The algorithm is capable of accurately track the interface and applies a compression term to keep it sharp.
 This approach is still experimental and using the interface compression can lead to unphysical results and divergence.
 
-Enzymatic reactions (**OpenFOAM-13 only**)
+.. _Enzymatic reactions (**OpenFOAM-13 only**):
 
 The `birdmultiphaseEuler` module provides the `bioReactingPhaseModel` that incorporates the model of Michealis and Menten for enzymatic reactions. Currently, this model only consumes liquid species (for example, oxygen dissolved in the liquid).
 For a reacting specie with mass fraction :math:`Y_l`, the uptake rate is
