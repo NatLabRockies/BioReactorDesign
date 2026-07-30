@@ -1,4 +1,19 @@
+import math
+
 from bird import logger
+
+
+def actuator_disk_power(
+    Np: float, Vtip: float, R: float, rho: float = 1000.0
+) -> float:
+    """Power [W] drawn by a ``from_Np_Vtip`` actuator-disk mixer.
+
+    ``P = Np * rho * Vtip**3 * D**2 / pi**3`` with ``D = 2R`` (see the ball
+    mixer derivation). Used at case-generation time to record the derived
+    power for the efficiency QoI.
+    """
+    D = 2.0 * R
+    return Np * rho * Vtip**3 * D**2 / math.pi**3
 
 
 class Mixer:
