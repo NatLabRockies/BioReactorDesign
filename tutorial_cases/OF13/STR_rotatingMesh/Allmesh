@@ -23,5 +23,4 @@ runApplication createNonConformalCouples nonCouple2 nonCouple1
 
 runApplication checkMesh -allGeometry -allTopology
 runApplication setFields
-runApplication decomposePar -fileHandler collated
 #------------------------------------------------------------------------------

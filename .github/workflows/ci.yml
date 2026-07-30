@@ -162,8 +162,8 @@ jobs:
       - name: Test
         run: nox -s tests -- no-reports
 
-  Regression-Test-OF:
-    name: Regression-Test-OF (${{ matrix.python-version }}, ${{ matrix.os }})
+  Regression-Test-OF9:
+    name: Regression-Test-OF9 (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -256,6 +256,66 @@ jobs:
         run: |
           cd tutorial_cases/OF9/FlatPanel_250L_ASU
           bash run.sh
+          cd ../../../
+          
+  Regression-Test-OF13:
+    name: Regression-Test-OF13 (${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.14']
+        os: ['ubuntu-22.04']
+    defaults:
+      run:
+        shell: bash -l {0}
+        working-directory: ${{github.workspace}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{matrix.python-version}}
+      - uses: gerlero/setup-openfoam@v1
+        with:
+          openfoam-version: 13
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: test-env
+          create-args: >-
+            python=${{ matrix.python-version }}
+          channels: conda-forge
+          channel-priority: strict
+          cache-downloads: true
+          cache-env: true
+
+      - name: Install dependencies
+        run: |
+          micromamba install --yes -n test-env -c conda-forge paraview
+          pip install --upgrade pip
+          pip install .
+
+      - name: Compile solver
+        run: |
+          cd OFsolvers/OF13/birdmultiphaseEuler
+          export WM_COMPILE_OPTION=Debug
+          ./Allwmake
+          cd ../../../
+      - name: Run bubble column
+        run: |
+          cd tutorial_cases/OF13/bubble_column
+          bash Allrun --test 
+          cd ../../../
+      - name: STR MRF
+        run: |
+          cd tutorial_cases/OF13/STR_MRF
+          bash Allrun --test 
+          cd ../../../
+      - name: STR rotating mesh
+        run: |
+          cd tutorial_cases/OF13/STR_rotatingMesh
+          bash Allrun --test 
           cd ../../../
 
   Regression-Test-OF-pixi:

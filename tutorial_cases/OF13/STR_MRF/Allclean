@@ -13,5 +13,6 @@ cd "${0%/*}" || exit 1
 # - log files
 # - field files with a ".orig" backup
 cleanCase
+rm -rf STR.unv
 
 #------------------------------------------------------------------------------

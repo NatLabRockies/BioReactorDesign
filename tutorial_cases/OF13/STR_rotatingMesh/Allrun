@@ -8,9 +8,31 @@ cd "${0%/*}" || exit 1
 
 ./Allmesh
 
-#runApplication decomposePar -fileHandler collated
-runParallel foamRun -fileHandler collated
-runApplication -a reconstructPar -fileHandler collated
+test=false
+for arg in "$@"; do
+    case "$arg" in
+        --test)
+            test=true
+            ;;
+    esac
+done
+
+if [ "$test" = true ]; then
+    echo "Running test in single core and one iteration"
+    sed -i 's/endTime;/writeNow;/g' system/controlDict
+    runApplication foamRun
+    sed -i 's/writeNow;/endTime;/g' system/controlDict
+    
+    if grep -q "End" log.foamRun; then
+     echo "Test ran succesfully"
+    else
+     echo "Test failed"
+    fi
+else
+    runApplication decomposePar -fileHandler collated
+    runParallel foamRun -fileHandler collated
+    runApplication reconstructPar -fileHandler collated
+fi
 
 
 #------------------------------------------------------------------------------

@@ -9,12 +9,11 @@ cd "${0%/*}" || exit 1
 rm -rf 0/alpha.gas
 rm -rf 0/alpha.liquid
 
-unzip STR.zip .
+unzip STR.zip STR.unv
 
 runApplication ideasUnvToFoam STR.unv
 runApplication changeDictionary
 
 runApplication checkMesh -allGeometry -allTopology
 runApplication setFields
-runApplication decomposePar -fileHandler collated
 #------------------------------------------------------------------------------
