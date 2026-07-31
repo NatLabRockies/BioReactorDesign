@@ -18,10 +18,10 @@ if ! type "python" &> /dev/null; then
     echo "Skipping Mesh generation"
 else
     # Generate blockmeshDict
-    python ../../applications/write_block_cyl_mesh.py -i ../../bird/meshing/block_cyl_mesh_templates/coflowing/input.json  -t ../../bird/meshing/block_cyl_mesh_templates/coflowing/topology.json -o system
+    python ../../../applications/write_block_cyl_mesh.py -i ../../../bird/meshing/block_cyl_mesh_templates/coflowing/input.json  -t ../../../bird/meshing/block_cyl_mesh_templates/coflowing/topology.json -o system
    
     # Generate species thermo properties
-    python ../../applications/write_species_thermo_prop.py -cf .
+    python ../../../applications/write_species_thermo_prop.py -cf .
 
 fi
 
