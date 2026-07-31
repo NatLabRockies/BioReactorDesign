@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Run from this directory
+cd "${0%/*}" || exit 1
+
+# Source tutorial run functions
+. "$WM_PROJECT_DIR/bin/tools/RunFunctions"
+
+rm -rf 0/alpha.gas
+rm -rf 0/alpha.liquid
+
+unzip STR.zip STR.unv
+
+runApplication ideasUnvToFoam STR.unv
+runApplication changeDictionary
+
+runApplication checkMesh -allGeometry -allTopology
+runApplication setFields
+#------------------------------------------------------------------------------

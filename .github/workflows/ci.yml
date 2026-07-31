@@ -162,8 +162,8 @@ jobs:
       - name: Test
         run: nox -s tests -- no-reports
 
-  Regression-Test-OF:
-    name: Regression-Test-OF (${{ matrix.python-version }}, ${{ matrix.os }})
+  Regression-Test-OF9:
+    name: Regression-Test-OF9 (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -202,61 +202,121 @@ jobs:
 
       - name: Compile solver
         run: |
-          cd OFsolvers/birdmultiphaseEulerFoam
+          cd OFsolvers/OF9/birdmultiphaseEulerFoam
           export WM_COMPILE_OPTION=Debug
           ./Allwmake
-          cd ../../
+          cd ../../../
       - name: Run deckwer17 PBE
         run: |
-          cd experimental_cases/deckwer17
+          cd experimental_cases/OF9/deckwer17
           bash run.sh 
-          cd ../../
+          cd ../../../
       - name: Run deckwer17 constantD
         run: |
-          cd experimental_cases/deckwer17
+          cd experimental_cases/OF9/deckwer17
           cp constant/phaseProperties_constantd constant/phaseProperties
           bash run.sh 
-          cd ../../
+          cd ../../../
       - name: Run deckwer19 PBE
         run: |
-          cd experimental_cases/deckwer19
+          cd experimental_cases/OF9/deckwer19
           bash run.sh 
-          cd ../../
+          cd ../../../
       - name: Run side sparger tutorial
         run: |
-          cd tutorial_cases/side_sparger
+          cd tutorial_cases/OF9/side_sparger
           bash run.sh 
-          cd ../../
+          cd ../../../
       - name: Run bubble column tutorial
         run: |
-          cd tutorial_cases/bubble_column_20L
+          cd tutorial_cases/OF9/bubble_column_20L
           bash run.sh 
-          cd ../../
+          cd ../../../
       - name: Run stirred-tank tutorial
         run: |
-          cd tutorial_cases/stirred_tank
+          cd tutorial_cases/OF9/stirred_tank
           bash run.sh 
-          cd ../../
+          cd ../../../
       - name: Run reactive loop reactor tutorial
         run: |
-          cd tutorial_cases/loop_reactor_reacting
+          cd tutorial_cases/OF9/loop_reactor_reacting
           bash run.sh 
-          cd ../../
+          cd ../../../
       - name: Run mixing loop reactor tutorial
         run: |
-          cd tutorial_cases/loop_reactor_mixing
+          cd tutorial_cases/OF9/loop_reactor_mixing
           bash run.sh 
-          cd ../../
+          cd ../../../
       - name: Run airlift reactor tutorial
         run: |
-          cd tutorial_cases/airlift_40m
+          cd tutorial_cases/OF9/airlift_40m
           bash run.sh
-          cd ../../
+          cd ../../../
       - name: Run flat panel reactor tutorial
         run: |
-          cd tutorial_cases/FlatPanel_250L_ASU
+          cd tutorial_cases/OF9/FlatPanel_250L_ASU
           bash run.sh
-          cd ../../
+          cd ../../../
+          
+  Regression-Test-OF13:
+    name: Regression-Test-OF13 (${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.14']
+        os: ['ubuntu-22.04']
+    defaults:
+      run:
+        shell: bash -l {0}
+        working-directory: ${{github.workspace}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{matrix.python-version}}
+      - uses: gerlero/setup-openfoam@v1
+        with:
+          openfoam-version: 13
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: test-env
+          create-args: >-
+            python=${{ matrix.python-version }}
+          channels: conda-forge
+          channel-priority: strict
+          cache-downloads: true
+          cache-env: true
+
+      - name: Install dependencies
+        run: |
+          micromamba install --yes -n test-env -c conda-forge paraview
+          pip install --upgrade pip
+          pip install .
+
+      - name: Compile solver
+        run: |
+          cd OFsolvers/OF13/birdmultiphaseEuler
+          export WM_COMPILE_OPTION=Debug
+          ./Allwmake
+          cd ../../../
+      - name: Run bubble column
+        run: |
+          cd tutorial_cases/OF13/bubble_column
+          ./Allrun --test 
+          cd ../../../
+      - name: STR MRF
+        run: |
+          cd tutorial_cases/OF13/STR_MRF
+          ./Allrun --test 
+          cd ../../../
+      - name: STR rotating mesh
+        run: |
+          cd tutorial_cases/OF13/STR_rotatingMesh
+          ./Allrun --test 
+          cd ../../../
 
   Regression-Test-OF-pixi:
     name: Regression-Test-OF-pixi (${{ matrix.os }})
@@ -282,13 +342,13 @@ jobs:
           cache-write: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       - name: Compile solver
         run: |
-          cd OFsolvers/birdmultiphaseEulerFoam
+          cd OFsolvers/OF9/birdmultiphaseEulerFoam
           export WM_COMPILE_OPTION=Debug
           ./Allwmake
-          cd ../../
+          cd ../../../
       - name: Run bubble column tutorial
         run: |
-          cd tutorial_cases/bubble_column_20L
+          cd tutorial_cases/OF9/bubble_column_20L
           bash run_pixi.sh 
-          cd ../../
+          cd ../../../
 

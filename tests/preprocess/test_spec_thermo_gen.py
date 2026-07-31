@@ -21,6 +21,7 @@ def test_species_thermo_write():
         "..",
         "..",
         "tutorial_cases",
+        "OF9",
         "bubble_column_20L",
     )
 
@@ -127,6 +128,7 @@ def test_species_key_pair():
         "..",
         "..",
         "experimental_cases",
+        "OF9",
         "deckwer17",
     )
 

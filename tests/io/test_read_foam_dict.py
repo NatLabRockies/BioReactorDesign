@@ -15,6 +15,7 @@ def test_read_phaseProperties():
         "..",
         "..",
         "tutorial_cases",
+        "OF9",
         "loop_reactor_mixing",
         "constant",
     )
@@ -85,6 +86,7 @@ def test_read_thermophysicalProperties():
         "..",
         "..",
         "tutorial_cases",
+        "OF9",
         "loop_reactor_mixing",
         "constant",
     )
@@ -110,6 +112,7 @@ def test_read_momentumTransport():
         "..",
         "..",
         "tutorial_cases",
+        "OF9",
         "loop_reactor_mixing",
         "constant",
     )
@@ -131,6 +134,7 @@ def test_read_controlDict():
         "..",
         "..",
         "tutorial_cases",
+        "OF9",
         "loop_reactor_mixing",
         "system",
     )

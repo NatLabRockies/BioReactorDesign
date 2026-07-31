@@ -1,0 +1,4 @@
+derivedFvPatchFields/multiphaseCoupledTemperature/multiphaseCoupledTemperatureFvPatchScalarField.C
+derivedFvPatchFields/multiphaseExternalTemperature/multiphaseExternalTemperatureFvPatchScalarField.C
+
+LIB = $(FOAM_USER_LIBBIN)/libbirdmultiphaseEulerThermophysicalTransportModels
