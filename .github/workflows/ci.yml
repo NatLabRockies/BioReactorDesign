@@ -119,7 +119,7 @@ jobs:
           cache: true
           cache-write: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
-      - name: Formatting and sorting import
+      - name: Test
         run: |
           pixi run test
 

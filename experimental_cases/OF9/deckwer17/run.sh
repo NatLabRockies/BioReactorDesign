@@ -8,8 +8,10 @@ else
 fi
 
 set -e  # Exit on any error
-# Define what to do on error
-trap 'echo "ERROR: Something failed! Running cleanup..."; ./Allclean' ERR
+# 1. Capture the error code ($?)
+# 2. Run the echo and cleanup scripts
+# 3. Exit manually with the captured error code
+trap 'exit_code=$?; echo "ERROR: Something failed! Running cleanup..."; ./Allclean; exit $exit_code' ERR
 
 
 if ! type "python" &> /dev/null; then
