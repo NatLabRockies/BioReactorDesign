@@ -7,12 +7,11 @@ else
     ./Allclean
 fi
 
-set -e  # Exit on any error
-# 1. Capture the error code ($?)
-# 2. Run the echo and cleanup scripts
-# 3. Exit manually with the captured error code
-trap 'exit_code=$?; echo "ERROR: Something failed! Running cleanup..."; ./Allclean; exit $exit_code' ERR
-
+set -Eeuo pipefail   # -E: trap also fires inside functions/subshells
+trap 'exit_code=$?
+      echo "ERROR: Something failed! Running cleanup..."
+      ./Allclean || true
+      exit $exit_code' ERR
 
 if ! type "python" &> /dev/null; then
     echo "<python> could not be found"
