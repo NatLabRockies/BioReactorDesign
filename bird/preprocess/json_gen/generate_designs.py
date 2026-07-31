@@ -601,6 +601,66 @@ def overwrite_scale(case_folder, scale):
                 f.write(line)
 
 
+# setFields liquid-init box upper corner in UNSCALED (per-block) units: y is the
+# 4-block liquid fill height; x/z are made wide to cover the whole domain.
+_SETFIELDS_BOX_UPPER = (200.0, 4.0, 200.0)
+
+
+def overwrite_setfields_box(case_folder, scale):
+    """Rewrite the setFields liquid-init box to `scale` * ``_SETFIELDS_BOX_UPPER``.
+
+    setFields runs after transformPoints, so the box lives in scaled
+    coordinates; the lower corner stays ``(-1 -1 -1)``.
+    """
+    bx, by, bz = (v * scale for v in _SETFIELDS_BOX_UPPER)
+    filename = os.path.join(case_folder, "system", "setFieldsDict")
+    with open(filename, "r+") as f:
+        lines = f.readlines()
+    with open(filename, "w+") as f:
+        for line in lines:
+            if line.strip().startswith("box "):
+                indent = line[: len(line) - len(line.lstrip())]
+                f.write(f"{indent}box (-1.0 -1.0 -1.0) ({bx} {by} {bz});\n")
+            else:
+                f.write(line)
+
+
+def overwrite_qoi_params(case_folder, rhog, cstar_co2, cstar_h2):
+    """Rewrite the per-level QoI parameters in get_qoi.py.
+
+    These are hardcoded per dimension in get_qoi.py, so each level needs its
+    own values (the mixer power is NOT touched here -- get_qoi.py reads it from
+    mixers.json).
+
+    :param rhog: gas density [kg/m3] used in the injection-power estimate.
+    :param cstar_co2: (low, high) uniform-prior bounds for the CO2 c*.
+    :param cstar_h2: (low, high) uniform-prior bounds for the H2 c*.
+    """
+    co2_lo, co2_hi = cstar_co2
+    h2_lo, h2_hi = cstar_h2
+    filename = os.path.join(case_folder, "get_qoi.py")
+    with open(filename, "r+") as f:
+        lines = f.readlines()
+    with open(filename, "w+") as f:
+        for line in lines:
+            stripped = line.strip()
+            if stripped.startswith("rhog ="):
+                indent = line[: len(line) - len(line.lstrip())]
+                f.write(f"{indent}rhog = {rhog}  # kg /m3\n")
+            elif stripped.startswith("mean_cstar_co2 ="):
+                f.write(
+                    "mean_cstar_co2 = "
+                    f"np.random.uniform({co2_lo}, {co2_hi}, nuq)\n"
+                )
+            elif stripped.startswith("mean_cstar_h2 ="):
+                f.write(
+                    "mean_cstar_h2 = "
+                    f"np.random.uniform({h2_lo}, {h2_hi}, nuq)\n"
+                )
+            else:
+                f.write(line)
+
+
 def overwrite_ncores(case_folder, n):
     """Rewrite ``numberOfSubdomains`` in system/decomposeParDict to `n`."""
     filename = os.path.join(case_folder, "system", "decomposeParDict")
@@ -646,6 +706,11 @@ def write_script_post_single(case_folder, account="gas2fuels"):
         f.write("#SBATCH --time=00:59:00\n")
         f.write(f"#SBATCH --account={account}\n\n")
         f.write("bash computeQOI.sh\n")
+
+
+def write_foam_stub(case_folder: str) -> None:
+    """Create an empty ``test.foam`` so ParaView can open the case."""
+    open(os.path.join(case_folder, "test.foam"), "w").close()
 
 
 def write_pack_scripts(
@@ -710,17 +775,30 @@ def generate_leveled_reactor_cases(
     vvm=0.4,
     constantD=True,
     start_time=3,
+    rhog=None,
+    cstar_co2=None,
+    cstar_h2=None,
     template_folder="loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup",
     account="gas2fuels",
-    cores_per_sim=4,
-    sims_per_node=26,
+    cores_per_sim=16,
+    cores_per_node=128,
 ):
     """Generate one scale level of the actuator-disk (ball) design sweep.
 
     One template drives every level; the level `scale` is applied both to the
     mixers.json rescale (mixer positions) and to presteps.sh transformPoints.
     Uses the first `n_sim` designs of `config_dict`, so ``Sim_i`` is the same
-    design at every level. `mixer_params` holds Np/Vtip/sigma/radius/swirl_sign.
+    design at every level. `mixer_params` holds Np/Vtip/sigma/radius and the
+    per-branch `sign` and `swirl_sign` (each a dict keyed by branch_id), which
+    are written verbatim into each mixer entry of mixers.json.
+
+    `rhog`, `cstar_co2` and `cstar_h2` are the per-level QoI parameters; when
+    given they are written into each case's get_qoi.py (see
+    :func:`overwrite_qoi_params`). Left as ``None`` the template get_qoi.py is
+    used unchanged.
+
+    Each sim runs on `cores_per_sim` cores; the node-packing bundles fit
+    ``cores_per_node // cores_per_sim`` sims per node.
     """
     if not os.path.isabs(template_folder):
         template_folder = os.path.join(
@@ -786,7 +864,9 @@ def generate_leveled_reactor_cases(
         mix_list = []
         for branch in (0, 1, 2):
             for iind in np.argwhere(config_dict[sim_id][branch] == 0)[:, 0]:
-                sign = "+" if branch == 0 else "-"
+                # sign / swirl_sign are per-branch (keyed by branch_id) so the
+                # axial push and swirl form one coherent loop circulation; the
+                # values live in mixer_params and are written to mixers.json.
                 frac = branchcom_spots[branch][iind]
                 # derive this mixer's power from Np/Vtip and its (scaled) radius
                 probe = ActuatorMixer()
@@ -806,8 +886,8 @@ def generate_leveled_reactor_cases(
                         "branch_id": branch,
                         "frac_space": float(frac),
                         "start_time": start_time,
-                        "sign": sign,
-                        "swirl_sign": mixer_params["swirl_sign"],
+                        "sign": mixer_params["sign"][branch],
+                        "swirl_sign": mixer_params["swirl_sign"][branch],
                         "radius": mixer_params["radius"],
                         "Vtip": mixer_params["Vtip"],
                         "Np": mixer_params["Np"],
@@ -823,11 +903,22 @@ def generate_leveled_reactor_cases(
         )
         overwrite_vvm(case_folder=case, vvm=vvm)
         overwrite_scale(case_folder=case, scale=scale)
+        overwrite_setfields_box(case_folder=case, scale=scale)
+        if rhog is not None and cstar_co2 is not None and cstar_h2 is not None:
+            overwrite_qoi_params(
+                case_folder=case,
+                rhog=rhog,
+                cstar_co2=cstar_co2,
+                cstar_h2=cstar_h2,
+            )
         overwrite_ncores(case_folder=case, n=cores_per_sim)
         overwrite_bubble_size_model(case_folder=case, constantD=constantD)
         write_script_single(case, account=account, cores=cores_per_sim)
         write_script_post_single(case, account=account)
+        write_foam_stub(case)
 
+    # pack as many sims per node as the requested cores allow
+    sims_per_node = max(1, cores_per_node // cores_per_sim)
     write_pack_scripts(
         study_folder,
         sim_ids,
