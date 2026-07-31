@@ -303,8 +303,8 @@ jobs:
           cd tutorial_cases/OF13/STR_rotatingMesh
           ./Allrun --test 
 
-  Regression-Test-OF-pixi:
-    name: Regression-Test-OF-pixi (${{ matrix.os }})
+  Regression-Test-OF9-pixi:
+    name: Regression-Test-OF9-pixi (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
