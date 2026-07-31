@@ -11,7 +11,7 @@ def get_reactor_geom(yamlfile):
 
 def write_ofoam_preamble(outfile, react):
     outfile.write(
-        r"/*--------------------------------*- C++ -*----------------------------------*\\\n"
+        "/*--------------------------------*- C++ -*----------------------------------*\\\n"
     )
     outfile.write(
         "| =========                 |                                                 |\n"
@@ -29,7 +29,7 @@ def write_ofoam_preamble(outfile, react):
         "|    \\/     M anipulation  |                                                 |\n"
     )
     outfile.write(
-        r"\*---------------------------------------------------------------------------*/\n"
+        "/*---------------------------------------------------------------------------*/\n"
     )
     outfile.write("FoamFile\n")
     outfile.write("{\n")
@@ -39,18 +39,18 @@ def write_ofoam_preamble(outfile, react):
     outfile.write("\tobject      blockMeshDict;\n")
     outfile.write("}\n\n")
     outfile.write(
-        r"// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n\n"
+        "// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n\n"
     )
     outfile.write("convertToMeters 1.0;\n\n")
     outfile.write(
-        r"// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n\n"
+        "// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n\n"
     )
 
 
 def write_vertices(outfile, react):
     outfile.write(
         "\n"
-        + r"// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //"
+        + "// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //"
         + "\n"
     )
     outfile.write("vertices\n(\n")
@@ -166,7 +166,7 @@ def write_edges(outfile, react):
     reacthts = react.reacthts
 
     outfile.write(
-        r"\n// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n"
+        "\n// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n"
     )
     outfile.write("edges\n(\n")
 
@@ -204,7 +204,7 @@ def write_edges(outfile, react):
 
 def write_blocks(outfile, react):
     outfile.write(
-        r"\n// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n"
+        "\n// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n"
     )
     outfile.write("blocks\n(\n")
 
@@ -326,7 +326,7 @@ def write_patches(outfile, react):
 
     outfile.write(
         "\n"
-        + r"// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //"
+        + "// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //"
         + "\n"
     )
     outfile.write("patches\n(\n")
