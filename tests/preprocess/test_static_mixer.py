@@ -1,3 +1,4 @@
+import os
 import tempfile
 from pathlib import Path
 
@@ -9,6 +10,7 @@ from bird.preprocess.dynamic_mixer.io_fvModels import (
 )
 from bird.preprocess.dynamic_mixer.mixer import StaticMixer
 from bird.preprocess.dynamic_mixer.mixing_fvModels import write_fvModel
+from bird.utilities.parser import parse_json
 
 
 def test_StaticMixer():
@@ -189,3 +191,43 @@ def test_write_fvModel_static_mixers():
     assert txt.count("codedSource") == 1  # one shared block
     assert "// ===== ball mixer =====" in txt  # dynamic present
     assert "// ===== static mixer =====" in txt  # static present
+
+
+def test_static_expl_list():
+    template_dir = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "preprocess",
+        "dynamic_mixer",
+        "mixing_template",
+    )
+    d = parse_json(
+        os.path.join(template_dir, "static_expl_list", "mixers.json")
+    )
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        write_fvModel(d, output_folder=tmpdirname)
+        txt = Path(tmpdirname, "fvModels").read_text()
+    assert "// ===== static mixer =====" in txt
+    assert txt.rstrip().endswith("};")
+
+
+def test_static_loop_list():
+    template_dir = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "preprocess",
+        "dynamic_mixer",
+        "mixing_template",
+    )
+    d = parse_json(
+        os.path.join(template_dir, "static_loop_list", "mixers.json")
+    )
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        write_fvModel(d, output_folder=tmpdirname)
+        txt = Path(tmpdirname, "fvModels").read_text()
+    assert "// ===== static mixer =====" in txt
+    assert txt.rstrip().endswith("};")
