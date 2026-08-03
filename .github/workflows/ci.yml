@@ -252,6 +252,11 @@ jobs:
           cd tutorial_cases/loop_reactor_mixing_swirl
           bash run.sh
           cd ../../
+      - name: Run mixing loop reactor with static mixer tutorial
+        run: |
+          cd tutorial_cases/loop_reactor_mixing_static
+          bash run.sh
+          cd ../../
       - name: Run airlift reactor tutorial
         run: |
           cd tutorial_cases/airlift_40m

@@ -46,6 +46,10 @@ cd ../../
 cd tutorial_cases/loop_reactor_mixing_swirl
 bash run.sh
 cd ../../
+## Run mixing loop reactor with static mixer tutorial
+cd tutorial_cases/loop_reactor_mixing_static
+bash run.sh
+cd ../../
 ## Run airlift reactor tutorial
 cd tutorial_cases/airlift_40m
 bash run.sh
