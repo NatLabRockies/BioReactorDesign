@@ -121,6 +121,38 @@ def test_write_static_mixer_ball():
     assert "Usource[i][1] += -1.0*fvisc*V[i];" in txt
 
 
+def test_write_static_mixer_ball_negative_orientation():
+    # sign="-" and swirl_sign="-" must not emit "--1.0" (a decrement on a
+    # literal, which is a C++ compile error)
+    m = StaticMixer()
+    m.update_from_expl_dict(
+        {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "normal_dir": 1,
+            "radius": 0.05,
+            "sign": "-",
+            "swirl_sign": "-",
+            "S": 0.35,
+            "K": 0.5,
+            "start_time": 1,
+        }
+    )
+    assert m.ready
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        write_preamble_ball(tmpdirname)
+        write_static_mixer_ball(m, tmpdirname)
+        write_end(tmpdirname)
+        txt = Path(tmpdirname, "fvModels").read_text()
+
+    assert "--1.0" not in txt  # no decrement-on-literal
+    # -push_ax and -push_th collapse to +1.0 for the negative orientation
+    assert "Usource[i][1] += 1.0*fvisc*V[i];" in txt
+    assert "Usource[i][1] += 1.0*fcp*V[i];" in txt
+
+
 def test_write_fvModel_static_mixers():
     # static-only, explicit placement: the ball path is auto-triggered by the
     # presence of the static_mixers list (no volumetric_source needed)

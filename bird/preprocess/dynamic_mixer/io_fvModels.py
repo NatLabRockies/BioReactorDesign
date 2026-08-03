@@ -555,6 +555,11 @@ def write_static_mixer_ball(mixer, output_folder):
     }[nd]
     push_ax = "1.0" if mixer.sign == "+" else "-1.0"
     push_th = "1.0" if mixer.swirl_sign == "+" else "-1.0"
+    # pre-combined signs (= -push_ax / -push_th) as single literals, so the
+    # emitted C++ never contains "--1.0" (a decrement on a literal, a compile
+    # error). The drag opposes the oriented inflow; the reaction is -push_th.
+    drag_ax = "-1.0" if mixer.sign == "+" else "1.0"
+    cp_th = "-1.0" if mixer.swirl_sign == "+" else "1.0"
 
     with open(os.path.join(output_folder, "fvModels"), "a+") as f:
         f.write("\t\t// ===== static mixer =====\n")
@@ -640,7 +645,7 @@ def write_static_mixer_ball(mixer, output_folder):
         f.write("\t\t\t\t\t\tif (Sax > 1e-30)\n")
         f.write("\t\t\t\t\t\t{\n")
         f.write("\t\t\t\t\t\t\tconst double fvisc = Tls/Sax*alphaL[i]*g;\n")
-        f.write(f"\t\t\t\t\t\t\tUsource[i][{nd}] += -{push_ax}*fvisc*V[i];\n")
+        f.write(f"\t\t\t\t\t\t\tUsource[i][{nd}] += {drag_ax}*fvisc*V[i];\n")
         f.write("\t\t\t\t\t\t}\n")
         # swirl + energy-neutral axial reaction (local, velocity-weighted)
         f.write(
@@ -665,7 +670,7 @@ def write_static_mixer_ball(mixer, output_folder):
         f.write(
             "\t\t\t\t\t\t\tconst double fcp = A0*rhoL[i]*ux*uth*alphaL[i]*g;\n"
         )
-        f.write(f"\t\t\t\t\t\t\tUsource[i][{nd}] += -{push_th}*fcp*V[i];\n")
+        f.write(f"\t\t\t\t\t\t\tUsource[i][{nd}] += {cp_th}*fcp*V[i];\n")
         f.write("\t\t\t\t\t\t}\n")
         f.write("\t\t\t\t\t}\n")
         f.write("\t\t\t\t}\n")
