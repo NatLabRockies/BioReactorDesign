@@ -8,6 +8,7 @@ from bird.preprocess.dynamic_mixer.io_fvModels import (
     write_static_mixer_ball,
 )
 from bird.preprocess.dynamic_mixer.mixer import StaticMixer
+from bird.preprocess.dynamic_mixer.mixing_fvModels import write_fvModel
 
 
 def test_StaticMixer():
@@ -116,3 +117,75 @@ def test_write_static_mixer_ball():
     # axial reaction and viscous drag on the normal component (index 1)
     assert "Usource[i][1] += -1.0*fcp*V[i];" in txt
     assert "Usource[i][1] += -1.0*fvisc*V[i];" in txt
+
+
+def test_write_fvModel_static_mixers():
+    # static-only, explicit placement: the ball path is auto-triggered by the
+    # presence of the static_mixers list (no volumetric_source needed)
+    d = {
+        "static_mixers": [
+            {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "normal_dir": 1,
+                "radius": 0.05,
+                "sign": "+",
+                "swirl_sign": "+",
+                "S": 0.35,
+                "K": 0.5,
+                "start_time": 1,
+            }
+        ]
+    }
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        write_fvModel(d, output_folder=tmpdirname)
+        txt = Path(tmpdirname, "fvModels").read_text()
+    assert txt.count("codedSource") == 1  # single preamble
+    assert "// ===== static mixer =====" in txt
+    assert "// ===== ball mixer =====" not in txt  # no dynamic block
+    assert txt.rstrip().endswith("};")  # write_end closed the block
+
+    # mixed dynamic + static, loop placement: both share one codedSource
+    base = {
+        "Meshing": {"Blockwise": {"x": 10, "y": 10, "z": 10}},
+        "Geometry": {
+            "OverallDomain": {
+                a: {"nblocks": 10, "size_per_block": 1.0, "rescale": 2.76}
+                for a in ("x", "y", "z")
+            },
+            "Fluids": [[[0, 0, 0], [9, 0, 0]]],
+        },
+        "volumetric_source": "ball",
+        "mixers": [
+            {
+                "branch_id": 0,
+                "frac_space": 0.5,
+                "radius": 0.4,
+                "sign": "+",
+                "swirl_sign": "+",
+                "Vtip": 1.5,
+                "Np": 6,
+                "sigma": 0.35,
+                "start_time": 1,
+            }
+        ],
+        "static_mixers": [
+            {
+                "branch_id": 0,
+                "frac_space": 0.6,
+                "radius": 0.5,
+                "sign": "+",
+                "swirl_sign": "+",
+                "S": 0.35,
+                "K": 0.5,
+                "start_time": 1,
+            }
+        ],
+    }
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        write_fvModel(base, output_folder=tmpdirname)
+        txt = Path(tmpdirname, "fvModels").read_text()
+    assert txt.count("codedSource") == 1  # one shared block
+    assert "// ===== ball mixer =====" in txt  # dynamic present
+    assert "// ===== static mixer =====" in txt  # static present
