@@ -534,6 +534,145 @@ def write_mixer_ball(
         f.write("\t\t}\n")
 
 
+def write_static_mixer_ball(mixer, output_folder):
+    """Append one passive ``ball`` static-mixer block to ``fvModels``.
+
+    The swirl is imposed as an azimuthal body force proportional to the local
+    axial dynamic pressure (Kiesewetter), balanced cell-by-cell by an
+    energy-neutral axial reaction; a lumped axial drag adds the viscous loss.
+    The source is inactive when the inflow opposes the mixer orientation.
+
+    :param mixer: a ready
+        :class:`~bird.preprocess.dynamic_mixer.mixer.StaticMixer`.
+    """
+    nd = int(mixer.normal_dir)
+    dn = ["dx", "dy", "dz"][nd]
+    # theta_hat = n_hat x r_hat, per axis: (component index, numerator expr)
+    tan = {
+        0: [(1, "-dz"), (2, "dy")],
+        1: [(0, "dz"), (2, "-dx")],
+        2: [(0, "-dy"), (1, "dx")],
+    }[nd]
+    push_ax = "1.0" if mixer.sign == "+" else "-1.0"
+    push_th = "1.0" if mixer.swirl_sign == "+" else "-1.0"
+
+    with open(os.path.join(output_folder, "fvModels"), "a+") as f:
+        f.write("\t\t// ===== static mixer =====\n")
+        f.write("\t\t{\n")
+        f.write(f"\t\t\tconst double Rmix = {mixer.R};\n")
+        f.write("\t\t\tconst double area = pi*Rmix*Rmix;\n")
+        f.write(f"\t\t\tconst double Snum = {mixer.S};\n")
+        f.write(f"\t\t\tconst double Kloss = {mixer.K};\n")
+        f.write(f"\t\t\tconst double startT = {mixer.start_time};\n")
+        f.write(
+            f"\t\t\tconst double px = {mixer.x}, py = {mixer.y}, pz = {mixer.z};\n"
+        )
+        f.write("\t\t\tif (time.value() > startT)\n")
+        f.write("\t\t\t{\n")
+        # --- sense V1 and rho over the upstream half-ball ---
+        # (duplicated from write_mixer_ball; the dynamic path is kept untouched)
+        f.write("\t\t\t\tscalar sV = 0.0, sVU = 0.0, sVrho = 0.0;\n")
+        f.write("\t\t\t\tforAll(C, i)\n")
+        f.write("\t\t\t\t{\n")
+        f.write(
+            "\t\t\t\t\tconst double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;\n"
+        )
+        f.write("\t\t\t\t\tconst double d2 = dx*dx + dy*dy + dz*dz;\n")
+        f.write(f"\t\t\t\t\tif (d2 <= Rmix*Rmix && {push_ax}*{dn} < 0.0)\n")
+        f.write("\t\t\t\t\t{\n")
+        f.write("\t\t\t\t\t\tconst double w = V[i]*alphaL[i];\n")
+        f.write(
+            f"\t\t\t\t\t\tsV += w; sVU += w*UL[i][{nd}]; sVrho += w*rhoL[i];\n"
+        )
+        f.write("\t\t\t\t\t}\n")
+        f.write("\t\t\t\t}\n")
+        f.write("\t\t\t\treduce(sV, sumOp<scalar>());\n")
+        f.write("\t\t\t\treduce(sVU, sumOp<scalar>());\n")
+        f.write("\t\t\t\treduce(sVrho, sumOp<scalar>());\n")
+        f.write(
+            f"\t\t\t\tdouble V1 = (sV>1e-30) ? {push_ax}*(sVU/sV) : 0.0;\n"
+        )
+        f.write("\t\t\t\tif (V1 < 0.0) V1 = 0.0;\n")
+        f.write(
+            "\t\t\t\tconst double rhoM = (sV>1e-30) ? sVrho/sV : 1000.0;\n"
+        )
+        # --- passive loads (no Newton solve) ---
+        f.write("\t\t\t\tconst double Qsw = Snum*Rmix*rhoM*area*V1*V1;\n")
+        f.write("\t\t\t\tconst double Tls = 0.5*Kloss*rhoM*area*V1*V1;\n")
+        # --- pass 1: normalisation sums over the ball ---
+        f.write("\t\t\t\tscalar Sax = 0.0, Ssw = 0.0;\n")
+        f.write("\t\t\t\tforAll(C, i)\n")
+        f.write("\t\t\t\t{\n")
+        f.write(
+            "\t\t\t\t\tconst double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;\n"
+        )
+        f.write("\t\t\t\t\tconst double d2 = dx*dx + dy*dy + dz*dz;\n")
+        f.write("\t\t\t\t\tif (d2 <= Rmix*Rmix)\n")
+        f.write("\t\t\t\t\t{\n")
+        f.write(
+            "\t\t\t\t\t\tconst double epsi = std::max(0.6123724356957945*Rmix, 2.0*std::cbrt(V[i]));\n"
+        )
+        f.write("\t\t\t\t\t\tconst double g = std::exp(-d2/(epsi*epsi));\n")
+        f.write(
+            f"\t\t\t\t\t\tconst double rr = std::sqrt(d2-({dn})*({dn}));\n"
+        )
+        f.write(f"\t\t\t\t\t\tconst double ux = UL[i][{nd}];\n")
+        f.write("\t\t\t\t\t\tSax += alphaL[i]*g*V[i];\n")
+        f.write("\t\t\t\t\t\tSsw += alphaL[i]*g*rhoL[i]*ux*ux*rr*V[i];\n")
+        f.write("\t\t\t\t\t}\n")
+        f.write("\t\t\t\t}\n")
+        f.write("\t\t\t\treduce(Sax, sumOp<scalar>());\n")
+        f.write("\t\t\t\treduce(Ssw, sumOp<scalar>());\n")
+        # --- pass 2: apply ---
+        f.write("\t\t\t\tforAll(C, i)\n")
+        f.write("\t\t\t\t{\n")
+        f.write(
+            "\t\t\t\t\tconst double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;\n"
+        )
+        f.write("\t\t\t\t\tconst double d2 = dx*dx + dy*dy + dz*dz;\n")
+        f.write("\t\t\t\t\tif (d2 <= Rmix*Rmix)\n")
+        f.write("\t\t\t\t\t{\n")
+        f.write(
+            "\t\t\t\t\t\tconst double epsi = std::max(0.6123724356957945*Rmix, 2.0*std::cbrt(V[i]));\n"
+        )
+        f.write("\t\t\t\t\t\tconst double g = std::exp(-d2/(epsi*epsi));\n")
+        # viscous drag (lumped): opposes the oriented inflow
+        f.write("\t\t\t\t\t\tif (Sax > 1e-30)\n")
+        f.write("\t\t\t\t\t\t{\n")
+        f.write("\t\t\t\t\t\t\tconst double fvisc = Tls/Sax*alphaL[i]*g;\n")
+        f.write(f"\t\t\t\t\t\t\tUsource[i][{nd}] += -{push_ax}*fvisc*V[i];\n")
+        f.write("\t\t\t\t\t\t}\n")
+        # swirl + energy-neutral axial reaction (local, velocity-weighted)
+        f.write(
+            f"\t\t\t\t\t\tconst double rr = std::sqrt(d2-({dn})*({dn}));\n"
+        )
+        f.write("\t\t\t\t\t\tif (rr > 1e-3*Rmix && Ssw > 1e-30)\n")
+        f.write("\t\t\t\t\t\t{\n")
+        f.write(f"\t\t\t\t\t\t\tconst double ux = UL[i][{nd}];\n")
+        f.write(
+            f"\t\t\t\t\t\t\tconst double uth = UL[i][{tan[0][0]}]*(({tan[0][1]})/rr) + UL[i][{tan[1][0]}]*(({tan[1][1]})/rr);\n"
+        )
+        f.write("\t\t\t\t\t\t\tconst double A0 = Qsw/Ssw;\n")
+        f.write(
+            "\t\t\t\t\t\t\tconst double fsw = A0*rhoL[i]*ux*ux*alphaL[i]*g;\n"
+        )
+        f.write(
+            f"\t\t\t\t\t\t\tUsource[i][{tan[0][0]}] += {push_th}*fsw*V[i]*(({tan[0][1]})/rr);\n"
+        )
+        f.write(
+            f"\t\t\t\t\t\t\tUsource[i][{tan[1][0]}] += {push_th}*fsw*V[i]*(({tan[1][1]})/rr);\n"
+        )
+        f.write(
+            "\t\t\t\t\t\t\tconst double fcp = A0*rhoL[i]*ux*uth*alphaL[i]*g;\n"
+        )
+        f.write(f"\t\t\t\t\t\t\tUsource[i][{nd}] += -{push_th}*fcp*V[i];\n")
+        f.write("\t\t\t\t\t\t}\n")
+        f.write("\t\t\t\t\t}\n")
+        f.write("\t\t\t\t}\n")
+        f.write("\t\t\t}\n")
+        f.write("\t\t}\n")
+
+
 def write_end(output_folder):
     with open(os.path.join(output_folder, "fvModels"), "a+") as f:
         f.write("\t#};\n")

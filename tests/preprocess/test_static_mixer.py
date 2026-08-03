@@ -1,4 +1,12 @@
+import tempfile
+from pathlib import Path
+
 from bird.meshing.block_rect_mesh import from_block_rect_to_seg
+from bird.preprocess.dynamic_mixer.io_fvModels import (
+    write_end,
+    write_preamble_ball,
+    write_static_mixer_ball,
+)
 from bird.preprocess.dynamic_mixer.mixer import StaticMixer
 
 
@@ -61,3 +69,50 @@ def test_StaticMixer():
         {"x": 0.1, "y": 0.2, "z": 0.3, "normal_dir": 1, "radius": 0.05}
     )
     assert not m3.ready
+
+
+def test_write_static_mixer_ball():
+    m = StaticMixer()
+    m.update_from_expl_dict(
+        {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "normal_dir": 1,
+            "radius": 0.05,
+            "sign": "+",
+            "swirl_sign": "+",
+            "S": 0.35,
+            "K": 0.5,
+            "start_time": 1,
+        }
+    )
+    assert m.ready
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        write_preamble_ball(tmpdirname)
+        write_static_mixer_ball(m, tmpdirname)
+        write_end(tmpdirname)
+        txt = Path(tmpdirname, "fvModels").read_text()
+
+    assert "// ===== static mixer =====" in txt
+    assert "dynamicMix_util" not in txt  # no external header
+    assert "V2" not in txt  # passive: no Newton solve
+    # passive loads (no tip speed / power)
+    assert "const double Qsw = Snum*Rmix*rhoM*area*V1*V1;" in txt
+    assert "const double Tls = 0.5*Kloss*rhoM*area*V1*V1;" in txt
+    # activation gate inherited from the sensing block
+    assert "if (V1 < 0.0) V1 = 0.0;" in txt
+    # exact conservation: runtime-summed normalisers (velocity-weighted swirl)
+    assert "reduce(Sax, sumOp<scalar>());" in txt
+    assert "reduce(Ssw, sumOp<scalar>());" in txt
+    assert "Ssw += alphaL[i]*g*rhoL[i]*ux*ux*rr*V[i];" in txt
+    assert "const double A0 = Qsw/Ssw;" in txt
+    # energy-neutral axial reaction f_cp ~ rho*ux*uth
+    assert "const double fcp = A0*rhoL[i]*ux*uth*alphaL[i]*g;" in txt
+    # normal_dir=1 -> theta_hat = (dz/rr, 0, -dx/rr); swirl on components 0 and 2
+    assert "Usource[i][0] += 1.0*fsw*V[i]*((dz)/rr);" in txt
+    assert "Usource[i][2] += 1.0*fsw*V[i]*((-dx)/rr);" in txt
+    # axial reaction and viscous drag on the normal component (index 1)
+    assert "Usource[i][1] += -1.0*fcp*V[i];" in txt
+    assert "Usource[i][1] += -1.0*fvisc*V[i];" in txt
