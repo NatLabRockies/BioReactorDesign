@@ -512,7 +512,7 @@ def write_mixer_ball(
         f.write("\t\t\t\t\t\tif (Sax > 1e-30)\n")
         f.write("\t\t\t\t\t\t{\n")
         f.write("\t\t\t\t\t\t\tconst double fax = Tax/Sax*alphaL[i]*g;\n")
-        f.write(f"\t\t\t\t\t\t\tUsource[i][{nd}] += {push_ax}*fax*V[i];\n")
+        f.write(f"\t\t\t\t\t\t\tUsource[i][{nd}] -= {push_ax}*fax*V[i];\n")
         f.write("\t\t\t\t\t\t}\n")
         if swirl:
             f.write(
@@ -522,10 +522,10 @@ def write_mixer_ball(
             f.write("\t\t\t\t\t\t{\n")
             f.write("\t\t\t\t\t\t\tconst double fth = Qsw/Sth*alphaL[i]*g;\n")
             f.write(
-                f"\t\t\t\t\t\t\tUsource[i][{tan[0][0]}] += {push_th}*fth*V[i]*(({tan[0][1]})/rr);\n"
+                f"\t\t\t\t\t\t\tUsource[i][{tan[0][0]}] -= {push_th}*fth*V[i]*(({tan[0][1]})/rr);\n"
             )
             f.write(
-                f"\t\t\t\t\t\t\tUsource[i][{tan[1][0]}] += {push_th}*fth*V[i]*(({tan[1][1]})/rr);\n"
+                f"\t\t\t\t\t\t\tUsource[i][{tan[1][0]}] -= {push_th}*fth*V[i]*(({tan[1][1]})/rr);\n"
             )
             f.write("\t\t\t\t\t\t}\n")
         f.write("\t\t\t\t\t}\n")
@@ -645,7 +645,7 @@ def write_static_mixer_ball(mixer, output_folder):
         f.write("\t\t\t\t\t\tif (Sax > 1e-30)\n")
         f.write("\t\t\t\t\t\t{\n")
         f.write("\t\t\t\t\t\t\tconst double fvisc = Tls/Sax*alphaL[i]*g;\n")
-        f.write(f"\t\t\t\t\t\t\tUsource[i][{nd}] += {drag_ax}*fvisc*V[i];\n")
+        f.write(f"\t\t\t\t\t\t\tUsource[i][{nd}] -= {drag_ax}*fvisc*V[i];\n")
         f.write("\t\t\t\t\t\t}\n")
         # swirl + energy-neutral axial reaction (local, velocity-weighted)
         f.write(
@@ -662,15 +662,15 @@ def write_static_mixer_ball(mixer, output_folder):
             "\t\t\t\t\t\t\tconst double fsw = A0*rhoL[i]*ux*ux*alphaL[i]*g;\n"
         )
         f.write(
-            f"\t\t\t\t\t\t\tUsource[i][{tan[0][0]}] += {push_th}*fsw*V[i]*(({tan[0][1]})/rr);\n"
+            f"\t\t\t\t\t\t\tUsource[i][{tan[0][0]}] -= {push_th}*fsw*V[i]*(({tan[0][1]})/rr);\n"
         )
         f.write(
-            f"\t\t\t\t\t\t\tUsource[i][{tan[1][0]}] += {push_th}*fsw*V[i]*(({tan[1][1]})/rr);\n"
+            f"\t\t\t\t\t\t\tUsource[i][{tan[1][0]}] -= {push_th}*fsw*V[i]*(({tan[1][1]})/rr);\n"
         )
         f.write(
             "\t\t\t\t\t\t\tconst double fcp = A0*rhoL[i]*ux*uth*alphaL[i]*g;\n"
         )
-        f.write(f"\t\t\t\t\t\t\tUsource[i][{nd}] += {cp_th}*fcp*V[i];\n")
+        f.write(f"\t\t\t\t\t\t\tUsource[i][{nd}] -= {cp_th}*fcp*V[i];\n")
         f.write("\t\t\t\t\t\t}\n")
         f.write("\t\t\t\t\t}\n")
         f.write("\t\t\t\t}\n")
