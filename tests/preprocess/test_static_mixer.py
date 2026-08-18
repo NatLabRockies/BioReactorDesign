@@ -114,11 +114,13 @@ def test_write_static_mixer_ball():
     # energy-neutral axial reaction f_cp ~ rho*ux*uth
     assert "const double fcp = A0*rhoL[i]*ux*uth*alphaL[i]*g;" in txt
     # normal_dir=1 -> theta_hat = (dz/rr, 0, -dx/rr); swirl on components 0 and 2
-    assert "Usource[i][0] += 1.0*fsw*V[i]*((dz)/rr);" in txt
-    assert "Usource[i][2] += 1.0*fsw*V[i]*((-dx)/rr);" in txt
+    # Usource -= B applies body force +B (adds B to the RHS), so the deposition
+    # is emitted with -= and the pre-combined sign literals.
+    assert "Usource[i][0] -= 1.0*fsw*V[i]*((dz)/rr);" in txt
+    assert "Usource[i][2] -= 1.0*fsw*V[i]*((-dx)/rr);" in txt
     # axial reaction and viscous drag on the normal component (index 1)
-    assert "Usource[i][1] += -1.0*fcp*V[i];" in txt
-    assert "Usource[i][1] += -1.0*fvisc*V[i];" in txt
+    assert "Usource[i][1] -= -1.0*fcp*V[i];" in txt
+    assert "Usource[i][1] -= -1.0*fvisc*V[i];" in txt
 
 
 def test_write_static_mixer_ball_negative_orientation():
@@ -148,9 +150,9 @@ def test_write_static_mixer_ball_negative_orientation():
         txt = Path(tmpdirname, "fvModels").read_text()
 
     assert "--1.0" not in txt  # no decrement-on-literal
-    # -push_ax and -push_th collapse to +1.0 for the negative orientation
-    assert "Usource[i][1] += 1.0*fvisc*V[i];" in txt
-    assert "Usource[i][1] += 1.0*fcp*V[i];" in txt
+    # drag_ax and cp_th are +1.0 for the negative orientation
+    assert "Usource[i][1] -= 1.0*fvisc*V[i];" in txt
+    assert "Usource[i][1] -= 1.0*fcp*V[i];" in txt
 
 
 def test_write_fvModel_static_mixers():
