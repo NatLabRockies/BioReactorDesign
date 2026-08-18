@@ -99,14 +99,14 @@ codedSource
 						if (Sax > 1e-30)
 						{
 							const double fax = Tax/Sax*alphaL[i]*g;
-							Usource[i][0] += 1.0*fax*V[i];
+							Usource[i][0] -= 1.0*fax*V[i];
 						}
 						const double rr = std::sqrt(d2-(dx)*(dx));
 						if (rr > 1e-3*Rmix && Sth > 1e-30)
 						{
 							const double fth = Qsw/Sth*alphaL[i]*g;
-							Usource[i][1] += 1.0*fth*V[i]*((-dz)/rr);
-							Usource[i][2] += 1.0*fth*V[i]*((dy)/rr);
+							Usource[i][1] -= 1.0*fth*V[i]*((-dz)/rr);
+							Usource[i][2] -= 1.0*fth*V[i]*((dy)/rr);
 						}
 					}
 				}
@@ -178,14 +178,14 @@ codedSource
 						if (Sax > 1e-30)
 						{
 							const double fax = Tax/Sax*alphaL[i]*g;
-							Usource[i][0] += 1.0*fax*V[i];
+							Usource[i][0] -= 1.0*fax*V[i];
 						}
 						const double rr = std::sqrt(d2-(dx)*(dx));
 						if (rr > 1e-3*Rmix && Sth > 1e-30)
 						{
 							const double fth = Qsw/Sth*alphaL[i]*g;
-							Usource[i][1] += 1.0*fth*V[i]*((-dz)/rr);
-							Usource[i][2] += 1.0*fth*V[i]*((dy)/rr);
+							Usource[i][1] -= 1.0*fth*V[i]*((-dz)/rr);
+							Usource[i][2] -= 1.0*fth*V[i]*((dy)/rr);
 						}
 					}
 				}
@@ -257,14 +257,14 @@ codedSource
 						if (Sax > 1e-30)
 						{
 							const double fax = Tax/Sax*alphaL[i]*g;
-							Usource[i][0] += 1.0*fax*V[i];
+							Usource[i][0] -= 1.0*fax*V[i];
 						}
 						const double rr = std::sqrt(d2-(dx)*(dx));
 						if (rr > 1e-3*Rmix && Sth > 1e-30)
 						{
 							const double fth = Qsw/Sth*alphaL[i]*g;
-							Usource[i][1] += 1.0*fth*V[i]*((-dz)/rr);
-							Usource[i][2] += 1.0*fth*V[i]*((dy)/rr);
+							Usource[i][1] -= 1.0*fth*V[i]*((-dz)/rr);
+							Usource[i][2] -= 1.0*fth*V[i]*((dy)/rr);
 						}
 					}
 				}
@@ -336,14 +336,14 @@ codedSource
 						if (Sax > 1e-30)
 						{
 							const double fax = Tax/Sax*alphaL[i]*g;
-							Usource[i][0] += -1.0*fax*V[i];
+							Usource[i][0] -= -1.0*fax*V[i];
 						}
 						const double rr = std::sqrt(d2-(dx)*(dx));
 						if (rr > 1e-3*Rmix && Sth > 1e-30)
 						{
 							const double fth = Qsw/Sth*alphaL[i]*g;
-							Usource[i][1] += 1.0*fth*V[i]*((-dz)/rr);
-							Usource[i][2] += 1.0*fth*V[i]*((dy)/rr);
+							Usource[i][1] -= 1.0*fth*V[i]*((-dz)/rr);
+							Usource[i][2] -= 1.0*fth*V[i]*((dy)/rr);
 						}
 					}
 				}

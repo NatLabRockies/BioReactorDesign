@@ -90,7 +90,7 @@ codedSource
 						if (Sax > 1e-30)
 						{
 							const double fvisc = Tls/Sax*alphaL[i]*g;
-							Usource[i][0] += -1.0*fvisc*V[i];
+							Usource[i][0] -= -1.0*fvisc*V[i];
 						}
 						const double rr = std::sqrt(d2-(dx)*(dx));
 						if (rr > 1e-3*Rmix && Ssw > 1e-30)
@@ -99,10 +99,10 @@ codedSource
 							const double uth = UL[i][1]*((-dz)/rr) + UL[i][2]*((dy)/rr);
 							const double A0 = Qsw/Ssw;
 							const double fsw = A0*rhoL[i]*ux*ux*alphaL[i]*g;
-							Usource[i][1] += 1.0*fsw*V[i]*((-dz)/rr);
-							Usource[i][2] += 1.0*fsw*V[i]*((dy)/rr);
+							Usource[i][1] -= 1.0*fsw*V[i]*((-dz)/rr);
+							Usource[i][2] -= 1.0*fsw*V[i]*((dy)/rr);
 							const double fcp = A0*rhoL[i]*ux*uth*alphaL[i]*g;
-							Usource[i][0] += -1.0*fcp*V[i];
+							Usource[i][0] -= -1.0*fcp*V[i];
 						}
 					}
 				}
@@ -165,7 +165,7 @@ codedSource
 						if (Sax > 1e-30)
 						{
 							const double fvisc = Tls/Sax*alphaL[i]*g;
-							Usource[i][0] += 1.0*fvisc*V[i];
+							Usource[i][0] -= 1.0*fvisc*V[i];
 						}
 						const double rr = std::sqrt(d2-(dx)*(dx));
 						if (rr > 1e-3*Rmix && Ssw > 1e-30)
@@ -174,10 +174,10 @@ codedSource
 							const double uth = UL[i][1]*((-dz)/rr) + UL[i][2]*((dy)/rr);
 							const double A0 = Qsw/Ssw;
 							const double fsw = A0*rhoL[i]*ux*ux*alphaL[i]*g;
-							Usource[i][1] += -1.0*fsw*V[i]*((-dz)/rr);
-							Usource[i][2] += -1.0*fsw*V[i]*((dy)/rr);
+							Usource[i][1] -= -1.0*fsw*V[i]*((-dz)/rr);
+							Usource[i][2] -= -1.0*fsw*V[i]*((dy)/rr);
 							const double fcp = A0*rhoL[i]*ux*uth*alphaL[i]*g;
-							Usource[i][0] += 1.0*fcp*V[i];
+							Usource[i][0] -= 1.0*fcp*V[i];
 						}
 					}
 				}
