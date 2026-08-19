@@ -824,9 +824,20 @@ def generate_leveled_reactor_cases(
     written into every case of this level via :func:`overwrite_controldict`;
     left ``None`` the template controlDict is used unchanged.
     """
-    if not os.path.isabs(template_folder):
-        template_folder = os.path.join(
-            BIRD_DIR, "preprocess", "data_case_gen", template_folder
+    # Resolve template_folder: use it if it points at a real directory (an
+    # absolute path or one relative to the cwd, e.g. "./template_kom");
+    # otherwise fall back to a template bundled under data_case_gen.
+    bundled = os.path.join(
+        BIRD_DIR, "preprocess", "data_case_gen", template_folder
+    )
+    if os.path.isdir(template_folder):
+        template_folder = os.path.abspath(template_folder)
+    elif os.path.isdir(bundled):
+        template_folder = bundled
+    else:
+        raise FileNotFoundError(
+            f"template_folder not found: {template_folder!r} is not a "
+            f"directory, nor is {bundled!r}"
         )
     geom_dict = make_default_geom_dict_from_file(
         os.path.join(template_folder, "system", "mesh.json")
