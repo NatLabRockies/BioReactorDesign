@@ -129,3 +129,65 @@ def test_discrete_loop():
                 save_config_dict(
                     f"{study_folder}/branchcom_spots.pkl", branchcom_spots
                 )
+
+
+def test_overwrite_controldict():
+
+    template_control_dict = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "preprocess",
+        "data_case_gen",
+        "loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup",
+        "system",
+        "controlDict",
+    )
+
+    def read_scalars(control_dict_path):
+        scalars = {}
+        with open(control_dict_path, "r") as f:
+            for line in f:
+                tokens = line.strip().rstrip(";").split()
+                if len(tokens) == 2 and tokens[0] in (
+                    "deltaT",
+                    "endTime",
+                    "maxCo",
+                    "maxDeltaT",
+                ):
+                    scalars[tokens[0]] = tokens[1]
+        return scalars
+
+    # a full params dict is applied verbatim to a fresh case copy
+    params = {
+        "maxCo": "0.25",
+        "maxDeltaT": "0.00025",
+        "deltaT": "1e-5",
+        "endTime": "100",
+    }
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        case = os.path.join(tmpdirname, "case")
+        os.makedirs(os.path.join(case, "system"))
+        shutil.copy(
+            template_control_dict,
+            os.path.join(case, "system", "controlDict"),
+        )
+        overwrite_controldict(case, params)
+        written = read_scalars(os.path.join(case, "system", "controlDict"))
+        assert written == params
+
+    # a partial params dict overwrites only the keys it names
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        case = os.path.join(tmpdirname, "case")
+        os.makedirs(os.path.join(case, "system"))
+        shutil.copy(
+            template_control_dict,
+            os.path.join(case, "system", "controlDict"),
+        )
+        before = read_scalars(os.path.join(case, "system", "controlDict"))
+        overwrite_controldict(case, {"endTime": "50"})
+        after = read_scalars(os.path.join(case, "system", "controlDict"))
+        assert after["endTime"] == "50"
+        assert after["deltaT"] == before["deltaT"]
+        assert after["maxCo"] == before["maxCo"]

@@ -674,6 +674,24 @@ def overwrite_ncores(case_folder, n):
                 f.write(line)
 
 
+def overwrite_controldict(case_folder, params):
+    """Rewrite time-stepping entries in system/controlDict.
+
+    :param params: dict with any of ``deltaT``, ``endTime``, ``maxCo``,
+        ``maxDeltaT``; each present key overwrites its scalar entry.
+    """
+    filename = os.path.join(case_folder, "system", "controlDict")
+    with open(filename, "r+") as f:
+        lines = f.readlines()
+    with open(filename, "w+") as f:
+        for line in lines:
+            key = line.strip().split(None, 1)[0] if line.strip() else ""
+            if key in params:
+                f.write(f"{key:<16}{params[key]};\n")
+            else:
+                f.write(line)
+
+
 def write_script_single(
     case_folder,
     account="gas2fuels",
@@ -782,6 +800,7 @@ def generate_leveled_reactor_cases(
     account="gas2fuels",
     cores_per_sim=16,
     cores_per_node=128,
+    controldict_params=None,
 ):
     """Generate one scale level of the actuator-disk (ball) design sweep.
 
@@ -799,6 +818,11 @@ def generate_leveled_reactor_cases(
 
     Each sim runs on `cores_per_sim` cores; the node-packing bundles fit
     ``cores_per_node // cores_per_sim`` sims per node.
+
+    `controldict_params`, when given, is a dict of ``system/controlDict``
+    scalar entries (any of ``deltaT``, ``endTime``, ``maxCo``, ``maxDeltaT``)
+    written into every case of this level via :func:`overwrite_controldict`;
+    left ``None`` the template controlDict is used unchanged.
     """
     if not os.path.isabs(template_folder):
         template_folder = os.path.join(
@@ -912,6 +936,8 @@ def generate_leveled_reactor_cases(
                 cstar_h2=cstar_h2,
             )
         overwrite_ncores(case_folder=case, n=cores_per_sim)
+        if controldict_params is not None:
+            overwrite_controldict(case_folder=case, params=controldict_params)
         overwrite_bubble_size_model(case_folder=case, constantD=constantD)
         write_script_single(case, account=account, cores=cores_per_sim)
         write_script_post_single(case, account=account)
