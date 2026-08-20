@@ -1,3 +1,4 @@
+import json
 import os
 import pickle
 import shutil
@@ -705,7 +706,7 @@ def write_script_single(
         f.write("#SBATCH --job-name=lev_single\n")
         f.write("#SBATCH --nodes=1\n")
         f.write(f"#SBATCH --ntasks-per-node={cores}\n")
-        f.write("#SBATCH --time=07:59:00\n")
+        f.write("#SBATCH --time=47:59:00\n")
         f.write(f"#SBATCH --account={account}\n\n")
         f.write("bash presteps.sh\n")
         f.write(f"source {ofbashrc}\n")
@@ -759,7 +760,7 @@ def write_pack_scripts(
             f.write(f"#SBATCH --job-name=lev_{pack_name}\n")
             f.write("#SBATCH --nodes=1\n")
             f.write("#SBATCH --exclusive\n")
-            f.write("#SBATCH --time=07:59:00\n")
+            f.write("#SBATCH --time=47:59:00\n")
             f.write(f"#SBATCH --account={account}\n\n")
             f.write(f"source {ofbashrc}\n\n")
             f.write("run_sim () {\n")
@@ -864,19 +865,18 @@ def generate_leveled_reactor_cases(
         case = os.path.join(study_folder, sim_folder)
         shutil.copytree(template_folder, case)
 
-        bc_dict = {"inlets": [], "outlets": []}
-        for br in (6, 4):
-            bc_dict["outlets"].append(
-                {
-                    "branch_id": br,
-                    "type": "circle",
-                    "frac_space": 1,
-                    "normal_dir": 1,
-                    "radius": 0.4,
-                    "nelements": 50,
-                    "block_pos": "top",
-                }
-            )
+        # Outlets are template-driven: read from the template's
+        # inlets_outlets.json so each head shape carries its own outlet -- the
+        # square-head templates define a full-face rectangle covering the whole
+        # top patch, while the baseline templates define the two disk outlets on
+        # branches 6 and 4. Inlets stay config-driven, built below.
+        with open(
+            os.path.join(template_folder, "system", "inlets_outlets.json")
+        ) as f:
+            bc_dict = {
+                "inlets": [],
+                "outlets": json.load(f).get("outlets", []),
+            }
         for branch in (0, 1, 2):
             for iind in np.argwhere(config_dict[sim_id][branch] == 1)[:, 0]:
                 bc_dict["inlets"].append(

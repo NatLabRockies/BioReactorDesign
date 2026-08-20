@@ -1,3 +1,4 @@
+import json
 import os
 import pickle
 import shutil
@@ -129,6 +130,89 @@ def test_discrete_loop():
                 save_config_dict(
                     f"{study_folder}/branchcom_spots.pkl", branchcom_spots
                 )
+
+
+def test_generate_leveled_reactor_cases():
+    # Outlets must be template-driven (read from the template's
+    # inlets_outlets.json), not hardcoded: a template carrying a distinctive
+    # full-face rectangle outlet must reproduce that rectangle in every
+    # generated case. Under the old hardcoded (branch 6 & 4 disks) path this
+    # assertion fails.
+    BIRD_CASE_GEN_DATA_DIR = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "preprocess",
+        "data_case_gen",
+    )
+    bundled = os.path.join(
+        BIRD_CASE_GEN_DATA_DIR,
+        "loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup",
+    )
+    rectangle = {
+        "type": "rectangle",
+        "normal_dir": 1,
+        "centx": 0.5,
+        "centy": 11.0,
+        "centz": 2.5,
+        "width": 3.0,
+        "height": 7.0,
+    }
+
+    branchcom_spots = {
+        0: np.linspace(0.2, 0.8, 4),
+        1: np.linspace(0.2, 0.8, 3),
+        2: np.linspace(0.2, 0.8, 4),
+    }
+    branches_com = [0, 1, 2]
+    config_dict = {}
+    for _ in range(10):
+        config = {
+            b: np.random.choice([0, 1, 2], size=len(branchcom_spots[b]))
+            for b in branches_com
+        }
+        if check_config(config):
+            config_dict[len(config_dict)] = config
+        if len(config_dict) >= 1:
+            break
+    mixer_params = {
+        "Np": 6,
+        "Vtip": 1.5,
+        "sigma": 0.35,
+        "radius": 0.4,
+        "sign": {0: "+", 1: "+", 2: "-"},
+        "swirl_sign": {0: "+", 1: "+", 2: "-"},
+    }
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        # a template whose outlet differs from the old hardcoded disks
+        template = os.path.join(tmpdirname, "template")
+        shutil.copytree(bundled, template)
+        io_path = os.path.join(template, "system", "inlets_outlets.json")
+        with open(io_path) as f:
+            io = json.load(f)
+        io["outlets"] = [rectangle]
+        with open(io_path, "w") as f:
+            json.dump(io, f)
+
+        study = os.path.join(tmpdirname, "study")
+        generate_leveled_reactor_cases(
+            config_dict,
+            branchcom_spots,
+            scale=0.05,
+            n_sim=1,
+            study_folder=study,
+            mixer_params=mixer_params,
+            template_folder=template,
+            constantD=True,
+            start_time=1,
+        )
+        with open(
+            os.path.join(study, "Sim_0000", "system", "inlets_outlets.json")
+        ) as f:
+            generated = json.load(f)
+        assert generated["outlets"] == [rectangle]
 
 
 def test_overwrite_controldict():
