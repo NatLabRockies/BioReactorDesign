@@ -859,6 +859,64 @@ def write_pack_scripts(
             f.write(f"sbatch {pack_name}\n")
 
 
+def write_pack_post_scripts(
+    study_folder,
+    sim_ids,
+    sims_per_node=26,
+    account="gas2fuels",
+    walltime="1:00:00",
+):
+    """Write post-processing packing scripts: pack_post_XXX + submit_all_post.sh.
+
+    Mirrors :func:`write_pack_scripts` one-to-one (same `sims_per_node`
+    bundling, so ``pack_post_b`` post-processes exactly the sims in
+    ``pack_b``), but each sim runs the QoI pipeline on a single core:
+    ``reconstructPar`` then ``read_history.py`` + ``get_qoi.py`` under the
+    bird_mixer conda env. The bundle requests one core per sim
+    (``ntasks-per-node = len(bundle)``) and its sims run concurrently, each in
+    its own subshell so their conda state stays isolated. ``submit_all_post.sh``
+    sbatches every bundle.
+    """
+    ofbashrc = "/projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc"
+    conda_env = "/projects/gas2fuels/conda_env/bird_mixer/"
+    bundles = [
+        sim_ids[i : i + sims_per_node]
+        for i in range(0, len(sim_ids), sims_per_node)
+    ]
+    pack_names = []
+    for b, bundle in enumerate(bundles):
+        pack_name = f"pack_post_{b:03}"
+        pack_names.append(pack_name)
+        with open(os.path.join(study_folder, pack_name), "w+") as f:
+            f.write("#!/bin/bash\n")
+            f.write(f"#SBATCH --job-name=lev_{pack_name}\n")
+            f.write("#SBATCH --nodes=1\n")
+            f.write(f"#SBATCH --ntasks-per-node={len(bundle)}\n")
+            f.write(f"#SBATCH --time={walltime}\n")
+            f.write(f"#SBATCH --account={account}\n\n")
+            f.write("run_post () {\n")
+            f.write("(\n")
+            f.write('\tcd "$1"\n')
+            f.write(f"\tsource {ofbashrc}\n")
+            f.write("\treconstructPar -newTimes > log.reconstruct 2>&1\n")
+            f.write("\tmodule load conda\n")
+            f.write(f"\tconda activate {conda_env}\n")
+            f.write(
+                "\tpython read_history.py -cr .. -cn local -df data"
+                " > log.readhist 2>&1\n"
+            )
+            f.write("\tpython get_qoi.py > log.getqoi 2>&1\n")
+            f.write("\tconda deactivate\n")
+            f.write(") &\n")
+            f.write("}\n\n")
+            for sim_id in bundle:
+                f.write(f"run_post {id2simfolder(sim_id)}\n")
+            f.write("wait\n")
+    with open(os.path.join(study_folder, "submit_all_post.sh"), "w+") as f:
+        for pack_name in pack_names:
+            f.write(f"sbatch {pack_name}\n")
+
+
 def generate_leveled_reactor_cases(
     config_dict,
     branchcom_spots,
@@ -1042,6 +1100,13 @@ def generate_leveled_reactor_cases(
         cores_per_sim=cores_per_sim,
         account=account,
         walltime=walltime,
+    )
+    # post-processing packs mirror the run packs one-to-one (1 core per sim)
+    write_pack_post_scripts(
+        study_folder,
+        sim_ids,
+        sims_per_node=cores_per_node,
+        account=account,
     )
     write_prep(os.path.join(study_folder, "prep.sh"), n_sim)
     save_config_dict(os.path.join(study_folder, "configs.pkl"), config_dict)
