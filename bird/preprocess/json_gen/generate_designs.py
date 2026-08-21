@@ -43,6 +43,12 @@ def compare_config(config1, config2):
 
 
 def check_config(config):
+    """Accept a design only if it has at least one sparger.
+
+    Choice value ``1`` marks a sparger (a bottom gas inlet); ``0`` a mixer,
+    ``2`` nothing. A design with no sparger is rejected, so
+    :func:`sample_placement_designs` never keeps one.
+    """
     success = False
     inlet_exist = False
     for key in config:
@@ -64,6 +70,73 @@ def save_config_dict(filename, config_dict):
 def load_config_dict(filename):
     with open(filename, "rb") as f:
         config_dict = pickle.load(f)
+    return config_dict
+
+
+def sample_placement_designs(
+    branches_com,
+    branchcom_spots,
+    n_designs,
+    choices=(0, 1, 2),
+    max_attempts=1_000_000,
+):
+    """Randomly sample `n_designs` distinct, valid placement designs.
+
+    Draws are non-deterministic (the caller must NOT seed for reproducibility).
+    Each design maps ``branch_id -> array`` of per-spot choices;
+    :func:`check_config` keeps only designs with at least one inlet and
+    :func:`compare_config` rejects duplicates. Keys are contiguous ``0..n-1``.
+
+    :param branches_com: branch ids on which choices are placed.
+    :param branchcom_spots: ``branch_id -> array`` of candidate spot fractions.
+    :param n_designs: number of distinct valid designs to return.
+    :param choices: per-spot categorical choices (e.g. mixer/sparger/none).
+    :param max_attempts: give up after this many draws.
+    """
+    config_dict = {}
+    attempts = 0
+    while len(config_dict) < n_designs and attempts < max_attempts:
+        config = {
+            b: np.random.choice(choices, size=len(branchcom_spots[b]))
+            for b in branches_com
+        }
+        attempts += 1
+        if any(compare_config(config_dict[k], config) for k in config_dict):
+            continue
+        if check_config(config):
+            config_dict[len(config_dict)] = config
+    if len(config_dict) < n_designs:
+        raise RuntimeError(
+            f"only found {len(config_dict)} designs in {attempts} attempts"
+        )
+    return config_dict
+
+
+def load_or_sample_designs(
+    design_file,
+    branches_com,
+    branchcom_spots,
+    n_designs,
+    choices=(0, 1, 2),
+):
+    """Borrow designs from `design_file` if it exists, else sample and save.
+
+    The first sweep run samples a fresh random design set (see
+    :func:`sample_placement_designs`) and pickles it to `design_file`; every
+    later sweep pointed at the same file loads it instead of re-sampling, so
+    ``Sim_i`` is the same design across all sweeps without relying on a fixed
+    seed. `design_file` should hold enough designs for the largest sweep --
+    downstream slicing (``sorted(config_dict)[:n_sim]``) selects the first
+    `n_sim`.
+    """
+    if os.path.exists(design_file):
+        logger.info(f"Borrowing designs from existing {design_file}")
+        return load_config_dict(design_file)
+    logger.info(f"Sampling {n_designs} designs and saving to {design_file}")
+    config_dict = sample_placement_designs(
+        branches_com, branchcom_spots, n_designs, choices=choices
+    )
+    save_config_dict(design_file, config_dict)
     return config_dict
 
 
@@ -698,6 +771,7 @@ def write_script_single(
     account="gas2fuels",
     cores=4,
     solver="birdmultiphaseEulerFoam",
+    walltime="47:59:00",
 ):
     """Write a per-case SLURM script (``script_single``) running one case."""
     ofbashrc = "/projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc"
@@ -706,7 +780,7 @@ def write_script_single(
         f.write("#SBATCH --job-name=lev_single\n")
         f.write("#SBATCH --nodes=1\n")
         f.write(f"#SBATCH --ntasks-per-node={cores}\n")
-        f.write("#SBATCH --time=47:59:00\n")
+        f.write(f"#SBATCH --time={walltime}\n")
         f.write(f"#SBATCH --account={account}\n\n")
         f.write("bash presteps.sh\n")
         f.write(f"source {ofbashrc}\n")
@@ -739,6 +813,7 @@ def write_pack_scripts(
     cores_per_sim=4,
     account="gas2fuels",
     solver="birdmultiphaseEulerFoam",
+    walltime="47:59:00",
 ):
     """Write node-packing scripts (Option A): pack_XXX bundles + submit_all.sh.
 
@@ -760,7 +835,7 @@ def write_pack_scripts(
             f.write(f"#SBATCH --job-name=lev_{pack_name}\n")
             f.write("#SBATCH --nodes=1\n")
             f.write("#SBATCH --exclusive\n")
-            f.write("#SBATCH --time=47:59:00\n")
+            f.write(f"#SBATCH --time={walltime}\n")
             f.write(f"#SBATCH --account={account}\n\n")
             f.write(f"source {ofbashrc}\n\n")
             f.write("run_sim () {\n")
@@ -802,6 +877,7 @@ def generate_leveled_reactor_cases(
     cores_per_sim=16,
     cores_per_node=128,
     controldict_params=None,
+    walltime="47:59:00",
 ):
     """Generate one scale level of the actuator-disk (ball) design sweep.
 
@@ -818,7 +894,8 @@ def generate_leveled_reactor_cases(
     used unchanged.
 
     Each sim runs on `cores_per_sim` cores; the node-packing bundles fit
-    ``cores_per_node // cores_per_sim`` sims per node.
+    ``cores_per_node // cores_per_sim`` sims per node. `walltime` is the SLURM
+    ``--time`` written into both the per-case and node-packing scripts.
 
     `controldict_params`, when given, is a dict of ``system/controlDict``
     scalar entries (any of ``deltaT``, ``endTime``, ``maxCo``, ``maxDeltaT``)
@@ -950,7 +1027,9 @@ def generate_leveled_reactor_cases(
         if controldict_params is not None:
             overwrite_controldict(case_folder=case, params=controldict_params)
         overwrite_bubble_size_model(case_folder=case, constantD=constantD)
-        write_script_single(case, account=account, cores=cores_per_sim)
+        write_script_single(
+            case, account=account, cores=cores_per_sim, walltime=walltime
+        )
         write_script_post_single(case, account=account)
         write_foam_stub(case)
 
@@ -962,6 +1041,7 @@ def generate_leveled_reactor_cases(
         sims_per_node=sims_per_node,
         cores_per_sim=cores_per_sim,
         account=account,
+        walltime=walltime,
     )
     write_prep(os.path.join(study_folder, "prep.sh"), n_sim)
     save_config_dict(os.path.join(study_folder, "configs.pkl"), config_dict)

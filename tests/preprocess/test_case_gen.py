@@ -275,3 +275,72 @@ def test_overwrite_controldict():
         assert after["endTime"] == "50"
         assert after["deltaT"] == before["deltaT"]
         assert after["maxCo"] == before["maxCo"]
+
+
+def test_sample_placement_designs():
+    branchcom_spots = {
+        0: np.linspace(0.2, 0.8, 4),
+        1: np.linspace(0.2, 0.8, 3),
+        2: np.linspace(0.2, 0.8, 4),
+    }
+    branches_com = [0, 1, 2]
+    n_designs = 30
+    config_dict = sample_placement_designs(
+        branches_com, branchcom_spots, n_designs
+    )
+    # exactly n_designs, contiguous keys, one array per branch of the right size
+    assert len(config_dict) == n_designs
+    assert sorted(config_dict) == list(range(n_designs))
+    for design in config_dict.values():
+        for b in branches_com:
+            assert design[b].shape == (len(branchcom_spots[b]),)
+    # every design is valid (>=1 inlet) and all are distinct
+    assert all(check_config(d) for d in config_dict.values())
+    for i in range(n_designs):
+        for j in range(i + 1, n_designs):
+            assert not compare_config(config_dict[i], config_dict[j])
+    # sampling is non-deterministic: an independent draw differs
+    other = sample_placement_designs(branches_com, branchcom_spots, n_designs)
+    assert any(
+        not np.array_equal(config_dict[k][b], other[k][b])
+        for k in range(n_designs)
+        for b in branches_com
+    )
+    # too many designs for the space raises rather than looping forever
+    try:
+        sample_placement_designs(
+            branches_com, branchcom_spots, n_designs, max_attempts=5
+        )
+        raised = False
+    except RuntimeError:
+        raised = True
+    assert raised
+
+
+def test_load_or_sample_designs():
+    branchcom_spots = {
+        0: np.linspace(0.2, 0.8, 4),
+        1: np.linspace(0.2, 0.8, 3),
+        2: np.linspace(0.2, 0.8, 4),
+    }
+    branches_com = [0, 1, 2]
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        design_file = os.path.join(tmpdirname, "designs.pkl")
+        # first call: no file yet -> samples and saves
+        first = load_or_sample_designs(
+            design_file, branches_com, branchcom_spots, n_designs=20
+        )
+        assert os.path.exists(design_file)
+        assert len(first) == 20
+        # second call: file exists -> borrows the identical set (n_designs
+        # is ignored once a file is present, so a later sweep asking for
+        # fewer still reuses the saved pool)
+        borrowed = load_or_sample_designs(
+            design_file, branches_com, branchcom_spots, n_designs=5
+        )
+        assert len(borrowed) == 20
+        assert all(
+            np.array_equal(first[k][b], borrowed[k][b])
+            for k in first
+            for b in branches_com
+        )
