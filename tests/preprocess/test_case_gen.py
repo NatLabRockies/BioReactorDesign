@@ -344,3 +344,43 @@ def test_load_or_sample_designs():
             for k in first
             for b in branches_com
         )
+
+
+def test_write_pack_post_scripts():
+    sim_ids = list(range(5))
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        write_pack_post_scripts(
+            tmpdirname,
+            sim_ids,
+            sims_per_node=2,
+            account="catmod",
+            walltime="1:00:00",
+        )
+        # 5 sims, 2 per node -> 3 bundles (2, 2, 1)
+        packs = sorted(
+            p for p in os.listdir(tmpdirname) if p.startswith("pack_post_")
+        )
+        assert packs == ["pack_post_000", "pack_post_001", "pack_post_002"]
+
+        first = Path(tmpdirname, "pack_post_000").read_text()
+        # header: 1 core per sim in the bundle, catmod, 1h
+        assert "#SBATCH --ntasks-per-node=2" in first
+        assert "#SBATCH --account=catmod" in first
+        assert "#SBATCH --time=1:00:00" in first
+        # the post pipeline, once per sim in the bundle
+        assert "reconstructPar -newTimes" in first
+        assert "python read_history.py -cr .. -cn local -df data" in first
+        assert "python get_qoi.py" in first
+        assert first.count("run_post Sim_") == 2
+        assert first.rstrip().endswith("wait")
+        # last bundle has the single trailing sim
+        last = Path(tmpdirname, "pack_post_002").read_text()
+        assert "#SBATCH --ntasks-per-node=1" in last
+        assert last.count("run_post Sim_") == 1
+
+        submit = Path(tmpdirname, "submit_all_post.sh").read_text()
+        assert submit.splitlines() == [
+            "sbatch pack_post_000",
+            "sbatch pack_post_001",
+            "sbatch pack_post_002",
+        ]
