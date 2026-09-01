@@ -1,0 +1,52 @@
+#!/bin/bash
+if ! type "blockMesh" &> /dev/null; then
+    echo "<blockMesh> could not be found"
+    echo "OpenFoam is likely not installed, skipping run"
+else
+    # Clean case
+    ./Allclean
+fi
+
+set -Eeuo pipefail   # -E: trap also fires inside functions/subshells
+trap 'exit_code=$?
+      echo "ERROR: Something failed! Running cleanup..."
+      ./Allclean || true
+      exit $exit_code' ERR
+
+
+if ! type "python" &> /dev/null; then
+    echo "<python> could not be found"
+    echo "Skipping Mesh generation"
+else
+    # Generate blockmeshDict
+    python -W error::SyntaxWarning  ../../../applications/write_stirred_tank_mesh.py -i ../../../bird/meshing/stirred_tank_mesh_templates/base_tank/tank_par.yaml -o system/blockMeshDict
+  
+    # Generate species thermo properties
+    # python ../../../applications/write_species_thermo_prop.py -cf .
+
+fi
+
+
+if ! type "blockMesh" &> /dev/null; then
+    echo "<blockMesh> could not be found"
+    echo "OpenFoam is likely not installed, skipping run"
+else
+    # Mesh gen
+    blockMesh -dict system/blockMeshDict
+    cp -r orig0 0
+    stitchMesh -perfect -overwrite inside_to_hub inside_to_hub_copy
+    stitchMesh -perfect -overwrite hub_to_rotor hub_to_rotor_copy
+    transformPoints "rotate=((0 0 1)(0 1 0))"
+    
+    # set IC
+    setFields
+    rm -rf 0/meshPhi
+    
+    # Run
+    birdmultiphaseEulerFoam
+
+fi
+
+
+
+

@@ -45,8 +45,8 @@ We highly recommend that you specify the version explicitly as the library is st
 
 ## Installation of BiRD OpenFOAM solver (for developers and users)
 
-1. Activate your OpenFOAM-9 environment (`source <OpenFOAM-9 installation directory>/etc/<your-shell>rc`)
-2. `cd OFsolvers/birdmultiphaseEulerFoam/`
+1. Activate your OpenFOAM environment (`source <OpenFOAM installation directory>/etc/<your-shell>rc`)
+2. For OpenFOAM-9: `cd OFsolvers/OF9/birdmultiphaseEulerFoam/`. For OpenFOAM-13: `cd OFsolvers/OF9/birdmultiphaseEulerFoam/`
 3. Compile `./Allwmake`
 
 ## Documentation

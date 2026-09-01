@@ -1,0 +1,112 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2018-2025 OpenFOAM Foundation
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
+\*---------------------------------------------------------------------------*/
+
+#include "Laakkonen.H"
+#include "phaseCompressibleMomentumTransportModel.H"
+#include "addToRunTimeSelectionTable.H"
+
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+namespace Foam
+{
+namespace diameterModels
+{
+namespace breakupModels
+{
+    defineTypeNameAndDebug(Laakkonen, 0);
+    addToRunTimeSelectionTable
+    (
+        breakupModel,
+        Laakkonen,
+        dictionary
+    );
+}
+}
+}
+
+
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::diameterModels::breakupModels::Laakkonen::
+Laakkonen
+(
+    const populationBalanceModel& popBal,
+    const dictionary& dict
+)
+:
+    breakupModel(popBal, dict),
+    C1_("C1", dimensionSet(0, -2.0/3.0, 0, 0, 0), dict, 2.25),
+    C2_("C2", dimless, dict, 0.04),
+    C3_("C3", dimless, dict, 0.01),
+    eta_("efficiency", dimless, dict, 1)
+{}
+
+
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+void Foam::diameterModels::breakupModels::Laakkonen::setBreakupRate
+(
+    volScalarField::Internal& breakupRate,
+    const label i
+)
+{
+    const sizeGroup& fi = popBal_.sizeGroups()[i];
+
+    const volScalarField::Internal& rhoc = popBal_.continuousPhase().rho();
+
+    tmp<volScalarField> tsigma(popBal_.sigmaWithContinuousPhase(fi.phase()));
+    const volScalarField::Internal& sigma = tsigma();
+
+    tmp<volScalarField> tepsilonc(popBal_.continuousTurbulence().epsilon());
+    const volScalarField::Internal& epsilonc = tepsilonc();
+    tmp<volScalarField> tmu(popBal_.continuousPhase().fluidThermo().mu());
+    const volScalarField::Internal muc = tmu();
+
+    breakupRate =
+        eta_ * C1_
+       *cbrt(epsilonc)
+       *erfc
+        (
+            sqrt
+            (
+                C2_
+               *sigma
+               /(
+                   rhoc*pow(fi.dSph(), 5.0/3.0)
+                  *pow(epsilonc, 2.0/3.0)
+                )
+              + C3_
+               *muc
+               /(
+                    sqrt(rhoc*fi.phase().rho())
+                   *cbrt(epsilonc)
+                   *pow(fi.dSph(), 4.0/3.0)
+                )
+            )
+        );
+}
+
+
+// ************************************************************************* //

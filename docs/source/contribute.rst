@@ -51,7 +51,7 @@ To run the regression tests
 
 .. code-block:: console
 
-   source <OpenFOAM-9 installation directory>/etc/<your-shell>rc
+   source <OpenFOAM installation directory>/etc/<your-shell>rc
    conda activate bird
    pip install pytest
    BIRD_HOME=`python -c "import bird; print(bird.BIRD_DIR)"`

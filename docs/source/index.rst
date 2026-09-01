@@ -12,7 +12,9 @@ The objective of `BiRD` is to
 
 It contains a python module ``bird`` that can be used to generate input files that may be read by OpenFOAM to generate meshes and cases. It can also be used to post process the output of OpenFOAM simulations.
 
-We provide a solver ``birdmultiphaseEulerFoam`` that contains custom models added to the base OpenFOAM-v9. 
+`BiRD` can run with OpenFOAM-9 or OpenFOAM-13:
+* The solver ``birdmultiphaseEulerFoam`` contains custom models added to the base OpenFOAM-9.
+* The module ``birdmultiphaseEuler`` contains custom models added to the base OpenFOAM-13. 
 
 
 .. note::
