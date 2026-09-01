@@ -125,7 +125,7 @@ def mixing_time(t_arr, z_arr, t_start, continuous=True):
                     z_target = z_final - band  # Crossed the bottom boundary
 
                 # Linearly interpolate to find the exact time t_settle at z_target
-                if z1 != z0: # Safety check to prevent division by zero
+                if z1 != z0:  # Safety check to prevent division by zero
                     t_settle = t0 + (t1 - t0) * (z_target - z0) / (z1 - z0)
                 else:
                     t_settle = t1
@@ -137,6 +137,7 @@ def mixing_time(t_arr, z_arr, t_start, continuous=True):
             t_settle = t_arr[last_out]
 
     return t_settle - t_start, t_settle, z_final
+
 
 if __name__ == "__main__":
     os.makedirs(os.path.join(CASE, "Figures"), exist_ok=True)
@@ -175,7 +176,9 @@ if __name__ == "__main__":
 
     dye_start = read_dye_start()
     t_mix, t_settle, z_final = mixing_time(t_arr, z_arr, dye_start)
-    t_mix_disc, t_settle_disc, z_final_disc = mixing_time(t_arr, z_arr, dye_start, continuous=False)
+    t_mix_disc, t_settle_disc, z_final_disc = mixing_time(
+        t_arr, z_arr, dye_start, continuous=False
+    )
 
     with open(os.path.join(CASE, "mix_time.txt"), "w") as f:
         f.write(f"Continuous: {t_mix:.4f}\n")
@@ -204,6 +207,12 @@ if __name__ == "__main__":
     print(f"final well-mixed Z discrete     : {z_final_disc:.6g}")
     print(f"final well-mixed Z continous    : {z_final:.6g}")
     print(f"dye injection start    : {dye_start:.3f} s")
-    print(f"mixing time discrete (+/-5%)    : {t_mix_disc:.3f} s  (settles at t={t_settle_disc:.3f} s)")
-    print(f"mixing time continuous (+/-5%)    : {t_mix:.3f} s  (settles at t={t_settle:.3f} s)")
-    print("wrote mix_time.txt, Z_box_average.dat and Figures/Z_box_average.png")
+    print(
+        f"mixing time discrete (+/-5%)    : {t_mix_disc:.3f} s  (settles at t={t_settle_disc:.3f} s)"
+    )
+    print(
+        f"mixing time continuous (+/-5%)    : {t_mix:.3f} s  (settles at t={t_settle:.3f} s)"
+    )
+    print(
+        "wrote mix_time.txt, Z_box_average.dat and Figures/Z_box_average.png"
+    )
