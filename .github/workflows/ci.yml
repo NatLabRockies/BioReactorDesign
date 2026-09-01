@@ -89,7 +89,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview
+          micromamba install --yes -n test-env -c conda-forge paraview hdf5
           pip install --upgrade pip
           pip install --upgrade nox
           pip install .[tests] 
@@ -154,7 +154,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview
+          micromamba install --yes -n test-env -c conda-forge paraview hdf5
           pip install --upgrade pip
           pip install --upgrade nox
           pip install nlr-bird[tests]
@@ -196,7 +196,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview
+          micromamba install --yes -n test-env -c conda-forge paraview hdf5
           pip install --upgrade pip
           pip install .
 
@@ -301,7 +301,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview
+          micromamba install --yes -n test-env -c conda-forge paraview hdf5
           pip install --upgrade pip
           pip install .
 
