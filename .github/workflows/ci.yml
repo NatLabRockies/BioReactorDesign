@@ -222,6 +222,21 @@ jobs:
           cd experimental_cases/deckwer19
           bash run.sh 
           cd ../../
+      - name: Run uloop_valadbeigy_exp1
+        run: |
+          cd experimental_cases/
+          bash run.sh 
+          cd ../../
+      - name: Run uloop_valadbeigy_exp2
+        run: |
+          cd experimental_cases/
+          bash run.sh 
+          cd ../../
+      - name: Run uloop_valadbeigy_exp3
+        run: |
+          cd experimental_cases/
+          bash run.sh 
+          cd ../../
       - name: Run side sparger tutorial
         run: |
           cd tutorial_cases/side_sparger
