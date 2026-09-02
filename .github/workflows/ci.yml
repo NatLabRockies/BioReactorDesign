@@ -82,6 +82,8 @@ jobs:
           environment-name: test-env
           create-args: >-
             python=${{ matrix.python-version }}
+            paraview=6.1
+            hdf5=1.14
           channels: conda-forge
           channel-priority: strict
           cache-downloads: true
@@ -89,7 +91,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview hdf5
           pip install --upgrade pip
           pip install --upgrade nox
           pip install .[tests] 
@@ -147,6 +148,8 @@ jobs:
           environment-name: test-env
           create-args: >-
             python=${{ matrix.python-version }}
+            paraview=6.1
+            hdf5=1.14
           channels: conda-forge
           channel-priority: strict
           cache-downloads: true
@@ -154,7 +157,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview hdf5
           pip install --upgrade pip
           pip install --upgrade nox
           pip install nlr-bird[tests]
@@ -189,6 +191,8 @@ jobs:
           environment-name: test-env
           create-args: >-
             python=${{ matrix.python-version }}
+            paraview=6.1
+            hdf5=1.14
           channels: conda-forge
           channel-priority: strict
           cache-downloads: true
@@ -196,7 +200,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview hdf5
           pip install --upgrade pip
           pip install .
 
@@ -294,6 +297,8 @@ jobs:
           environment-name: test-env
           create-args: >-
             python=${{ matrix.python-version }}
+            paraview=6.1
+            hdf5=1.14
           channels: conda-forge
           channel-priority: strict
           cache-downloads: true
@@ -301,7 +306,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview hdf5
           pip install --upgrade pip
           pip install .
 
