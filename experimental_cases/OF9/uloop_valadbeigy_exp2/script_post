@@ -5,7 +5,6 @@
 #SBATCH --ntasks-per-node=16
 #SBATCH --time=01:59:00
 #SBATCH --account=gas2fuels
-#SBATCH --dependency=afterany:15800966
 
 source /projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
 reconstructPar -newTimes -fields "(Z.liquid U.liquid alpha.gas)"
