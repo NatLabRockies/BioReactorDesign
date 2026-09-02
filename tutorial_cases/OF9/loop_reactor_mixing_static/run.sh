@@ -12,16 +12,16 @@ trap 'echo "ERROR: Something failed! Running cleanup..."; ./Allclean' ERR
 
 echo PRESTEP 1
 # Generate blockmeshDict
-python ../../applications/write_block_rect_mesh.py -i system/mesh.json -o system
+python ../../../applications/write_block_rect_mesh.py -i system/mesh.json -o system
 
 # Generate boundary stl
-python ../../applications/write_stl_patch.py -i system/inlets_outlets.json
+python ../../../applications/write_stl_patch.py -i system/inlets_outlets.json
 
 # Generate mixers
-python ../../applications/write_dynMix_fvModels.py -fs -i system/mixers.json -o constant
+python ../../../applications/write_dynMix_fvModels.py -fs -i system/mixers.json -o constant
 
 # Generate species thermo properties
-python ../../applications/write_species_thermo_prop.py -cf .
+python ../../../applications/write_species_thermo_prop.py -cf .
 
 echo PRESTEP 2
 # Mesh gen
