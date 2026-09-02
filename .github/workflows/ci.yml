@@ -82,6 +82,8 @@ jobs:
           environment-name: test-env
           create-args: >-
             python=${{ matrix.python-version }}
+            paraview=6.1
+            hdf5=1.14
           channels: conda-forge
           channel-priority: strict
           cache-downloads: true
@@ -89,7 +91,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
           pip install --upgrade nox
           pip install .[tests] 
@@ -147,6 +148,8 @@ jobs:
           environment-name: test-env
           create-args: >-
             python=${{ matrix.python-version }}
+            paraview=6.1
+            hdf5=1.14
           channels: conda-forge
           channel-priority: strict
           cache-downloads: true
@@ -154,7 +157,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
           pip install --upgrade nox
           pip install nlr-bird[tests]
@@ -189,6 +191,8 @@ jobs:
           environment-name: test-env
           create-args: >-
             python=${{ matrix.python-version }}
+            paraview=6.1
+            hdf5=1.14
           channels: conda-forge
           channel-priority: strict
           cache-downloads: true
@@ -196,7 +200,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
           pip install .
 
@@ -218,6 +221,18 @@ jobs:
         run: |
           cd experimental_cases/OF9/deckwer19
           bash run.sh 
+      - name: Run Uloop Exp1
+        run: |
+          cd experimental_cases/OF9/uloop_valadbeigy_exp1
+          bash run.sh 
+      - name: Run Uloop Exp2
+        run: |
+          cd experimental_cases/OF9/uloop_valadbeigy_exp2
+          bash run.sh 
+      - name: Run Uloop Exp3
+        run: |
+          cd experimental_cases/OF9/uloop_valadbeigy_exp3
+          bash run.sh 
       - name: Run side sparger tutorial
         run: |
           cd tutorial_cases/OF9/side_sparger
@@ -237,7 +252,15 @@ jobs:
       - name: Run mixing loop reactor tutorial
         run: |
           cd tutorial_cases/OF9/loop_reactor_mixing
-          bash run.sh 
+          bash run.sh
+      - name: Run mixing loop reactor with swirl tutorial
+        run: |
+          cd tutorial_cases/OF9/loop_reactor_mixing_swirl
+          bash run.sh
+      - name: Run mixing loop reactor with static mixer tutorial
+        run: |
+          cd tutorial_cases/OF9/loop_reactor_mixing_static
+          bash run.sh
       - name: Run airlift reactor tutorial
         run: |
           cd tutorial_cases/OF9/airlift_40m
@@ -274,6 +297,8 @@ jobs:
           environment-name: test-env
           create-args: >-
             python=${{ matrix.python-version }}
+            paraview=6.1
+            hdf5=1.14
           channels: conda-forge
           channel-priority: strict
           cache-downloads: true
@@ -281,7 +306,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
           pip install .
 
