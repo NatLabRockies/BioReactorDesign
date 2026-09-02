@@ -1,0 +1,372 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+        <title>bird.preprocess.dynamic_mixer package &mdash; Bio Reactor Design (BiRD) 0.0.57 documentation</title>
+    
+
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2bfb35b6"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bio Reactor Design (BiRD)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multiphase.html">Multiphase flow model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meshing.html">Meshing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uq.html">Uncertainty quantification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_interface.html">Python interface to OpenFOAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bird.html">BiRD API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">External links</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign/blob/main/LICENSE"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bio Reactor Design (BiRD)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">bird.preprocess.dynamic_mixer package</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bird-preprocess-dynamic-mixer-package">
+<h1>bird.preprocess.dynamic_mixer package<a class="headerlink" href="#bird-preprocess-dynamic-mixer-package" title="Link to this heading"></a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">dynamic_mixer</span></code> package generates mixer momentum sources as OpenFOAM coded
+<code class="docutils literal notranslate"><span class="pre">fvModels</span></code> (see
+<a class="reference internal" href="#bird.preprocess.dynamic_mixer.mixing_fvModels.write_fvModel" title="bird.preprocess.dynamic_mixer.mixing_fvModels.write_fvModel"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_fvModel()</span></code></a>). Two mixer
+families share the same <code class="docutils literal notranslate"><span class="pre">ball</span></code> deposition:</p>
+<ul class="simple">
+<li><p><strong>Dynamic</strong> (<a class="reference internal" href="#bird.preprocess.dynamic_mixer.mixer.ActuatorMixer" title="bird.preprocess.dynamic_mixer.mixer.ActuatorMixer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ActuatorMixer</span></code></a>, the
+<code class="docutils literal notranslate"><span class="pre">mixers</span></code> list) – an <em>active</em> actuator disk driven by a power number <code class="docutils literal notranslate"><span class="pre">Np</span></code>
+and tip speed <code class="docutils literal notranslate"><span class="pre">Vtip</span></code>; it adds axial thrust and swirl.</p></li>
+<li><p><strong>Static</strong> (<a class="reference internal" href="#bird.preprocess.dynamic_mixer.mixer.StaticMixer" title="bird.preprocess.dynamic_mixer.mixer.StaticMixer"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticMixer</span></code></a>, the
+<code class="docutils literal notranslate"><span class="pre">static_mixers</span></code> list) – a <em>passive</em> obstacle with no power input: the swirl
+is an energy-neutral axial-to-azimuthal redirection (swirl number <code class="docutils literal notranslate"><span class="pre">S</span></code>) and
+the axial drag is a pure viscous loss (loss coefficient <code class="docutils literal notranslate"><span class="pre">K</span></code>). It is inactive
+when the inflow opposes the mixer orientation. The momentum source follows the
+energy-neutral swirler model of Kiesewetter (2005).</p></li>
+</ul>
+<section id="static-mixer-json-schema">
+<h2>Static mixer JSON schema<a class="headerlink" href="#static-mixer-json-schema" title="Link to this heading"></a></h2>
+<p>Each entry of the <code class="docutils literal notranslate"><span class="pre">static_mixers</span></code> list accepts:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">S</span></code> – swirl number (default <code class="docutils literal notranslate"><span class="pre">0.35</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">K</span></code> – loss coefficient / velocity heads (default <code class="docutils literal notranslate"><span class="pre">0.5</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code> – mixer radius; a fraction of the tube in loop mode (<code class="docutils literal notranslate"><span class="pre">0.5</span></code> spans
+the whole tube) or an absolute radius in metres in explicit mode.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">normal_dir</span></code> – mixer axis (<code class="docutils literal notranslate"><span class="pre">0</span></code>/<code class="docutils literal notranslate"><span class="pre">1</span></code>/<code class="docutils literal notranslate"><span class="pre">2</span></code> for x/y/z).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sign</span></code> – mixer orientation along that axis (<code class="docutils literal notranslate"><span class="pre">&quot;+&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;-&quot;</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">swirl_sign</span></code> – rotation orientation (<code class="docutils literal notranslate"><span class="pre">&quot;+&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;-&quot;</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start_time</span></code> – time after which the source is active.</p></li>
+</ul>
+<p>Placement is either explicit (<code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">z</span></code>) or on a loop branch
+(<code class="docutils literal notranslate"><span class="pre">branch_id</span></code> plus <code class="docutils literal notranslate"><span class="pre">frac_space</span></code>, the fraction along the branch), exactly as
+for the dynamic mixer.</p>
+</section>
+<section id="module-bird.preprocess.dynamic_mixer.io_fvModels">
+<span id="bird-preprocess-dynamic-mixer-io-fvmodels-module"></span><h2>bird.preprocess.dynamic_mixer.io_fvModels module<a class="headerlink" href="#module-bird.preprocess.dynamic_mixer.io_fvModels" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.io_fvModels.write_end">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.dynamic_mixer.io_fvModels.</span></span><span class="sig-name descname"><span class="pre">write_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_folder</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.io_fvModels.write_end" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.io_fvModels.write_mixer">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.dynamic_mixer.io_fvModels.</span></span><span class="sig-name descname"><span class="pre">write_mixer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.io_fvModels.write_mixer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.io_fvModels.write_mixer_ball">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.dynamic_mixer.io_fvModels.</span></span><span class="sig-name descname"><span class="pre">write_mixer_ball</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'from_Np_Vtip'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">momentum_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'axial'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.io_fvModels.write_mixer_ball" title="Link to this definition"></a></dt>
+<dd><p>Append one <code class="docutils literal notranslate"><span class="pre">ball</span></code> mixer block to <code class="docutils literal notranslate"><span class="pre">fvModels</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mixer</strong> – a ready <a class="reference internal" href="#bird.preprocess.dynamic_mixer.mixer.ActuatorMixer" title="bird.preprocess.dynamic_mixer.mixer.ActuatorMixer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ActuatorMixer</span></code></a>.</p></li>
+<li><p><strong>power_mode</strong> – <code class="docutils literal notranslate"><span class="pre">&quot;from_P&quot;</span></code> (drive by <code class="docutils literal notranslate"><span class="pre">mixer.power</span></code>) or
+<code class="docutils literal notranslate"><span class="pre">&quot;from_Np_Vtip&quot;</span></code> (drive by <code class="docutils literal notranslate"><span class="pre">mixer.Np</span></code> and <code class="docutils literal notranslate"><span class="pre">mixer.Vtip</span></code>).</p></li>
+<li><p><strong>momentum_mode</strong> – <code class="docutils literal notranslate"><span class="pre">&quot;axial&quot;</span></code> (thrust only) or <code class="docutils literal notranslate"><span class="pre">&quot;axial_and_swirl&quot;</span></code>
+(thrust + tangential source using <code class="docutils literal notranslate"><span class="pre">mixer.sigma</span></code>).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.io_fvModels.write_mixer_force_sign">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.dynamic_mixer.io_fvModels.</span></span><span class="sig-name descname"><span class="pre">write_mixer_force_sign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.io_fvModels.write_mixer_force_sign" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.io_fvModels.write_preamble">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.dynamic_mixer.io_fvModels.</span></span><span class="sig-name descname"><span class="pre">write_preamble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_folder</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.io_fvModels.write_preamble" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.io_fvModels.write_preamble_ball">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.dynamic_mixer.io_fvModels.</span></span><span class="sig-name descname"><span class="pre">write_preamble_ball</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_folder</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.io_fvModels.write_preamble_ball" title="Link to this definition"></a></dt>
+<dd><p>Write the FoamFile header + codedSource preamble for the <code class="docutils literal notranslate"><span class="pre">ball</span></code> source.</p>
+<p>The Newton solve is inlined in each mixer block (see <code class="docutils literal notranslate"><span class="pre">write_mixer_ball</span></code>),
+so no external <code class="docutils literal notranslate"><span class="pre">dynamicMix_util.H</span></code> is needed.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.io_fvModels.write_static_mixer_ball">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.dynamic_mixer.io_fvModels.</span></span><span class="sig-name descname"><span class="pre">write_static_mixer_ball</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.io_fvModels.write_static_mixer_ball" title="Link to this definition"></a></dt>
+<dd><p>Append one passive <code class="docutils literal notranslate"><span class="pre">ball</span></code> static-mixer block to <code class="docutils literal notranslate"><span class="pre">fvModels</span></code>.</p>
+<p>The swirl is imposed as an azimuthal body force proportional to the local
+axial dynamic pressure (Kiesewetter), balanced cell-by-cell by an
+energy-neutral axial reaction; a lumped axial drag adds the viscous loss.
+The source is inactive when the inflow opposes the mixer orientation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mixer</strong> – a ready
+<a class="reference internal" href="#bird.preprocess.dynamic_mixer.mixer.StaticMixer" title="bird.preprocess.dynamic_mixer.mixer.StaticMixer"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticMixer</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-bird.preprocess.dynamic_mixer.mixer">
+<span id="bird-preprocess-dynamic-mixer-mixer-module"></span><h2>bird.preprocess.dynamic_mixer.mixer module<a class="headerlink" href="#module-bird.preprocess.dynamic_mixer.mixer" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixer.ActuatorMixer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bird.preprocess.dynamic_mixer.mixer.</span></span><span class="sig-name descname"><span class="pre">ActuatorMixer</span></span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixer.ActuatorMixer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Actuator-disk mixer with optional swirl, used by the <code class="docutils literal notranslate"><span class="pre">ball</span></code> source.</p>
+<p>Unlike <a class="reference internal" href="#bird.preprocess.dynamic_mixer.mixer.Mixer" title="bird.preprocess.dynamic_mixer.mixer.Mixer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mixer</span></code></a> (the legacy <code class="docutils literal notranslate"><span class="pre">pancake</span></code> source), momentum is deposited
+over a ball of physical radius <code class="docutils literal notranslate"><span class="pre">R</span></code> and the drive is set by a power number
+<code class="docutils literal notranslate"><span class="pre">Np</span></code> and tip speed <code class="docutils literal notranslate"><span class="pre">Vtip</span></code> rather than a raw power. <code class="docutils literal notranslate"><span class="pre">sigma</span></code> is the swirl
+fraction; <code class="docutils literal notranslate"><span class="pre">sign</span></code> is the axial push direction and <code class="docutils literal notranslate"><span class="pre">swirl_sign</span></code> the
+(independent) rotation sense.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixer.ActuatorMixer.check_status">
+<span class="sig-name descname"><span class="pre">check_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixer.ActuatorMixer.check_status" title="Link to this definition"></a></dt>
+<dd><p>Log the resolved mixer and set <code class="docutils literal notranslate"><span class="pre">ready</span></code> if all fields are present.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixer.ActuatorMixer.update_from_expl_dict">
+<span class="sig-name descname"><span class="pre">update_from_expl_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixer_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixer.ActuatorMixer.update_from_expl_dict" title="Link to this definition"></a></dt>
+<dd><p>Populate from an explicit mixer dict (absolute position and radius).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixer.ActuatorMixer.update_from_loop_dict">
+<span class="sig-name descname"><span class="pre">update_from_loop_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixer_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixer.ActuatorMixer.update_from_loop_dict" title="Link to this definition"></a></dt>
+<dd><p>Populate from a loop mixer dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mixer_dict</strong> – mixer entry with <code class="docutils literal notranslate"><span class="pre">branch_id</span></code>, <code class="docutils literal notranslate"><span class="pre">frac_space</span></code> and,
+optionally, <code class="docutils literal notranslate"><span class="pre">radius</span></code> as a fraction of the branch cross-section.</p></li>
+<li><p><strong>geom_dict</strong> – output of <code class="docutils literal notranslate"><span class="pre">from_block_rect_to_seg</span></code> (<code class="docutils literal notranslate"><span class="pre">segments</span></code> and
+<code class="docutils literal notranslate"><span class="pre">blocksize</span></code>).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixer.Mixer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bird.preprocess.dynamic_mixer.mixer.</span></span><span class="sig-name descname"><span class="pre">Mixer</span></span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixer.Mixer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixer.Mixer.check_status">
+<span class="sig-name descname"><span class="pre">check_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixer.Mixer.check_status" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixer.Mixer.update_from_expl_dict">
+<span class="sig-name descname"><span class="pre">update_from_expl_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixer_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixer.Mixer.update_from_expl_dict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixer.Mixer.update_from_loop_dict">
+<span class="sig-name descname"><span class="pre">update_from_loop_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixer_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixer.Mixer.update_from_loop_dict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixer.StaticMixer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bird.preprocess.dynamic_mixer.mixer.</span></span><span class="sig-name descname"><span class="pre">StaticMixer</span></span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixer.StaticMixer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Passive (unpowered) momentum-source mixer used by the <code class="docutils literal notranslate"><span class="pre">ball</span></code> source.</p>
+<p>Unlike <a class="reference internal" href="#bird.preprocess.dynamic_mixer.mixer.ActuatorMixer" title="bird.preprocess.dynamic_mixer.mixer.ActuatorMixer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ActuatorMixer</span></code></a>, no power is injected: the swirl is imposed as
+an energy-neutral axial-to-azimuthal redirection and the axial drag is a pure
+loss. The drive is a swirl number <code class="docutils literal notranslate"><span class="pre">S</span></code> and a loss coefficient <code class="docutils literal notranslate"><span class="pre">K</span></code> rather
+than <code class="docutils literal notranslate"><span class="pre">Np</span></code>/<code class="docutils literal notranslate"><span class="pre">Vtip</span></code>; <code class="docutils literal notranslate"><span class="pre">sign</span></code> is the mixer orientation (the source is
+inactive when the inflow opposes it) and <code class="docutils literal notranslate"><span class="pre">swirl_sign</span></code> the rotation sense.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixer.StaticMixer.check_status">
+<span class="sig-name descname"><span class="pre">check_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixer.StaticMixer.check_status" title="Link to this definition"></a></dt>
+<dd><p>Log the resolved mixer and set <code class="docutils literal notranslate"><span class="pre">ready</span></code> if all fields are present.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixer.StaticMixer.update_from_expl_dict">
+<span class="sig-name descname"><span class="pre">update_from_expl_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixer_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixer.StaticMixer.update_from_expl_dict" title="Link to this definition"></a></dt>
+<dd><p>Populate from an explicit mixer dict (absolute position and radius).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixer.StaticMixer.update_from_loop_dict">
+<span class="sig-name descname"><span class="pre">update_from_loop_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixer_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixer.StaticMixer.update_from_loop_dict" title="Link to this definition"></a></dt>
+<dd><p>Populate from a loop mixer dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mixer_dict</strong> – mixer entry with <code class="docutils literal notranslate"><span class="pre">branch_id</span></code>, <code class="docutils literal notranslate"><span class="pre">frac_space</span></code> and,
+optionally, <code class="docutils literal notranslate"><span class="pre">radius</span></code> as a fraction of the branch cross-section
+(<code class="docutils literal notranslate"><span class="pre">0.5</span></code> spans the whole tube).</p></li>
+<li><p><strong>geom_dict</strong> – output of <code class="docutils literal notranslate"><span class="pre">from_block_rect_to_seg</span></code> (<code class="docutils literal notranslate"><span class="pre">segments</span></code> and
+<code class="docutils literal notranslate"><span class="pre">blocksize</span></code>).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixer.actuator_disk_power">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.dynamic_mixer.mixer.</span></span><span class="sig-name descname"><span class="pre">actuator_disk_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Np</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">Vtip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixer.actuator_disk_power" title="Link to this definition"></a></dt>
+<dd><p>Power [W] drawn by a <code class="docutils literal notranslate"><span class="pre">from_Np_Vtip</span></code> actuator-disk mixer.</p>
+<p><code class="docutils literal notranslate"><span class="pre">P</span> <span class="pre">=</span> <span class="pre">Np</span> <span class="pre">*</span> <span class="pre">rho</span> <span class="pre">*</span> <span class="pre">Vtip**3</span> <span class="pre">*</span> <span class="pre">D**2</span> <span class="pre">/</span> <span class="pre">pi**3</span></code> with <code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">=</span> <span class="pre">2R</span></code> (see the ball
+mixer derivation). Used at case-generation time to record the derived
+power for the efficiency QoI.</p>
+</dd></dl>
+
+</section>
+<section id="module-bird.preprocess.dynamic_mixer.mixing_fvModels">
+<span id="bird-preprocess-dynamic-mixer-mixing-fvmodels-module"></span><h2>bird.preprocess.dynamic_mixer.mixing_fvModels module<a class="headerlink" href="#module-bird.preprocess.dynamic_mixer.mixing_fvModels" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixing_fvModels.check_input">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.dynamic_mixer.mixing_fvModels.</span></span><span class="sig-name descname"><span class="pre">check_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixing_fvModels.check_input" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixing_fvModels.check_static_input">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.dynamic_mixer.mixing_fvModels.</span></span><span class="sig-name descname"><span class="pre">check_static_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixing_fvModels.check_static_input" title="Link to this definition"></a></dt>
+<dd><p>Return the expl/loop type of each entry in the <code class="docutils literal notranslate"><span class="pre">static_mixers</span></code> list.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixing_fvModels.write_fvModel">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.dynamic_mixer.mixing_fvModels.</span></span><span class="sig-name descname"><span class="pre">write_fvModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_sign</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixing_fvModels.write_fvModel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.dynamic_mixer.mixing_fvModels.write_fvModel_ball">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.dynamic_mixer.mixing_fvModels.</span></span><span class="sig-name descname"><span class="pre">write_fvModel_ball</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.dynamic_mixer.mixing_fvModels.write_fvModel_ball" title="Link to this definition"></a></dt>
+<dd><p>Write the <code class="docutils literal notranslate"><span class="pre">ball</span></code> (actuator-disk) fvModels.</p>
+<p>Reads the top-level <code class="docutils literal notranslate"><span class="pre">power</span></code> (<code class="docutils literal notranslate"><span class="pre">from_P</span></code> / <code class="docutils literal notranslate"><span class="pre">from_Np_Vtip</span></code>) and
+<code class="docutils literal notranslate"><span class="pre">momentum_source</span></code> (<code class="docutils literal notranslate"><span class="pre">axial</span></code> / <code class="docutils literal notranslate"><span class="pre">axial_and_swirl</span></code>) modes; both default to
+the new full model. Each dynamic mixer is an
+<a class="reference internal" href="#bird.preprocess.dynamic_mixer.mixer.ActuatorMixer" title="bird.preprocess.dynamic_mixer.mixer.ActuatorMixer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ActuatorMixer</span></code></a>; each entry of the
+optional <code class="docutils literal notranslate"><span class="pre">static_mixers</span></code> list is a
+<a class="reference internal" href="#bird.preprocess.dynamic_mixer.mixer.StaticMixer" title="bird.preprocess.dynamic_mixer.mixer.StaticMixer"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticMixer</span></code></a> appended to the same
+codedSource.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

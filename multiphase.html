@@ -1,0 +1,281 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+        <title>Multiphase flow model &mdash; Bio Reactor Design (BiRD) 0.0.57 documentation</title>
+    
+
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2bfb35b6"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Meshing" href="meshing.html" />
+    <link rel="prev" title="Quick start" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bio Reactor Design (BiRD)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick start</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Multiphase flow model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#multiphase-transport-equations">Multiphase transport equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multiphase-flow-closure-models">Multiphase flow closure models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#higbie-model">Higbie Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#openfoam-s-treatment-of-the-henry-s-constant">OpenFOAM’s treatment of the Henry’s constant</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#converting-to-non-dimensional-henry-s-constant">Converting to non-dimensional Henry’s constant</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="meshing.html">Meshing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uq.html">Uncertainty quantification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_interface.html">Python interface to OpenFOAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bird.html">BiRD API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">External links</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign/blob/main/LICENSE"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bio Reactor Design (BiRD)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Multiphase flow model</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="multiphase-flow-model">
+<h1>Multiphase flow model<a class="headerlink" href="#multiphase-flow-model" title="Link to this heading"></a></h1>
+<section id="multiphase-transport-equations">
+<h2>Multiphase transport equations<a class="headerlink" href="#multiphase-transport-equations" title="Link to this heading"></a></h2>
+<p>The multiphase flow model uses an Euler-Euler approach (already available in <code class="docutils literal notranslate"><span class="pre">multiphaseEulerFoam</span></code>).
+Gas and liquid volume fractions are transported as</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\frac{\partial (\alpha_j \rho_j)}{\partial t} + \nabla \cdot (\alpha_j \rho_j u_j) = \sum_{k\neq j} \dot{m}_{kj},\]</div>
+</div></blockquote>
+<p>where <span class="math notranslate nohighlight">\(j\)</span> is the phase index (gas or liquid), <span class="math notranslate nohighlight">\(\alpha_j\)</span> is the volume fraction of the phase <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(\rho_j\)</span> is the density of phase <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(u_j\)</span> is the velocity vector of phase <span class="math notranslate nohighlight">\(j\)</span>. The right-hand side of this equation includes the sum of interphase mass transfer terms where <span class="math notranslate nohighlight">\(\dot{m}_{kj}\)</span> is the mass transfer rate from phase <span class="math notranslate nohighlight">\(k\)</span> to phase <span class="math notranslate nohighlight">\(j\)</span>. To model the relative motion of each phase, a phase-momentum transport equation is solved, which takes the form</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\frac{\partial (\alpha_j \rho_j u_j)}{\partial t} + \nabla \cdot (\alpha_j \rho_j u_j u_j) = \nabla \cdot (\alpha_j \overline{\tau}) - \alpha_j \nabla p + \alpha_j \rho_j g +\sum_{k\neq j} D_{kj} + M^{m}_j + F_j,\]</div>
+</div></blockquote>
+<p>where <span class="math notranslate nohighlight">\(\overline{\tau}\)</span> is the stress tensor which includes Reynolds stress and viscous (molecular and turbulent) stress (including turbulent viscosity) for the phase <span class="math notranslate nohighlight">\(j\)</span>; <span class="math notranslate nohighlight">\(D_{kj}\)</span> is the drag force exerted by phase <span class="math notranslate nohighlight">\(k\)</span> on phase <span class="math notranslate nohighlight">\(j\)</span> that depends on the drag coefficient associated with the dispersed phase and associated volume fraction, and <span class="math notranslate nohighlight">\(F_j\)</span> contains interfacial forces acting on phase <span class="math notranslate nohighlight">\(j\)</span> which includes lift, wall-lubrication, virtual-mass and turbulent-dispersion forces. <span class="math notranslate nohighlight">\(M^{m}_j\)</span> accounts for the added momentum and is defined as <span class="math notranslate nohighlight">\(M^{m}_j = \dot{m}_{j,in} u_k - \dot{m}_{j,out} u_j\)</span> where <span class="math notranslate nohighlight">\(\dot{m}\)</span> is the mass transfer rate from/to phase <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(u_j\)</span> is the velocity of phase <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(u_k\)</span> is the velocity of phase <span class="math notranslate nohighlight">\(k\)</span>.</p>
+<p>If needed, an energy equation is solved to account for differences in phase temperatures.</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\frac{\partial \rho_j \alpha_j E_j}{\partial t} + \nabla \cdot (\rho_j \alpha_j u_j E_j) = \nabla \cdot (\alpha_j \kappa_{j} \nabla T_j) + \dot{Q}\]</div>
+</div></blockquote>
+<p>where <span class="math notranslate nohighlight">\(E_j\)</span> is the sensible energy of the phase <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(T_j\)</span> is the temperature of the phase <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(\kappa_{j}\)</span> is the effective thermal diffusivity of the phase <span class="math notranslate nohighlight">\(j\)</span> (including molecular and turbulent contributions) and <span class="math notranslate nohighlight">\(\dot{Q}\)</span> is the heat exchange due to differences in temperature. Heat exchange through the interface is driven by temperature differences between phases. The last right-hand side term can be written as <span class="math notranslate nohighlight">\(\dot{Q} = h_{jl}(T_f - T_j)\)</span>, where <span class="math notranslate nohighlight">\(h_{jl}\)</span> is the heat transfer coefficient of species <span class="math notranslate nohighlight">\(l\)</span> in phase <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(T_j\)</span> is the temperature of phase <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(T_f\)</span> is the temperature at the interface. The temperature at the interface is computed based on the assumption that the rate of heat transfer must be equal to the latent heat <span class="math notranslate nohighlight">\(\lambda_j\)</span> at the interface between phases <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(k\)</span> where <span class="math notranslate nohighlight">\(h_{jl}(T_j - T_f) + h_{kl}(T_k - T_f) = \dot{m}_{j,in} \lambda_j\)</span></p>
+<p>Using the momentum and phase fraction, species mass fractions are transported as</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\frac{\partial (\rho_j \alpha_j Y_{jl})}{\partial t} + \nabla \cdot (\rho_j \alpha_j Y_{jl} u_j) = \nabla \cdot (\rho_j \alpha_j D_{jl} \nabla Y_{jl}) + S_{jl},\]</div>
+</div></blockquote>
+<p>where <span class="math notranslate nohighlight">\(Y_{jl}\)</span> is the <span class="math notranslate nohighlight">\(l^{th}\)</span> species mass fraction in phase <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(D_{jl}\)</span> is the diffusivity of the <span class="math notranslate nohighlight">\(l^{th}\)</span> species in phase <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(S_{jl}\)</span> are source terms due to interphase mass transfer.</p>
+<p>If desired, a population balance equation can be solved to model the distribution of bubble size. The fundamental governing equation of the NDF is</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\frac{\partial n_v}{\partial t} + \nabla \cdot (u n_v) = h_v,\]</div>
+</div></blockquote>
+<p>where $:math:<cite>u</cite> is the phase velocity, <span class="math notranslate nohighlight">\(t\)</span> is time, <span class="math notranslate nohighlight">\(n_v\)</span> is the number density of bubbles of size <span class="math notranslate nohighlight">\(v\)</span> and the source term is <span class="math notranslate nohighlight">\(h_v =  B_{\rm b} - B_{\rm d} +  C_{\rm b} -  C_{\rm d} - D + \dot{N_v}\)</span>, where <span class="math notranslate nohighlight">\(B_{\rm b}\)</span> (resp. <span class="math notranslate nohighlight">\(C_{\rm b}\)</span>) is the bubble birth contribution from bubble breakup (resp. coalescence), <span class="math notranslate nohighlight">\(B_{\rm d}\)</span> (resp. <span class="math notranslate nohighlight">\(C_{\rm d}\)</span>) is the bubble death contribution from bubble breakup (resp. coalescence), <span class="math notranslate nohighlight">\(D\)</span> is the drift term that is due to changes of bubble volume arising from pressure or mass transfer induced density changes, and <span class="math notranslate nohighlight">\(\dot{N_v}\)</span> is the bubble nucleation source term. The full expression of <span class="math notranslate nohighlight">\(h_v\)</span> is available in <a class="reference internal" href="#lehnigk2021" id="id1"><span>[Lehnigk2021]</span></a> and the effect of coalescence and breakup rates on the prediction of BiRD has been studied in <a class="reference internal" href="#hassanaly2025" id="id2"><span>[Hassanaly2025]</span></a>.</p>
+</section>
+<section id="multiphase-flow-closure-models">
+<span id="henry"></span><h2>Multiphase flow closure models<a class="headerlink" href="#multiphase-flow-closure-models" title="Link to this heading"></a></h2>
+<p>Though all closure models can be swapped by any other one available in OpenFOAM, we often use the same set of closure models. Usually, and throughout the tutorial, the user will find that the interphase drag force is obtained by using the Grace model <a class="reference internal" href="#grace1976" id="id3"><span>[Grace1976]</span></a> and transverse lift from the model by using the Tomiyama model <a class="reference internal" href="#tomiyama2002" id="id4"><span>[Tomiyama2002]</span></a>. Wall lubrication forces are computed using the model by Antal et al. <a class="reference internal" href="#antal1991" id="id5"><span>[Antal1991]</span></a> and turbulent dispersion uses the model of Burns et al. <a class="reference internal" href="#burns2004" id="id6"><span>[Burns2004]</span></a>. Interphase mass transfer of species is modeled by using the mass transfer coefficient obtained from Higbie correlation <a class="reference internal" href="#higbie1935" id="id7"><span>[Higbie1935]</span></a>. The interphase mass transfer of a species also depends on the local saturation concentration obtained from Henry’s constant and the local gas phase concentration of the species. The Higbie model is not available in OpenFOAM 9, and is described below</p>
+<section id="higbie-model">
+<span id="higbie-mass-transfer-model"></span><h3>Higbie Model<a class="headerlink" href="#higbie-model" title="Link to this heading"></a></h3>
+<p>The Higbie model calculates the phase-interface mass transfer coefficient based on the contact time of a fluid eddy at the gas-liquid boundary. The local Sherwood number (<span class="math notranslate nohighlight">\(\text{Sh}\)</span>) for a spherical bubble is approximated by the analytical solution:</p>
+<div class="math notranslate nohighlight">
+\[\text{Sh} = \frac{2}{\sqrt{\pi}} \sqrt{\text{Re} \cdot \text{Sc}} \approx 1.13 \sqrt{\text{Re} \cdot \text{Sc}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\text{Re}\)</span> is the particle Reynolds number and <span class="math notranslate nohighlight">\(\text{Sc}\)</span> is the Schmidt number (which OpenFOAM computes as the product of the Lewis and Prandtl numbers, <span class="math notranslate nohighlight">\(\text{Le} \cdot \text{Pr}\)</span>).</p>
+<p>The volumetric mass transfer coefficient, <span class="math notranslate nohighlight">\(K\)</span>, relates the Sherwood number to the specific interfacial area (<span class="math notranslate nohighlight">\(a = 6 \alpha_g / d_b\)</span>):</p>
+<p>In OpenFOAM’s <code class="docutils literal notranslate"><span class="pre">diffusiveMassTransferModels</span></code> framework, the Higbie model returns a diffusivity-normalized coefficient (<span class="math notranslate nohighlight">\(K\)</span>):</p>
+<div class="math notranslate nohighlight">
+\[K = \frac{6 \alpha_g \text{Sh}}{d_b^2}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\alpha_g\)</span> is the gas phase volume fraction and <span class="math notranslate nohighlight">\(d_b\)</span> is the bubble diameter.</p>
+<p>In the mass fraction transport source term <span class="math notranslate nohighlight">\(K\)</span> is then multiplied by the phase density, the species diffusivity and the difference between the mass fraction at saturation (<code class="docutils literal notranslate"><span class="pre">Yf</span></code>, discussed below) and the local mass fraction.</p>
+</section>
+<section id="openfoam-s-treatment-of-the-henry-s-constant">
+<h3>OpenFOAM’s treatment of the Henry’s constant<a class="headerlink" href="#openfoam-s-treatment-of-the-henry-s-constant" title="Link to this heading"></a></h3>
+<p>The Henry’s constant is a critical parameter that controls the mass transfer rates. The Henry’s constant is a temperature dependent variable that is usually expressed in <span class="math notranslate nohighlight">\(mol/(kg.bar)\)</span>, see for example <a class="reference external" href="https://webbook.nist.gov/cgi/cbook.cgi?ID=C7782447&amp;Mask=10">the NIST database</a>.</p>
+<p>In OpenFOAM, a non-dimensional version of the the Henry’s constant is used and the user may find a discrepancy between the values used in the tutorials and the values available is existing databases. We will describe here how to go from one to the other.</p>
+<p>Consider the case of a mass transfer of <span class="math notranslate nohighlight">\(O_2\)</span> from the gas phase to the liquid phase. The Henry’s constant in OpenFOAM is used to compute the saturated liquid mass fraction <code class="docutils literal notranslate"><span class="pre">Yf</span></code> of <span class="math notranslate nohighlight">\(O_2\)</span> in the liquid phase as <span class="math notranslate nohighlight">\(Y_l = H_{\rm CC} \frac{Y_g \rho_g}{\rho_l}\)</span> (<code class="docutils literal notranslate"><span class="pre">Foam::interfaceCompositionModels::Henry::Yf</span></code> in <code class="docutils literal notranslate"><span class="pre">Henry.C</span></code>), where <span class="math notranslate nohighlight">\(Y_l\)</span> is <code class="docutils literal notranslate"><span class="pre">Yf</span></code>, <span class="math notranslate nohighlight">\(Y_g\)</span> is the mass fraction of <span class="math notranslate nohighlight">\(O_2\)</span> in the gas, <span class="math notranslate nohighlight">\(\rho_l\)</span> is the liquid density and <span class="math notranslate nohighlight">\(rho_g\)</span> is the gas density, and <span class="math notranslate nohighlight">\(H_{\rm CC}\)</span> is the Henry’s constant as used in OpenFOAM.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Yf</span></code> is eventually used to compute a mass transfer source term in <code class="docutils literal notranslate"><span class="pre">Foam::InterfaceCompositionPhaseChangePhaseSystem&lt;BasePhaseSystem&gt;::</span>
+<span class="pre">correct()</span></code> in <code class="docutils literal notranslate"><span class="pre">InterfaceCompositionPhaseChangePhaseSystem.C</span></code>.</p>
+</section>
+<section id="converting-to-non-dimensional-henry-s-constant">
+<h3>Converting to non-dimensional Henry’s constant<a class="headerlink" href="#converting-to-non-dimensional-henry-s-constant" title="Link to this heading"></a></h3>
+<p><span class="math notranslate nohighlight">\(H_{\rm CC}\)</span> is non-dimensional which differs from values reported in databases (noted <span class="math notranslate nohighlight">\(H_{\rm CP}\)</span>). We show below how to convert <span class="math notranslate nohighlight">\(H_{\rm CP}\)</span> to obtain <span class="math notranslate nohighlight">\(H_{\rm CC}\)</span>.
+Again, consider the case of a mass transfer of <span class="math notranslate nohighlight">\(O_2\)</span> from the gas phase to the liquid phase.</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[H_{\rm CP} = \frac{c_l'}{p' \rho_l},\]</div>
+</div></blockquote>
+<p>where <span class="math notranslate nohighlight">\(c_l'\)</span> is the concentration (<span class="math notranslate nohighlight">\(mol/m^3\)</span>) and <span class="math notranslate nohighlight">\(p'= x_c p\)</span> is the partial pressure of <span class="math notranslate nohighlight">\(O_2\)</span>, <span class="math notranslate nohighlight">\(x_c\)</span> its mole fraction in the gas phase and <span class="math notranslate nohighlight">\(p\)</span> is the background pressure.</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[H_{\rm CC} = \frac{Y_l \rho_l}{ Y_g \rho_g},\]</div>
+</div></blockquote>
+<p>as described above.</p>
+<p>Using the ideal gas equation,</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[H_{\rm CP} \rho_l R T = \frac{c_l'}{c_g'} =  \frac{y_l \rho_l}{y_g \rho_g}\]</div>
+</div></blockquote>
+<p>where <span class="math notranslate nohighlight">\(T\)</span> is the temperature, <span class="math notranslate nohighlight">\(R\)</span> is the universal gas constant, and the last equation is obtained because the same molar mass applied to both the gas and the liquid phase. It comes that</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[H_{\rm CP} \rho_l R T = H_{\rm CC}\]</div>
+</div></blockquote>
+<p>For example, <span class="math notranslate nohighlight">\(H_{\rm CP}\)</span> for <span class="math notranslate nohighlight">\(O_2\)</span> is reported to be <span class="math notranslate nohighlight">\(1.3 \times 10^{-8}\)</span> mol/(kg Pa) in <a class="reference external" href="https://webbook.nist.gov/cgi/cbook.cgi?ID=C7782447&amp;Mask=10">the NIST database</a>. The bubble column tutorial of BiRD uses in <code class="docutils literal notranslate"><span class="pre">globalVars</span></code> a value <code class="docutils literal notranslate"><span class="pre">H_O2_298</span></code> of 0.032, which assumed <span class="math notranslate nohighlight">\(\rho_l = 1000\)</span> and <span class="math notranslate nohighlight">\(T = 298\)</span>.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Since <code class="docutils literal notranslate"><span class="pre">H_O2_298</span></code> is set in <code class="docutils literal notranslate"><span class="pre">globalVars</span></code> it is a constant value that cannot accommodate spatial inhomogeneities of temperature
+This will be improved in future versions</p>
+</div>
+<p id="interface-tracking-and-compression-openfoam-13-only">The <cite>birdmultiphaseEuler</cite> module provides optional interface compression and tracking for transition from dispersed to segregated phases. The algorithm is capable of accurately track the interface and applies a compression term to keep it sharp.
+This approach is still experimental and using the interface compression can lead to unphysical results and divergence.</p>
+<p id="enzymatic-reactions-openfoam-13-only">The <cite>birdmultiphaseEuler</cite> module provides the <cite>bioReactingPhaseModel</cite> that incorporates the model of Michealis and Menten for enzymatic reactions. Currently, this model only consumes liquid species (for example, oxygen dissolved in the liquid).
+For a reacting specie with mass fraction <span class="math notranslate nohighlight">\(Y_l\)</span>, the uptake rate is</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[UR = - UR_{max} \frac{Y_i}/{k_p - \rho_l Y_i}\]</div>
+</div></blockquote>
+<p>where the user parameters are the maximum uptake rate <span class="math notranslate nohighlight">\(UR_{max}\)</span> and the enzyme affinity <span class="math notranslate nohighlight">\(k_p\)</span>.</p>
+</section>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<div role="list" class="citation-list">
+<div class="citation" id="lehnigk2021" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">Lehnigk2021</a><span class="fn-bracket">]</span></span>
+<p>Lehnigk, R. et al. (2021). “An open-source population balance modeling framework for the simulation of polydisperse multiphase flows”. AIChE Journal.</p>
+</div>
+<div class="citation" id="hassanaly2025" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">Hassanaly2025</a><span class="fn-bracket">]</span></span>
+<p>Hassanaly, M. et al. (2025). “Bayesian calibration of bubble size dynamics applied to CO2 gas fermenters”. Chemical Engineering Research and Design.</p>
+</div>
+<div class="citation" id="grace1976" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">Grace1976</a><span class="fn-bracket">]</span></span>
+<p>Grace, J. R. (1976). “Shapes and Velocities of Single Drops and Bubbles Moving Freely through Immisicible Liquids”. Transactions of the American Institute of Chemical Engineers.</p>
+</div>
+<div class="citation" id="tomiyama2002" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">Tomiyama2002</a><span class="fn-bracket">]</span></span>
+<p>Tomiyama, A. et al. (2002). “Transverse migration of single bubbles in simple shear flows”. Chemical Engineering Science.</p>
+</div>
+<div class="citation" id="antal1991" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">Antal1991</a><span class="fn-bracket">]</span></span>
+<p>Antal, S. P. et al. (1991). “Analysis of phase distribution in fully developed laminar bubbly two-phase flow”. International Journal of Multiphase Flow.</p>
+</div>
+<div class="citation" id="burns2004" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">Burns2004</a><span class="fn-bracket">]</span></span>
+<p>Burns, A. D et al. (2004). “The Favre averaged drag model for turbulent dispersion in Eulerian multi-phase flows”. 5th International Conference on Multiphase Flow, ICMF.</p>
+</div>
+<div class="citation" id="higbie1935" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">Higbie1935</a><span class="fn-bracket">]</span></span>
+<p>Higbie, R. (1935). “The rate of absorption of pure gas into a still liquid during short periods of exposure”. Transactions of the American Institute of Chemical Engineers.</p>
+</div>
+<div class="citation" id="menten1913" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Menten1913<span class="fn-bracket">]</span></span>
+<p>Michaelis, L., &amp; Menten, M. L. (1913). Die Kinetik der InwertinWirkung. Biochem., (49), 333-369.</p>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quick start" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="meshing.html" class="btn btn-neutral float-right" title="Meshing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

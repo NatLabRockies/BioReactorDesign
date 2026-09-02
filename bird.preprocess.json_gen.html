@@ -1,0 +1,429 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+        <title>bird.preprocess.json_gen package &mdash; Bio Reactor Design (BiRD) 0.0.57 documentation</title>
+    
+
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2bfb35b6"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bio Reactor Design (BiRD)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multiphase.html">Multiphase flow model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meshing.html">Meshing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uq.html">Uncertainty quantification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_interface.html">Python interface to OpenFOAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bird.html">BiRD API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">External links</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign/blob/main/LICENSE"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bio Reactor Design (BiRD)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">bird.preprocess.json_gen package</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bird-preprocess-json-gen-package">
+<h1>bird.preprocess.json_gen package<a class="headerlink" href="#bird-preprocess-json-gen-package" title="Link to this heading"></a></h1>
+<section id="module-bird.preprocess.json_gen.design_io">
+<span id="bird-preprocess-json-gen-design-io-module"></span><h2>bird.preprocess.json_gen.design_io module<a class="headerlink" href="#module-bird.preprocess.json_gen.design_io" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.design_io.generate_dynamic_mixer">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.design_io.</span></span><span class="sig-name descname"><span class="pre">generate_dynamic_mixer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixers_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.design_io.generate_dynamic_mixer" title="Link to this definition"></a></dt>
+<dd><p>Write a mixers.json.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> – optional dict of top-level model selectors written verbatim
+(e.g. <code class="docutils literal notranslate"><span class="pre">{&quot;volumetric_source&quot;:</span> <span class="pre">&quot;ball&quot;,</span> <span class="pre">&quot;power&quot;:</span> <span class="pre">&quot;from_Np_Vtip&quot;,</span>
+<span class="pre">&quot;momentum_source&quot;:</span> <span class="pre">&quot;axial_and_swirl&quot;}</span></code>). <code class="docutils literal notranslate"><span class="pre">None</span></code> keeps the legacy
+pancake output.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.design_io.generate_stl_patch">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.design_io.</span></span><span class="sig-name descname"><span class="pre">generate_stl_patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bc_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.design_io.generate_stl_patch" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.design_io.make_default_geom_dict_from_file">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.design_io.</span></span><span class="sig-name descname"><span class="pre">make_default_geom_dict_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rescale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.7615275385627096</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.design_io.make_default_geom_dict_from_file" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-bird.preprocess.json_gen.generate_designs">
+<span id="bird-preprocess-json-gen-generate-designs-module"></span><h2>bird.preprocess.json_gen.generate_designs module<a class="headerlink" href="#module-bird.preprocess.json_gen.generate_designs" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.check_config">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">check_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.check_config" title="Link to this definition"></a></dt>
+<dd><p>Accept a design only if it has at least one sparger.</p>
+<p>Choice value <code class="docutils literal notranslate"><span class="pre">1</span></code> marks a sparger (a bottom gas inlet); <code class="docutils literal notranslate"><span class="pre">0</span></code> a mixer,
+<code class="docutils literal notranslate"><span class="pre">2</span></code> nothing. A design with no sparger is rejected, so
+<a class="reference internal" href="#bird.preprocess.json_gen.generate_designs.sample_placement_designs" title="bird.preprocess.json_gen.generate_designs.sample_placement_designs"><code class="xref py py-func docutils literal notranslate"><span class="pre">sample_placement_designs()</span></code></a> never keeps one.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.check_sparger_config">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">check_sparger_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sparger_locs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_spargers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">sparger_spacing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_spacing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_branches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bypass_sparger_spacing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.check_sparger_config" title="Link to this definition"></a></dt>
+<dd><p>Check realizability of the sparger placement configuration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sparger_locs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – Location of every sparger along the loop reactor coordinate [-]
+There are 3 branches. Spargers can be placed anywhere
+between edge_spacing and (1-edge_spacing) fractions of the branch
+Each sparger locations must be between 0 and 3*1=3</p></li>
+<li><p><strong>n_spargers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>|</em><em>None</em>) – Number of spargers</p></li>
+<li><p><strong>sparger_spacing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Spacing between two spargers [-]</p></li>
+<li><p><strong>edge_spacing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Spacing required between any sparger and the edges of the branches [-]</p></li>
+<li><p><strong>n_branches</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of loop reactor branches</p></li>
+<li><p><strong>bypass_sparger_spacing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If true, allow an overlap of spargers</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.compare_config">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">compare_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.compare_config" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.generate_leveled_reactor_cases">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">generate_leveled_reactor_cases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branchcom_spots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">study_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixer_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vvm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constantD</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rhog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cstar_co2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cstar_h2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gas2fuels'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores_per_sim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores_per_node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controldict_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">walltime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'47:59:00'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.generate_leveled_reactor_cases" title="Link to this definition"></a></dt>
+<dd><p>Generate one scale level of the actuator-disk (ball) design sweep.</p>
+<p>One template drives every level; the level <cite>scale</cite> is applied both to the
+mixers.json rescale (mixer positions) and to presteps.sh transformPoints.
+Uses the first <cite>n_sim</cite> designs of <cite>config_dict</cite>, so <code class="docutils literal notranslate"><span class="pre">Sim_i</span></code> is the same
+design at every level. <cite>mixer_params</cite> holds Np/Vtip/sigma/radius and the
+per-branch <cite>sign</cite> and <cite>swirl_sign</cite> (each a dict keyed by branch_id), which
+are written verbatim into each mixer entry of mixers.json.</p>
+<p><cite>rhog</cite>, <cite>cstar_co2</cite> and <cite>cstar_h2</cite> are the per-level QoI parameters; when
+given they are written into each case’s get_qoi.py (see
+<a class="reference internal" href="#bird.preprocess.json_gen.generate_designs.overwrite_qoi_params" title="bird.preprocess.json_gen.generate_designs.overwrite_qoi_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">overwrite_qoi_params()</span></code></a>). Left as <code class="docutils literal notranslate"><span class="pre">None</span></code> the template get_qoi.py is
+used unchanged.</p>
+<p>Each sim runs on <cite>cores_per_sim</cite> cores; the node-packing bundles fit
+<code class="docutils literal notranslate"><span class="pre">cores_per_node</span> <span class="pre">//</span> <span class="pre">cores_per_sim</span></code> sims per node. <cite>walltime</cite> is the SLURM
+<code class="docutils literal notranslate"><span class="pre">--time</span></code> written into both the per-case and node-packing scripts.</p>
+<p><cite>controldict_params</cite>, when given, is a dict of <code class="docutils literal notranslate"><span class="pre">system/controlDict</span></code>
+scalar entries (any of <code class="docutils literal notranslate"><span class="pre">deltaT</span></code>, <code class="docutils literal notranslate"><span class="pre">endTime</span></code>, <code class="docutils literal notranslate"><span class="pre">maxCo</span></code>, <code class="docutils literal notranslate"><span class="pre">maxDeltaT</span></code>)
+written into every case of this level via <a class="reference internal" href="#bird.preprocess.json_gen.generate_designs.overwrite_controldict" title="bird.preprocess.json_gen.generate_designs.overwrite_controldict"><code class="xref py py-func docutils literal notranslate"><span class="pre">overwrite_controldict()</span></code></a>;
+left <code class="docutils literal notranslate"><span class="pre">None</span></code> the template controlDict is used unchanged.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.generate_scaledup_reactor_cases">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">generate_scaledup_reactor_cases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branchcom_spots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vvm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constantD</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">study_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.generate_scaledup_reactor_cases" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.generate_single_scaledup_reactor_sparger_cases">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">generate_single_scaledup_reactor_sparger_cases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sparger_locs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_spargers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sparger_spacing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_spacing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_branches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constantD</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vvm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">study_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bypass_sparger_spacing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.generate_single_scaledup_reactor_sparger_cases" title="Link to this definition"></a></dt>
+<dd><p>Generates loop reactor case with desired sparger placement configuration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sparger_locs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – Location of every sparger along the loop reactor coordinate [-]</p></li>
+<li><p><strong>n_spargers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>|</em><em>None</em>) – Number of spargers</p></li>
+<li><p><strong>sparger_spacing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Spacing between two spargers [-]</p></li>
+<li><p><strong>edge_spacing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Spacing required between any sparger and the edges of the branches [-]</p></li>
+<li><p><strong>n_branches</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of loop reactor branches</p></li>
+<li><p><strong>sim_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Index identifier of the simulation</p></li>
+<li><p><strong>constantD</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If true, use constant bubble diameter
+If false, use population balance</p></li>
+<li><p><strong>vvm</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – VVM value [-]</p></li>
+<li><p><strong>study_folder</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Where to generate the case</p></li>
+<li><p><strong>template_folder</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The case template to start from</p></li>
+<li><p><strong>bypass_sparger_spacing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If true, allow an overlap of spargers</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.generate_small_reactor_cases">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">generate_small_reactor_cases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branchcom_spots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vvm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constantD</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">study_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'loop_reactor_pbe_dynmix_nonstat_headbranch'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.generate_small_reactor_cases" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.id2simfolder">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">id2simfolder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.id2simfolder" title="Link to this definition"></a></dt>
+<dd><p>Generates simulation folder name from simulation index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sim_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Simulation index</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>sim_folder</strong> – Simulation folder name</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.load_config_dict">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">load_config_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.load_config_dict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.load_or_sample_designs">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">load_or_sample_designs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">design_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches_com</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branchcom_spots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_designs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1,</span> <span class="pre">2)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.load_or_sample_designs" title="Link to this definition"></a></dt>
+<dd><p>Borrow designs from <cite>design_file</cite> if it exists, else sample and save.</p>
+<p>The first sweep run samples a fresh random design set (see
+<a class="reference internal" href="#bird.preprocess.json_gen.generate_designs.sample_placement_designs" title="bird.preprocess.json_gen.generate_designs.sample_placement_designs"><code class="xref py py-func docutils literal notranslate"><span class="pre">sample_placement_designs()</span></code></a>) and pickles it to <cite>design_file</cite>; every
+later sweep pointed at the same file loads it instead of re-sampling, so
+<code class="docutils literal notranslate"><span class="pre">Sim_i</span></code> is the same design across all sweeps without relying on a fixed
+seed. <cite>design_file</cite> should hold enough designs for the largest sweep –
+downstream slicing (<code class="docutils literal notranslate"><span class="pre">sorted(config_dict)[:n_sim]</span></code>) selects the first
+<cite>n_sim</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.overwrite_bubble_size_model">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">overwrite_bubble_size_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constantD</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.overwrite_bubble_size_model" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.overwrite_controldict">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">overwrite_controldict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.overwrite_controldict" title="Link to this definition"></a></dt>
+<dd><p>Rewrite time-stepping entries in system/controlDict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> – dict with any of <code class="docutils literal notranslate"><span class="pre">deltaT</span></code>, <code class="docutils literal notranslate"><span class="pre">endTime</span></code>, <code class="docutils literal notranslate"><span class="pre">maxCo</span></code>,
+<code class="docutils literal notranslate"><span class="pre">maxDeltaT</span></code>; each present key overwrites its scalar entry.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.overwrite_ncores">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">overwrite_ncores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.overwrite_ncores" title="Link to this definition"></a></dt>
+<dd><p>Rewrite <code class="docutils literal notranslate"><span class="pre">numberOfSubdomains</span></code> in system/decomposeParDict to <cite>n</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.overwrite_qoi_params">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">overwrite_qoi_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rhog</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cstar_co2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cstar_h2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.overwrite_qoi_params" title="Link to this definition"></a></dt>
+<dd><p>Rewrite the per-level QoI parameters in get_qoi.py.</p>
+<p>These are hardcoded per dimension in get_qoi.py, so each level needs its
+own values (the mixer power is NOT touched here – get_qoi.py reads it from
+mixers.json).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rhog</strong> – gas density [kg/m3] used in the injection-power estimate.</p></li>
+<li><p><strong>cstar_co2</strong> – (low, high) uniform-prior bounds for the CO2 c*.</p></li>
+<li><p><strong>cstar_h2</strong> – (low, high) uniform-prior bounds for the H2 c*.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.overwrite_scale">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">overwrite_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.overwrite_scale" title="Link to this definition"></a></dt>
+<dd><p>Rewrite the <code class="docutils literal notranslate"><span class="pre">transformPoints</span></code> scale in presteps.sh to <cite>scale</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.overwrite_setfields_box">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">overwrite_setfields_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.overwrite_setfields_box" title="Link to this definition"></a></dt>
+<dd><p>Rewrite the setFields liquid-init box to <cite>scale</cite> * <code class="docutils literal notranslate"><span class="pre">_SETFIELDS_BOX_UPPER</span></code>.</p>
+<p>setFields runs after transformPoints, so the box lives in scaled
+coordinates; the lower corner stays <code class="docutils literal notranslate"><span class="pre">(-1</span> <span class="pre">-1</span> <span class="pre">-1)</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.overwrite_vvm">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">overwrite_vvm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vvm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.overwrite_vvm" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.sample_placement_designs">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">sample_placement_designs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branches_com</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branchcom_spots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_designs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1,</span> <span class="pre">2)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.sample_placement_designs" title="Link to this definition"></a></dt>
+<dd><p>Randomly sample <cite>n_designs</cite> distinct, valid placement designs.</p>
+<p>Draws are non-deterministic (the caller must NOT seed for reproducibility).
+Each design maps <code class="docutils literal notranslate"><span class="pre">branch_id</span> <span class="pre">-&gt;</span> <span class="pre">array</span></code> of per-spot choices;
+<a class="reference internal" href="#bird.preprocess.json_gen.generate_designs.check_config" title="bird.preprocess.json_gen.generate_designs.check_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_config()</span></code></a> keeps only designs with at least one inlet and
+<a class="reference internal" href="#bird.preprocess.json_gen.generate_designs.compare_config" title="bird.preprocess.json_gen.generate_designs.compare_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">compare_config()</span></code></a> rejects duplicates. Keys are contiguous <code class="docutils literal notranslate"><span class="pre">0..n-1</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>branches_com</strong> – branch ids on which choices are placed.</p></li>
+<li><p><strong>branchcom_spots</strong> – <code class="docutils literal notranslate"><span class="pre">branch_id</span> <span class="pre">-&gt;</span> <span class="pre">array</span></code> of candidate spot fractions.</p></li>
+<li><p><strong>n_designs</strong> – number of distinct valid designs to return.</p></li>
+<li><p><strong>choices</strong> – per-spot categorical choices (e.g. mixer/sparger/none).</p></li>
+<li><p><strong>max_attempts</strong> – give up after this many draws.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.save_config_dict">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">save_config_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.save_config_dict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.write_foam_stub">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">write_foam_stub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.write_foam_stub" title="Link to this definition"></a></dt>
+<dd><p>Create an empty <code class="docutils literal notranslate"><span class="pre">test.foam</span></code> so ParaView can open the case.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.write_pack_post_scripts">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">write_pack_post_scripts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sims_per_node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">26</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gas2fuels'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">walltime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1:00:00'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.write_pack_post_scripts" title="Link to this definition"></a></dt>
+<dd><p>Write post-processing packing scripts: pack_post_XXX + submit_all_post.sh.</p>
+<p>Mirrors <a class="reference internal" href="#bird.preprocess.json_gen.generate_designs.write_pack_scripts" title="bird.preprocess.json_gen.generate_designs.write_pack_scripts"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_pack_scripts()</span></code></a> one-to-one (same <cite>sims_per_node</cite>
+bundling, so <code class="docutils literal notranslate"><span class="pre">pack_post_b</span></code> post-processes exactly the sims in
+<code class="docutils literal notranslate"><span class="pre">pack_b</span></code>), but each sim runs the QoI pipeline on a single core:
+<code class="docutils literal notranslate"><span class="pre">reconstructPar</span></code> then <code class="docutils literal notranslate"><span class="pre">read_history.py</span></code> + <code class="docutils literal notranslate"><span class="pre">get_qoi.py</span></code> under the
+bird_mixer conda env. The bundle requests one core per sim
+(<code class="docutils literal notranslate"><span class="pre">ntasks-per-node</span> <span class="pre">=</span> <span class="pre">len(bundle)</span></code>) and its sims run concurrently, each in
+its own subshell so their conda state stays isolated. <code class="docutils literal notranslate"><span class="pre">submit_all_post.sh</span></code>
+sbatches every bundle.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.write_pack_scripts">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">write_pack_scripts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sims_per_node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">26</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores_per_sim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gas2fuels'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'birdmultiphaseEulerFoam'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">walltime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'47:59:00'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.write_pack_scripts" title="Link to this definition"></a></dt>
+<dd><p>Write node-packing scripts (Option A): pack_XXX bundles + submit_all.sh.</p>
+<p>Each bundle runs up to <cite>sims_per_node</cite> cases concurrently on one node, each
+via <code class="docutils literal notranslate"><span class="pre">srun</span> <span class="pre">--exclusive</span> <span class="pre">-n</span> <span class="pre">cores_per_sim</span></code> (so <cite>sims_per_node*cores_per_sim</cite>
+cores are used per node).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.write_prep">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">write_prep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.write_prep" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.write_script_post">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">write_script_post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.write_script_post" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.write_script_post_single">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">write_script_post_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gas2fuels'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.write_script_post_single" title="Link to this definition"></a></dt>
+<dd><p>Write a per-case post-processing SLURM script (<code class="docutils literal notranslate"><span class="pre">script_post_single</span></code>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.write_script_single">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">write_script_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gas2fuels'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'birdmultiphaseEulerFoam'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">walltime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'47:59:00'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.write_script_single" title="Link to this definition"></a></dt>
+<dd><p>Write a per-case SLURM script (<code class="docutils literal notranslate"><span class="pre">script_single</span></code>) running one case.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.preprocess.json_gen.generate_designs.write_script_start">
+<span class="sig-prename descclassname"><span class="pre">bird.preprocess.json_gen.generate_designs.</span></span><span class="sig-name descname"><span class="pre">write_script_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.preprocess.json_gen.generate_designs.write_script_start" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
