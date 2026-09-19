@@ -122,8 +122,6 @@ def get_globalindex_of(splti, ci, zi, react):
     centeroffset = react.centeroffset
     polyoffset = react.polyoffset
     nsplits = react.nsplits
-    hub_circ = react.hub_circ
-    tank_circ = react.tank_circ
 
     # also works for ci=-1
     global_id = (
@@ -172,8 +170,6 @@ def write_edges(outfile, react):
 
     for zi in range(nsections):
         outfile.write("\n//section " + str(zi) + "\n")
-
-        offset = 1 + nsplits  # one for center and nsplits for polygon
 
         outfile.write("\n//circles\n")
         for ci in range(ncirc):

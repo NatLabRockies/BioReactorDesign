@@ -93,7 +93,6 @@ def make_fluid_blocks_from_corner(corners):
     assert isinstance(corners, list)
     fluid_blocks = []
     for multi_block in corners:
-        n_end_block = len(multi_block)
         for iend, end_block in enumerate(multi_block):
             # Add blocks that connect end points
             if iend == 0:
