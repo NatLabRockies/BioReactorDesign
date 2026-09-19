@@ -37,10 +37,9 @@ def compute_cond_mean(
             field_file.append(
                 os.path.join(case_folder, time_folder, field_name)
             )
-
         for filename, name in zip(field_file, field_name_list):
             field_tmp, _ = read_field(
-                case_folder, time_folder, field_name=field_name
+                case_folder, time_folder, field_name=name
             )
             vert_axis, field_cond_tmp = conditional_average(
                 cell_centers[:, vert_ind], field_tmp, nbins=n_bins

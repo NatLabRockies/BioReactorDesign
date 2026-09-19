@@ -14,8 +14,8 @@ from bird.postprocess.conditional_mean import (
 def test_compute_cond():
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -31,7 +31,7 @@ def test_compute_cond():
         "d.gas",
     ]
     fields_cond = compute_cond_mean(case_folder, 1, fields_list, 2, n_bins=32)
-
+   
     # Output to temporary directory and delete when done
     with tempfile.TemporaryDirectory() as tmpdirname:
         save_cond(os.path.join(tmpdirname, "cond.pkl"), fields_cond)
