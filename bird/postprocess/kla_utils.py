@@ -367,6 +367,6 @@ def print_res_dict(res_dict: dict) -> None:
     if bs:
         logger.info(f"\tkla = {kla*3600:.4g} +/- {kla_err*3600:.4g} [h-1]")
         logger.info(f"\tcstar = {cs:.4g} +/- {cs_err:.4g} [mol/m3]")
-        logger.info(f"Without data bootstrap")
+        logger.info("Without data bootstrap")
     logger.info(f"\tkla = {kla_nb*3600:.4g} +/- {kla_err_nb*3600:.4g} [h-1]")
     logger.info(f"\tcstar = {cs_nb:.4g} +/- {cs_err_nb:.4g} [mol/m3]")
