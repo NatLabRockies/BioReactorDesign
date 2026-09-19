@@ -50,3 +50,14 @@ __all__ = [
     "species_name_to_mw",
     "write_openfoam_dict",
 ]
+
+# Helpers
+__all__ += [
+    "_find_header_size",
+    "_get_mesh_time",
+    "_get_volume_time",
+    "_read_mesh",
+    "_readOF",
+    "_readOFScal",
+    "_readOFVec",
+]
