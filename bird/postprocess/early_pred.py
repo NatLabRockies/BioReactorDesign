@@ -63,7 +63,6 @@ def plotAllEarly_uq(data_dict, color_files=None):
         t = data_dict[datf]["t"]
         y = data_dict[datf]["y"] * 100
         med_real = data_dict[datf]["med_real"] * 100
-        mean_real = data_dict[datf]["mean_real"] * 100
         std16_real = data_dict[datf]["std16_real"] * 100
         std84_real = data_dict[datf]["std84_real"] * 100
 

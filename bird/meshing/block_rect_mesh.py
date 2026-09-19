@@ -44,7 +44,6 @@ def write_vertices(outfile, lengths, nboxes):
 def write_blocks(outfile, blockids, lengths, nboxes, points_per_len):
     nx = nboxes[0]
     ny = nboxes[1]
-    nz = nboxes[2]
 
     idarray = np.zeros(8, dtype=int)
     mesharray = np.zeros(3, dtype=int)
@@ -221,7 +220,6 @@ def from_block_rect_to_seg(input_geom_dict, rescale=True):
         )
         vec_conn = segments[iseg]["end"] - segments[iseg]["start"]
         segments[iseg]["conn"] = vec_conn
-        norm_vec_conn = np.linalg.norm(vec_conn)
         segments[iseg]["normal_dir"] = int(np.nonzero(vec_conn)[0][0])
         if segments[iseg]["normal_dir"] == 0:
             segments[iseg]["max_rad"] = (blocksize_y + blocksize_z) / 4

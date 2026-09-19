@@ -311,9 +311,7 @@ def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
     BoundaryNames = geom_dict["names"]
     BoundaryType = geom_dict["types"]
     BoundaryRmin = geom_dict["rmin"]
-    BoundaryRmax = geom_dict["rmax"]
     BoundaryLmin = geom_dict["lmin"]
-    BoundaryLmax = geom_dict["lmax"]
 
     NR = mesh_dict["NR"]
     NS = mesh_dict["NS"]
@@ -522,7 +520,6 @@ def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
             boundType = BoundaryType[i][ibound]
             if boundType == "lateral":
                 rminInd = BoundaryRmin[i][ibound]
-                rmaxInd = BoundaryRmax[i][ibound]
                 lInd = BoundaryLmin[i][ibound]
                 i1 = rminInd * (4 * (N2 + 1)) + 4 * lInd  # bottom
                 i2 = i1 - 4  # top
@@ -534,7 +531,6 @@ def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
 
             elif boundType == "top":
                 lminInd = BoundaryLmin[i][ibound]
-                lmaxInd = BoundaryLmax[i][ibound]
                 rInd = BoundaryRmin[i][ibound]
                 if rInd > 0:
                     i1 = 4 * (N2 + 1) * (rInd - 1) + 4 * lminInd  # right
@@ -550,7 +546,6 @@ def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
 
             elif boundType == "bottom":
                 lminInd = BoundaryLmin[i][ibound]
-                lmaxInd = BoundaryLmax[i][ibound]
                 rInd = BoundaryRmin[i][ibound]
                 i1 = 4 * (N2 + 1) * (rInd - 1) + 4 * lminInd  # right
                 i2 = i1 + 4 * (N2 + 1)  # left
