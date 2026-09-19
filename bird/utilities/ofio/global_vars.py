@@ -94,7 +94,7 @@ def _cross_reference_global_vars(
                     #    result = int(result)
                     cross_referenced_globalVars_dict[key] = result
 
-                except Exception as e:
+                except Exception:
                     logger.warning(
                         f"Could not evaluate globalVars expression for {key}: {expr}"
                     )
@@ -124,7 +124,7 @@ def _cross_reference_global_vars(
                     # if result.is_integer():
                     #    result = int(result)
                     cross_referenced_globalVars_dict[key] = result
-                except Exception as e:
+                except Exception:
                     logger.warning(
                         f"Could not evaluate globalVars expression for {key}: {expr}"
                     )

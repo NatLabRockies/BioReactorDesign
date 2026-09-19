@@ -302,7 +302,6 @@ def post_cal(
     """
     np_hmc_samples = hmc_samples_2_np_samples(hmc_samples)
     labels_np = ["cstar", "kla", "sigma"]
-    nsamples = np_hmc_samples.shape[0]
     labels = list(hmc_samples.keys())
     nparams = len(labels)
 
@@ -322,7 +321,7 @@ def post_cal(
     p10_real = pred_dict["p10_pred"]
     p90_real = pred_dict["p90_pred"]
 
-    fig = plt.figure()
+    plt.figure()
     plt.plot(
         time_obs, mean_real, color="k", linewidth=3, label="mean predictions"
     )

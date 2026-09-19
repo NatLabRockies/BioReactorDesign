@@ -20,7 +20,6 @@ def compute_cond_mean(
 ):
     time_float_sorted, time_str_sorted = get_case_times(case_folder)
     cell_centers, _ = read_cell_centers(case_folder)
-    nCells = len(cell_centers)
     assert len(diff_val_list) == len(diff_name_list)
     window_ave = min(window_ave, len(time_str_sorted))
 
@@ -40,7 +39,6 @@ def compute_cond_mean(
             )
 
         for filename, name in zip(field_file, field_name_list):
-            val_dict = {}
             field_tmp, _ = read_field(
                 case_folder, time_folder, field_name=field_name
             )

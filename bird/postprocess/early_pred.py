@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 def plotAllEarly(data_dict, color_files=None, chop=False, extrap=False):
-    fig = plt.figure()
+    plt.figure()
     for idat, datf in enumerate(data_dict):
         if color_files is not None:
             color = color_files[idat]
@@ -56,7 +56,7 @@ def plotAllEarly(data_dict, color_files=None, chop=False, extrap=False):
 
 
 def plotAllEarly_uq(data_dict, color_files=None):
-    fig = plt.figure()
+    plt.figure()
     for idat, datf in enumerate(data_dict):
         color = color_files[idat]
         text = data_dict[datf]["textrap"]
