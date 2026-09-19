@@ -87,8 +87,6 @@ def assemble_mesh(input_file, geom_dict):
         raise ValueError(f"unknown input file ({input_file}) extension")
     R = geom_dict["R"]
     L = geom_dict["L"]
-    N1 = len(R)
-    N2 = len(L) - 1
     CW = []
     mCW = []
     C1 = []
@@ -321,8 +319,6 @@ def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
     NS = mesh_dict["NS"]
     NVert = mesh_dict["NVert"]
     gradR = mesh_dict["gradR"]
-    gradR_l = mesh_dict["gradR_l"]
-    gradR_r = mesh_dict["gradR_r"]
     gradVert = mesh_dict["gradVert"]
     CW = mesh_dict["CW"]
     mCW = mesh_dict["mCW"]
@@ -420,8 +416,6 @@ def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
             # gradingR = 1
             # if il==N2-1:
             #    gradingVert = outletGrading
-            gradingR_l = gradR_l[ir]
-            gradingR_r = gradR_r[ir]
             gradingVert = gradVert[il]
             gradingR = gradR[ir]
             # Am I a wall
