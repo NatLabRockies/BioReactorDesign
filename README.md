@@ -56,7 +56,7 @@ See the [natlabrockies.github.io/BioReactorDesign](https://natlabrockies.github.
 
 ## References
 
-Software record [SWR 24-35](https://www.osti.gov/biblio/2319227)
+Software record [SWR 24-35](https://www.osti.gov/biblio/code-123482)
 
 To cite BiRD, please use these articles on [CO2 interphase mass transfer](https://doi.org/10.1016/j.cherd.2025.01.034) (open access [link](https://arxiv.org/pdf/2404.19636) ) on [aerobic bioreactors](https://doi.org/10.1016/j.cherd.2018.08.033) and on [butanediol synthesis](https://doi.org/10.1016/j.cherd.2023.07.031).
 
