@@ -1,4 +1,4 @@
-# <ins>Bi</ins>o <ins>R</ins>eactor <ins>D</ins>esign (BiRD) [![bird-CI](https://github.com/NatLabRockies/BioReactorDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NatLabRockies/BioReactorDesign/actions/workflows/ci.yml) [![bird-pyversion](https://img.shields.io/pypi/pyversions/NLR-bird.svg)](https://pypi.org/project/NLR-bird/) [![coverage](https://codecov.io/gh/NatlabRockies/BioReactorDesign/graph/badge.svg)](https://app.codecov.io/gh/nrel/bioreactordesign)  [![bird-pypi](https://badge.fury.io/py/nlr-bird.svg)](https://badge.fury.io/py/nlr-bird)
+# <ins>Bi</ins>o <ins>R</ins>eactor <ins>D</ins>esign (BiRD) [![bird-CI](https://github.com/NatLabRockies/BioReactorDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NatLabRockies/BioReactorDesign/actions/workflows/ci.yml) [![bird-pyversion](https://img.shields.io/pypi/pyversions/NLR-bird.svg)](https://pypi.org/project/NLR-bird/) [![coverage](https://codecov.io/gh/NatlabRockies/BioReactorDesign/graph/badge.svg)](https://app.codecov.io/gh/natlabrockies/bioreactordesign)  [![bird-pypi](https://badge.fury.io/py/nlr-bird.svg)](https://badge.fury.io/py/nlr-bird)
 
 ## Quick start
 1. Follow the steps to install the python package (see `Installation of python package for developers` or `Installation of python package for users` below)
@@ -25,7 +25,7 @@ This requires installing `pixi`. If it is not available on your machine, follow 
 Once installed, `pixi` does not require the `conda` environment creation and `pip install` gymnastics, and can be used as
 
 ```bash
-git clone https://github.com/NREL/BioReactorDesign.git
+git clone https://github.com/NatLabRockies/BioReactorDesign.git
 cd BioReactorDesign
 pixi shell
 ```
