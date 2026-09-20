@@ -61,3 +61,12 @@ __all__ = [
     "sherwood",
     "weber",
 ]
+
+# Private cell-selection helpers re-exported for the test suite (imported by tests/).
+__all__ += [
+    "_field_filter",
+    "_get_ind_gas",
+    "_get_ind_liq",
+    "_get_ind_slice",
+    "_weighted_average",
+]

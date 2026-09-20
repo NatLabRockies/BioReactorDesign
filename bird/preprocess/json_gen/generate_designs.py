@@ -152,8 +152,8 @@ def write_script_start(filename, n):
         for i in range(n):
             sim_folder = id2simfolder(i)
             f.write(f"cd {sim_folder}\n")
-            f.write(f"sbatch script\n")
-            f.write(f"cd ..\n")
+            f.write("sbatch script\n")
+            f.write("cd ..\n")
 
 
 def write_script_post(filename, n):
@@ -161,20 +161,20 @@ def write_script_post(filename, n):
         for i in range(n):
             sim_folder = id2simfolder(i)
             f.write(f"cd {sim_folder}\n")
-            f.write(f"sbatch script_post\n")
-            f.write(f"cd ..\n")
+            f.write("sbatch script_post\n")
+            f.write("cd ..\n")
 
 
 def write_prep(filename, n):
     with open(filename, "w+") as f:
         f.write("prep () {\n")
-        f.write(f"\tcd $1\n")
-        f.write(f"\treconstructPar -newTimes\n")
-        f.write(f"\tcd ..\n")
+        f.write("\tcd $1\n")
+        f.write("\treconstructPar -newTimes\n")
+        f.write("\tcd ..\n")
         f.write("}\n")
-        f.write(f"\n")
+        f.write("\n")
         f.write(
-            f"source /projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc\n"
+            "source /projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc\n"
         )
         for i in range(n):
             sim_folder = id2simfolder(i)

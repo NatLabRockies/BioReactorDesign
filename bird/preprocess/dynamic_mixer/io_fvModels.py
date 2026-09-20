@@ -42,14 +42,14 @@ def write_preamble(output_folder):
         f.write("\t\tconst volVectorField& UL =\n")
         f.write('\t\t\tmesh().lookupObject<volVectorField>("U.liquid");\n')
         f.write("\t\tdouble pi=3.141592654;\n")
-        f.write(f"\t\tdouble source_pt_x;\n")
-        f.write(f"\t\tdouble source_pt_y;\n")
-        f.write(f"\t\tdouble source_pt_z;\n")
-        f.write(f"\t\tdouble disk_rad;\n")
+        f.write("\t\tdouble source_pt_x;\n")
+        f.write("\t\tdouble source_pt_y;\n")
+        f.write("\t\tdouble source_pt_z;\n")
+        f.write("\t\tdouble disk_rad;\n")
         f.write("\t\tdouble disk_area;\n")
-        f.write(f"\t\tdouble power;\n")
-        f.write(f"\t\tdouble smear_factor;\n")
-        f.write(f"\t\tdouble startTime;\n")
+        f.write("\t\tdouble power;\n")
+        f.write("\t\tdouble smear_factor;\n")
+        f.write("\t\tdouble startTime;\n")
 
 
 def write_mixer(mixer, output_folder):
