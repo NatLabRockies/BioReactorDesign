@@ -58,50 +58,8 @@ See the [natlabrockies.github.io/BioReactorDesign](https://natlabrockies.github.
 
 Software record [SWR 24-35](https://www.osti.gov/biblio/code-123482)
 
-To cite BiRD, please use these articles on [U-loop reactors](https://doi.org/10.1016/j.ceja.2026.101480), [CO2 interphase mass transfer](https://doi.org/10.1016/j.cherd.2025.01.034) (open access [link](https://arxiv.org/pdf/2404.19636) ) on [aerobic bioreactors](https://doi.org/10.1016/j.cherd.2018.08.033) and on [butanediol synthesis](https://doi.org/10.1016/j.cherd.2023.07.031).
+To cite BiRD, please refer to [references](https://natlabrockies.github.io/BioReactorDesign/references.html)
 
-```
-
-@article{hassanaly2026optimal,
-  title={Optimal sparging and mixing for enhanced mass transfer in U-loop bioreactors across scales},
-  author={Hassanaly, Malik and Jain, Pranav and Rahimi, Mohammad J. and Municchi, Federico and Sigler, Devon and Sitaraman, Hariswaran},
-  journal={Chemical Engineering Journal Advances},
-  volume={28},
-  pages={101480},
-  year={2026},
-  publisher={Elsevier}
-}
-
-@article{hassanaly2025bayesian,
-  title={Bayesian calibration of bubble size dynamics applied to CO2 gas fermenters},
-  author={Hassanaly, Malik and Parra-Alvarez, John M. and Rahimi, Mohammad J. and Municchi, Federico and Sitaraman, Hariswaran},
-  journal={Chemical Engineering Research and Design},
-  volume={215},
-  pages={312--328},
-  year={2025},
-  publisher={Elsevier}
-}
-
-@article{rahimi2018computational,
-  title={Computational fluid dynamics study of full-scale aerobic bioreactors: Evaluation of gas--liquid mass transfer, oxygen uptake, and dynamic oxygen distribution},
-  author={Rahimi, Mohammad J. and Sitaraman, Hariswaran and Humbird, David and Stickel, Jonathan J.},
-  journal={Chemical Engineering Research and Design},
-  volume={139},
-  pages={283--295},
-  year={2018},
-  publisher={Elsevier}
-}
-
-@article{sitaraman2023reacting,
-  title={A reacting multiphase computational flow model for 2, 3-butanediol synthesis in industrial-scale bioreactors},
-  author={Sitaraman, Hariswaran and Lischeske, James and Lu, Yimin and Stickel, Jonathan},
-  journal={Chemical Engineering Research and Design},
-  volume={197},
-  pages={38--52},
-  year={2023},
-  publisher={Elsevier}
-}
-```
 
 ## Acknowledgments
 
