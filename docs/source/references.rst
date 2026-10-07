@@ -17,7 +17,7 @@ To cite optimization tools or actuator mixer models in BiRD, please refer to our
    }
 
 
-To cite the bubble dyanmics model in BiRD, please refer to our work on `CO2 interphase mass transfer <https://doi.org/10.1016/j.cherd.2025.01.034>`_ (open access `link <https://arxiv.org/pdf/2404.19636>`_ )
+To cite the bubble dynamics model in BiRD, please refer to our work on `CO2 interphase mass transfer <https://doi.org/10.1016/j.cherd.2025.01.034>`_ (open access `link <https://arxiv.org/pdf/2404.19636>`_ )
 
 .. code-block:: console
 
